@@ -28,10 +28,7 @@
 /* Create a new directory with permission bits MODE.  But interpret
    relative PATH names relative to the directory associated with FD.  */
 int
-mkdirat (fd, file, mode)
-     int fd;
-     const char *file;
-     mode_t mode;
+mkdirat (int fd, const char *file, mode_t mode)
 {
   int res;
 

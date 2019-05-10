@@ -39,7 +39,7 @@ pthread_barrier_init (pthread_barrier_t *barrier,
 
   const struct pthread_barrierattr *iattr
     = (attr != NULL
-       ? iattr = (struct pthread_barrierattr *) attr
+       ? (struct pthread_barrierattr *) attr
        : &default_barrierattr);
 
   if (iattr->pshared != PTHREAD_PROCESS_PRIVATE

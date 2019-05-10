@@ -113,8 +113,7 @@ extern int errno;
 
 void
 attribute_compat_text_section
-_IO_old_file_init_internal (fp)
-     struct _IO_FILE_plus *fp;
+_IO_old_file_init_internal (struct _IO_FILE_plus *fp)
 {
   /* POSIX.1 allows another file handle to be used to change the position
      of our file descriptor.  Hence we actually don't know the actual
@@ -148,8 +147,7 @@ _IO_old_file_init (struct _IO_FILE_plus *fp)
 
 int
 attribute_compat_text_section
-_IO_old_file_close_it (fp)
-     _IO_FILE *fp;
+_IO_old_file_close_it (_IO_FILE *fp)
 {
   int write_status, close_status;
   if (!_IO_file_is_open (fp))
@@ -177,9 +175,7 @@ _IO_old_file_close_it (fp)
 
 void
 attribute_compat_text_section
-_IO_old_file_finish (fp, dummy)
-     _IO_FILE *fp;
-     int dummy;
+_IO_old_file_finish (_IO_FILE *fp, int dummy)
 {
   if (_IO_file_is_open (fp))
     {
@@ -192,10 +188,7 @@ _IO_old_file_finish (fp, dummy)
 
 _IO_FILE *
 attribute_compat_text_section
-_IO_old_file_fopen (fp, filename, mode)
-     _IO_FILE *fp;
-     const char *filename;
-     const char *mode;
+_IO_old_file_fopen (_IO_FILE *fp, const char *filename, const char *mode)
 {
   int oflags = 0, omode;
   int read_write, fdesc;
@@ -242,9 +235,7 @@ _IO_old_file_fopen (fp, filename, mode)
 
 _IO_FILE *
 attribute_compat_text_section
-_IO_old_file_attach (fp, fd)
-     _IO_FILE *fp;
-     int fd;
+_IO_old_file_attach (_IO_FILE *fp, int fd)
 {
   if (_IO_file_is_open (fp))
     return NULL;
@@ -262,10 +253,7 @@ _IO_old_file_attach (fp, fd)
 
 _IO_FILE *
 attribute_compat_text_section
-_IO_old_file_setbuf (fp, p, len)
-     _IO_FILE *fp;
-     char *p;
-     _IO_ssize_t len;
+_IO_old_file_setbuf (_IO_FILE *fp, char *p, _IO_ssize_t len)
 {
     if (_IO_default_setbuf (fp, p, len) == NULL)
       return NULL;
@@ -284,10 +272,7 @@ static int old_do_write (_IO_FILE *, const char *, _IO_size_t);
 
 int
 attribute_compat_text_section
-_IO_old_do_write (fp, data, to_do)
-     _IO_FILE *fp;
-     const char *data;
-     _IO_size_t to_do;
+_IO_old_do_write (_IO_FILE *fp, const char *data, _IO_size_t to_do)
 {
   return (to_do == 0 || (_IO_size_t) old_do_write (fp, data, to_do) == to_do)
 	 ? 0 : EOF;
@@ -295,10 +280,7 @@ _IO_old_do_write (fp, data, to_do)
 
 static int
 attribute_compat_text_section
-old_do_write (fp, data, to_do)
-     _IO_FILE *fp;
-     const char *data;
-     _IO_size_t to_do;
+old_do_write (_IO_FILE *fp, const char *data, _IO_size_t to_do)
 {
   _IO_size_t count;
   if (fp->_flags & _IO_IS_APPENDING)
@@ -328,8 +310,7 @@ old_do_write (fp, data, to_do)
 
 int
 attribute_compat_text_section
-_IO_old_file_underflow (fp)
-     _IO_FILE *fp;
+_IO_old_file_underflow (_IO_FILE *fp)
 {
   _IO_ssize_t count;
 #if 0
@@ -393,9 +374,7 @@ _IO_old_file_underflow (fp)
 
 int
 attribute_compat_text_section
-_IO_old_file_overflow (f, ch)
-      _IO_FILE *f;
-      int ch;
+_IO_old_file_overflow (_IO_FILE *f, int ch)
 {
   if (f->_flags & _IO_NO_WRITES) /* SET ERROR */
     {
@@ -445,8 +424,7 @@ _IO_old_file_overflow (f, ch)
 
 int
 attribute_compat_text_section
-_IO_old_file_sync (fp)
-     _IO_FILE *fp;
+_IO_old_file_sync (_IO_FILE *fp)
 {
   _IO_ssize_t delta;
   int retval = 0;
@@ -480,11 +458,7 @@ _IO_old_file_sync (fp)
 
 _IO_off64_t
 attribute_compat_text_section
-_IO_old_file_seekoff (fp, offset, dir, mode)
-     _IO_FILE *fp;
-     _IO_off64_t offset;
-     int dir;
-     int mode;
+_IO_old_file_seekoff (_IO_FILE *fp, _IO_off64_t offset, int dir, int mode)
 {
   _IO_off_t result;
   _IO_off64_t delta, new_offset;
@@ -667,10 +641,7 @@ resync:
 
 _IO_ssize_t
 attribute_compat_text_section
-_IO_old_file_write (f, data, n)
-     _IO_FILE *f;
-     const void *data;
-     _IO_ssize_t n;
+_IO_old_file_write (_IO_FILE *f, const void *data, _IO_ssize_t n)
 {
   _IO_ssize_t to_do = n;
   while (to_do > 0)
@@ -692,10 +663,7 @@ _IO_old_file_write (f, data, n)
 
 _IO_size_t
 attribute_compat_text_section
-_IO_old_file_xsputn (f, data, n)
-     _IO_FILE *f;
-     const void *data;
-     _IO_size_t n;
+_IO_old_file_xsputn (_IO_FILE *f, const void *data, _IO_size_t n)
 {
   const char *s = (char *) data;
   _IO_size_t to_do = n;

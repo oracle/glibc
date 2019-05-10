@@ -71,7 +71,7 @@ SIMPLE_STRCAT (CHAR *dst, const CHAR *src)
 }
 
 static void
-do_one_test (impl_t *impl, CHAR *dst, const char *src)
+do_one_test (impl_t *impl, CHAR *dst, const CHAR *src)
 {
   size_t k = STRLEN (dst);
   if (CALL (impl, dst, src) != dst)

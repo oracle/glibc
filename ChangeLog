@@ -1,3 +1,10 @@
+2018-02-06  Joseph Myers  <joseph@codesourcery.com>
+
+	* sysdeps/unix/sysv/linux/x86/bits/mman.h [__USE_MISC] (MAP_SYNC):
+	(MAP_SYNC): New macro.
+	Limited backport by Patrick McGehearty
+	Addition to other platforms omitted.
+
 2018-07-24  Patrick McGehearty <patrick.mcgehearty@oracle.com>
 
 	* sysdeps/unix/sysv/linux/x86/bits/mman.h

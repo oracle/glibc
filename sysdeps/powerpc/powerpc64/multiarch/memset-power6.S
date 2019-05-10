@@ -25,7 +25,8 @@
   .align ALIGNARG(alignt);					\
   EALIGN_W_##words;						\
   BODY_LABEL(__memset_power6):					\
-  cfi_startproc;
+  cfi_startproc;						\
+  LOCALENTRY(__memset_power6)
 
 #undef END_GEN_TB
 #define END_GEN_TB(name, mask)					\

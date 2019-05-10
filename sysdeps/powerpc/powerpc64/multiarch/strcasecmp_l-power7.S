@@ -24,7 +24,8 @@
   ENTRY_2(__strcasecmp_l_power7)				\
   .align ALIGNARG(2);						\
   BODY_LABEL(__strcasecmp_l_power7):				\
-  cfi_startproc;
+  cfi_startproc;						\
+  LOCALENTRY(__strcasecmp_l_power7)
 
 #undef END
 #define END(name)						\

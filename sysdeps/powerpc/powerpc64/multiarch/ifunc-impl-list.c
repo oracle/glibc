@@ -34,6 +34,8 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
   size_t i = 0;
 
   unsigned long int hwcap = GLRO(dl_hwcap);
+  unsigned long int hwcap2 = GLRO(dl_hwcap2);
+
   /* hwcap contains only the latest supported ISA, the code checks which is
      and fills the previous supported ones.  */
   if (hwcap & PPC_FEATURE_ARCH_2_06)
@@ -70,6 +72,24 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
              IFUNC_IMPL_ADD (array, i, memset, hwcap & PPC_FEATURE_POWER4,
                              __memset_power4)
              IFUNC_IMPL_ADD (array, i, memset, 1, __memset_ppc))
+
+  /* Support sysdeps/powerpc/powerpc64/multiarch/strcpy.c.  */
+  IFUNC_IMPL (i, name, strcpy,
+              IFUNC_IMPL_ADD (array, i, strcpy, hwcap2 & PPC_FEATURE2_ARCH_2_07,
+                              __strcpy_power8)
+              IFUNC_IMPL_ADD (array, i, strcpy, hwcap & PPC_FEATURE_HAS_VSX,
+                              __strcpy_power7)
+              IFUNC_IMPL_ADD (array, i, strcpy, 1,
+                              __strcpy_ppc))
+
+  /* Support sysdeps/powerpc/powerpc64/multiarch/stpcpy.c.  */
+  IFUNC_IMPL (i, name, stpcpy,
+              IFUNC_IMPL_ADD (array, i, stpcpy, hwcap2 & PPC_FEATURE2_ARCH_2_07,
+                              __stpcpy_power8)
+              IFUNC_IMPL_ADD (array, i, stpcpy, hwcap & PPC_FEATURE_HAS_VSX,
+                              __stpcpy_power7)
+              IFUNC_IMPL_ADD (array, i, stpcpy, 1,
+                              __stpcpy_ppc))
 
   /* Support sysdeps/powerpc/powerpc64/multiarch/strlen.c.  */
   IFUNC_IMPL (i, name, strlen,

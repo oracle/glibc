@@ -1,7 +1,6 @@
-/* Support for high precision, low overhead timing functions.  IA-64 version.
-   Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+/* Measure stpcpy functions.
+   Copyright (C) 2013 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-   Contributed by Ulrich Drepper <drepper@cygnus.com>, 2001.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -17,7 +16,21 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <hp-timing.h>
+#define STRCPY_RESULT(dst, len) ((dst) + (len))
+#define TEST_MAIN
+#define TEST_NAME "stpcpy"
+#include "bench-string.h"
 
-/* We have to define the variable for the overhead.  */
-hp_timing_t _dl_hp_timing_overhead;
+char *simple_stpcpy (char *, const char *);
+
+IMPL (simple_stpcpy, 0)
+IMPL (stpcpy, 1)
+
+char *
+simple_stpcpy (char *dst, const char *src)
+{
+  while ((*dst++ = *src++) != '\0');
+  return dst - 1;
+}
+
+#include "bench-strcpy.c"

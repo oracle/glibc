@@ -1,7 +1,6 @@
-/* Support for high precision, low overhead timing functions.  sparc64 version.
-   Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+/* Measure bcopy functions.
+   Copyright (C) 2013 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-   Contributed by David S. Miller <davem@redhat.com>, 2001.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -17,7 +16,5 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <hp-timing.h>
-
-/* We have to define the variable for the overhead.  */
-hp_timing_t _dl_hp_timing_overhead;
+#define TEST_BCOPY
+#include "bench-memmove.c"

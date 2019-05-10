@@ -521,7 +521,7 @@ test_exceptions (const char *test_name, int exception)
 }
 
 
-static void
+static void __attribute__ ((noinline))
 check_float_internal (const char *test_name, FLOAT computed, FLOAT expected,
 		      FLOAT max_ulp, int xfail, int exceptions,
 		      FLOAT *curr_max_error)
@@ -610,7 +610,7 @@ check_float_internal (const char *test_name, FLOAT computed, FLOAT expected,
 }
 
 
-static void
+static void __attribute__ ((noinline))
 check_float (const char *test_name, FLOAT computed, FLOAT expected,
 	     FLOAT max_ulp, int xfail, int exceptions)
 {
@@ -619,7 +619,7 @@ check_float (const char *test_name, FLOAT computed, FLOAT expected,
 }
 
 
-static void
+static void __attribute__ ((noinline))
 check_complex (const char *test_name, __complex__ FLOAT computed,
 	       __complex__ FLOAT expected,
 	       __complex__ FLOAT max_ulp, __complex__ int xfail,

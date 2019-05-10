@@ -20,13 +20,14 @@
 #
 subdir	:= malloc
 
-all:
+include ../Makeconfig
 
 dist-headers := malloc.h
 headers := $(dist-headers) obstack.h mcheck.h
 tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 	 tst-mallocstate tst-mcheck tst-mallocfork tst-trim1 \
-	 tst-malloc-usable tst-malloc-backtrace
+	 tst-malloc-usable \
+	 tst-malloc-backtrace tst-malloc-thread-exit
 test-srcs = tst-mtrace
 
 routines = malloc morecore mcheck mtrace obstack
@@ -43,14 +44,14 @@ libmemusage-inhibit-o = $(filter-out .os,$(object-suffixes))
 
 $(objpfx)tst-malloc-backtrace: $(common-objpfx)nptl/libpthread.so \
 			       $(common-objpfx)nptl/libpthread_nonshared.a
+$(objpfx)tst-malloc-thread-exit: $(common-objpfx)nptl/libpthread.so \
+			       $(common-objpfx)nptl/libpthread_nonshared.a
 
 # These should be removed by `make clean'.
 extra-objs = mcheck-init.o libmcheck.a
 
 # Include the cleanup handler.
 aux := set-freeres thread-freeres
-
-include ../Makeconfig
 
 CPPFLAGS-memusagestat = -DNOT_IN_libc
 

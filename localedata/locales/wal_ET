@@ -1,10 +1,16 @@
-comment_char    %
-escape_char     /
+comment_char %
+escape_char /
 
+% This file is part of the GNU C Library and contains locale data.
+% The Free Software Foundation does not claim any copyright interest
+% in the locale data contained in this file.  The foregoing does not
+% affect the license of the GNU C Library as a whole.  It does not
+% exempt you from the conditions of the license if your use would
+% otherwise be governed by that license.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Sidama language locale for Ethiopia.
+% Walaita language locale for Ethiopia.
 %
 % Charset: UTF-8
 %
@@ -27,24 +33,23 @@ contact    ""
 email      "locales@geez.org"
 tel        ""
 fax        ""
-language   "wal"
-territory  "ET"
+language   "Wolaytta"
+territory  "Ethiopia"
 revision   "0.10"
 date       "2004-04-25"
-%
-category  "i18n:2000";LC_IDENTIFICATION
-category  "i18n:2000";LC_COLLATE
-category  "i18n:2000";LC_CTYPE
-category  "i18n:2000";LC_MEASUREMENT
-category  "i18n:2000";LC_MONETARY
-category  "posix:1993";LC_NUMERIC
-category  "i18n:2000";LC_PAPER
-category  "i18n:2000";LC_TELEPHONE
-category  "i18n:2000";LC_ADDRESS
-category  "i18n:2000";LC_MESSAGES
-category  "i18n:2000";LC_NAME
-category  "i18n:2000";LC_TIME
-%
+
+category "i18n:2012";LC_IDENTIFICATION
+category "i18n:2012";LC_COLLATE
+category "i18n:2012";LC_CTYPE
+category "i18n:2012";LC_MEASUREMENT
+category "i18n:2012";LC_MONETARY
+category "i18n:2012";LC_NUMERIC
+category "i18n:2012";LC_PAPER
+category "i18n:2012";LC_TELEPHONE
+category "i18n:2012";LC_ADDRESS
+category "i18n:2012";LC_MESSAGES
+category "i18n:2012";LC_NAME
+category "i18n:2012";LC_TIME
 END LC_IDENTIFICATION
 
 
@@ -65,7 +70,7 @@ END LC_CTYPE
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Ethiopia Specifc and Shared Data:
+%  Ethiopia Specific and Shared Data:
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -92,7 +97,7 @@ END LC_TELEPHONE
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Sidama Specific Data:
+%  Walaita Specific Data:
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -107,14 +112,12 @@ country_post  "<U0045><U0054><U0048>"
 country_ab2   "<U0045><U0054>"
 country_ab3   "<U0045><U0054><U0048>"
 country_num   231   % 210 found in at least one ISO 3166 doc
-% country_car   unknown
+% ETH
+country_car    "<U0045><U0054><U0048>"
 % country_isbn  unknown, Need ISO 2108
 lang_name     "<U12C8><U120B><U12ED><U1273><U1271>"
 lang_term     "<U0077><U0061><U006C>"
 lang_lib      "<U0077><U0061><U006C>"
-
-
-%
 END LC_ADDRESS
 
 
@@ -232,5 +235,5 @@ date_fmt    "<U0025><U0041><U1363><U0020><U0025><U0042><U0020><U0025><U0065>/
 <U0020><U130B><U120B><U1233>/
 <U0020><U0025><U0072><U0020><U0025><U005A><U0020><U0025><U0059>/
 <U0020><U130D><U002F><U120B>"
+week 7;19971130;1
 END LC_TIME
-%

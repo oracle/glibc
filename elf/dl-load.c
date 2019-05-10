@@ -1131,6 +1131,16 @@ _dl_map_object_from_fd (const char *name, int fd, struct filebuf *fbp,
 		= N_("ELF load command address/offset not properly aligned");
 	      goto call_lose;
 	    }
+	  if (__builtin_expect ((ph->p_offset + ph->p_filesz > st.st_size), 0))
+	    {
+	      /* If the segment requires zeroing of part of its last
+		 page, we'll crash when accessing the unmapped page.
+		 There's still a possibility of a race, if the shared
+		 object is truncated between the fxstat above and the
+		 memset below.  */
+	      errstring = N_("ELF load command past end of file");
+	      goto call_lose;
+	    }
 
 	  c = &loadcmds[nloadcmds++];
 	  c->mapstart = ph->p_vaddr & ~(GLRO(dl_pagesize) - 1);

@@ -64,7 +64,7 @@ ENTRY (BP_SYM (__sigsetjmp))
 	stw  r29,((JB_GPRS+15)*4)(3)
 	stw  r30,((JB_GPRS+16)*4)(3)
 	stw  r31,((JB_GPRS+17)*4)(3)
-#if defined NOT_IN_libc && defined IS_IN_rtld
+#ifdef IS_IN_rtld
 	li   r3,0
 	blr
 #else

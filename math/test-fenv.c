@@ -234,14 +234,9 @@ feenv_nomask_test (const char *flag_name, int fe_exc)
 #if defined FE_NOMASK_ENV
   int status;
   pid_t pid;
-  fenv_t saved;
 
-  fegetenv (&saved);
-  errno = 0;
-  fesetenv (FE_NOMASK_ENV);
-  status = errno;
-  fesetenv (&saved);
-  if (status == ENOSYS)
+  if (1
+      && fesetenv (FE_NOMASK_ENV) != 0)
     {
       printf ("Test: not testing FE_NOMASK_ENV, it isn't implemented.\n");
       return;
@@ -350,7 +345,13 @@ feexcp_nomask_test (const char *flag_name, int fe_exc)
   int status;
   pid_t pid;
 
-  printf ("Test: after fedisableexcept (%s) processes will abort\n",
+  if (1 && feenableexcept (fe_exc) == -1)
+    {
+      printf ("Test: not testing feenableexcept, it isn't implemented.\n");
+      return;
+    }
+
+  printf ("Test: after feenableexcept (%s) processes will abort\n",
 	  flag_name);
   printf ("      when feraiseexcept (%s) is called.\n", flag_name);
   pid = fork ();
@@ -471,7 +472,6 @@ feenable_test (const char *flag_name, int fe_exc)
 {
   int excepts;
 
-
   printf ("Tests for feenableexcepts etc. with flag %s\n", flag_name);
 
   /* First disable all exceptions.  */
@@ -489,8 +489,12 @@ feenable_test (const char *flag_name, int fe_exc)
 	      flag_name, excepts);
       ++count_errors;
     }
-
   excepts = feenableexcept (fe_exc);
+  if (1 && excepts == -1)
+    {
+      printf ("Test: not testing feenableexcept, it isn't implemented.\n");
+      return;
+    }
   if (excepts == -1)
     {
       printf ("Test: feenableexcept (%s) failed\n", flag_name);

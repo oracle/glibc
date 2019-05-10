@@ -3035,6 +3035,13 @@ __libc_memalign(size_t alignment, size_t bytes)
   /* Otherwise, ensure that it is at least a minimum chunk size */
   if (alignment <  MINSIZE) alignment = MINSIZE;
 
+  /* Check for overflow.  */
+  if (bytes > SIZE_MAX - alignment - MINSIZE)
+    {
+      __set_errno (ENOMEM);
+      return 0;
+    }
+
   arena_get(ar_ptr, bytes + alignment + MINSIZE);
   if(!ar_ptr)
     return 0;
@@ -3066,6 +3073,13 @@ __libc_valloc(size_t bytes)
     ptmalloc_init ();
 
   size_t pagesz = GLRO(dl_pagesize);
+
+  /* Check for overflow.  */
+  if (bytes > SIZE_MAX - pagesz - MINSIZE)
+    {
+      __set_errno (ENOMEM);
+      return 0;
+    }
 
   __malloc_ptr_t (*hook) __MALLOC_PMT ((size_t, size_t,
 					const __malloc_ptr_t)) =
@@ -3104,6 +3118,13 @@ __libc_pvalloc(size_t bytes)
   size_t pagesz = GLRO(dl_pagesize);
   size_t page_mask = GLRO(dl_pagesize) - 1;
   size_t rounded_bytes = (bytes + page_mask) & ~(page_mask);
+
+  /* Check for overflow.  */
+  if (bytes > SIZE_MAX - 2*pagesz - MINSIZE)
+    {
+      __set_errno (ENOMEM);
+      return 0;
+    }
 
   __malloc_ptr_t (*hook) __MALLOC_PMT ((size_t, size_t,
 					const __malloc_ptr_t)) =

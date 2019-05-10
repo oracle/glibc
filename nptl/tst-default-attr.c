@@ -38,6 +38,7 @@
 
 /* DEFAULT_STACKSIZE macro is defined in the Makefile.  */
 static size_t stacksize = DEFAULT_STACKSIZE;
+long int pagesize;
 
 static int
 verify_stacksize_result (pthread_attr_t *attr)
@@ -46,11 +47,19 @@ verify_stacksize_result (pthread_attr_t *attr)
 
   RETURN_IF_FAIL (pthread_attr_getstacksize, attr, &stack);
 
-  if (stacksize != stack)
+  /* pthread_create perturbs the stack size by a page if it aligns to 64K to
+     avoid the 64K aliasing conflict.  We cannot simply add 4K to the size in
+     the Makefile because it breaks the test on powerpc since the page size
+     there is 64K, resulting in a resize in __pthread_initialize_minimal.
+     Hence, our check is to ensure that the stack size is not more than a page
+     more than the requested size.  */
+  if (stack < stacksize || stack > stacksize + pagesize)
     {
       printf ("failed to set default stacksize (%zu, %zu)\n", stacksize, stack);
       return 1;
     }
+
+  printf ("Requested %zu and got %zu\n", stacksize, stack);
 
   return 0;
 }
@@ -101,6 +110,15 @@ run_threads (void)
 static int
 do_test (void)
 {
+  pthread_attr_t attr;
+
+  pagesize = sysconf (_SC_PAGESIZE);
+  if (pagesize < 0)
+    {
+      printf ("sysconf failed: %s\n", strerror (errno));
+      return 1;
+    }
+
   RETURN_IF_FAIL (run_threads);
   return 0;
 }

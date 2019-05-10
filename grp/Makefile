@@ -23,7 +23,8 @@ headers := grp.h
 
 routines := fgetgrent initgroups setgroups \
 	    getgrent getgrgid getgrnam putgrent \
-	    getgrent_r getgrgid_r getgrnam_r fgetgrent_r
+	    getgrent_r getgrgid_r getgrnam_r fgetgrent_r \
+	    grp-merge
 
 include ../Makeconfig
 

@@ -93,7 +93,7 @@
 # define ret_ERRVAL ret
 
 # define SYSCALL_ERROR  .Lsyscall_error
-# if NOT_IN_libc
+# if !IS_IN (libc)
 #  if RTLD_PRIVATE_ERRNO
 #   define SYSCALL_ERROR_HANDLER				\
 .Lsyscall_error:						\
@@ -325,7 +325,7 @@
 
 /* Pointer mangling is supported for AArch64.  */
 #if (IS_IN (rtld)) || \
-     (!defined SHARED && (!defined NOT_IN_libc \
+     (!defined SHARED && (IS_IN (libc) \
 			  || IS_IN (libpthread)))
 # ifdef __ASSEMBLER__
 #  define PTR_MANGLE(dst, src, guard, tmp)                                \

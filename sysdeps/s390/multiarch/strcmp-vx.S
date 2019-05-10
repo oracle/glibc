@@ -16,7 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+#if defined HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc)
 
 # include "sysdep.h"
 # include "asm-syntax.h"
@@ -111,6 +111,6 @@ END(__strcmp_vx)
 # define strcmp __strcmp_c
 # undef libc_hidden_builtin_def
 # define libc_hidden_builtin_def(name) strong_alias(__strcmp_c, __GI_strcmp)
-#endif /* HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc */
+#endif /* HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc) */
 
 #include <strcmp.S>

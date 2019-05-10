@@ -16,7 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+#if defined HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc)
 # include <string.h>
 
 # define RAWMEMCHR  __rawmemchr_c
@@ -31,4 +31,4 @@
 extern __typeof (rawmemchr) __rawmemchr_c attribute_hidden;
 
 # include <string/rawmemchr.c>
-#endif /* !(defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc) */
+#endif /* !(defined HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc)) */

@@ -23,7 +23,7 @@
 
 
 /* Define multiple versions only for the definition in lib.  */
-#ifndef NOT_IN_libc
+#if IS_IN (libc)
 	.text
 ENTRY(rawmemchr)
 	.type	rawmemchr, @gnu_indirect_function

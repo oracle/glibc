@@ -2465,7 +2465,7 @@
 	($(objpfx)errlist.d): Depend on $(..)sysdeps/gnu/errlist-compat.c.
 	* sysdeps/gnu/errlist.awk: Make output define _sys_errlist_internal
 	and _sys_nerr_internal instead of anything else.  Make it include
-	"errlist-compat.c" if [!NOT_IN_libc && !ERRLIST_NO_COMPAT].
+	"errlist-compat.c" if [!IS_IN (libc) && !ERRLIST_NO_COMPAT].
 	Make it emit some asm magic if [EMIT_ERR_MAX].
 	* sysdeps/gnu/errlist.c: Regenerated.
 	* sysdeps/gnu/errlist-compat.awk: New file.

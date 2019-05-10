@@ -79,6 +79,10 @@ CPPFLAGS += -Dgethostbyname=res_gethostbyname \
 ifeq (yes,$(have-ssp))
 CFLAGS-libresolv += -fstack-protector
 endif
+ifeq (yes,$(have-ssp-strong))
+CFLAGS-libresolv += -fstack-protector-strong
+endif
+
 CFLAGS-res_hconf.c = -fexceptions
 
 # The BIND code elicits some harmless warnings.

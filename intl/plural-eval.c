@@ -22,9 +22,7 @@ static unsigned long int plural_eval (const struct expression *pexp,
 
 static unsigned long int
 internal_function
-plural_eval (pexp, n)
-     const struct expression *pexp;
-     unsigned long int n;
+plural_eval (const struct expression *pexp, unsigned long int n)
 {
   switch (pexp->nargs)
     {

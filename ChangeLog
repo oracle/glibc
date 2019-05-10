@@ -1,3 +1,10 @@
+2018-07-24  Patrick McGehearty <patrick.mcgehearty@oracle.com>
+
+	* sysdeps/unix/sysv/linux/x86/bits/mman.h
+	(MAP_SHARED_VALIDATE): New macro.
+	derived from commit 92669d6ee3f25b3ca4cb227d194900489f895432
+	Joseph Myers <joseph@codesourcery.com>  Feb 6, 2018
+
 2013-05-22  Edjunior Barbosa Machado  <emachado@linux.vnet.ibm.com>
 
 	* sysdeps/unix/sysv/linux/bits/siginfo.h (siginfo_t): Add si_addr_lsb

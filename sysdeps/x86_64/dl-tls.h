@@ -16,6 +16,10 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#ifndef _X86_64_DL_TLS_H
+#define _X86_64_DL_TLS_H
+
+#include <stdint.h>
 
 /* Type used for the representation of TLS information in the GOT.  */
 typedef struct dl_tls_index
@@ -29,3 +33,5 @@ extern void *__tls_get_addr (tls_index *ti);
 
 /* Value used for dtv entries for which the allocation is delayed.  */
 #define TLS_DTV_UNALLOCATED	((void *) -1l)
+
+#endif /* _X86_64_DL_TLS_H */

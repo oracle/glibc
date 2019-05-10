@@ -267,6 +267,10 @@
   or other mallocs available that do this.
 */
 
+#ifndef MALLOC_DEBUG
+#define MALLOC_DEBUG 0
+#endif
+
 #ifdef NDEBUG
 # define assert(expr) ((void) 0)
 #else
@@ -4520,7 +4524,7 @@ static int mtrim(mstate av, size_t pad)
 
 		if (size > psm1)
 		  {
-#ifdef MALLOC_DEBUG
+#if MALLOC_DEBUG
 		    /* When debugging we simulate destroying the memory
 		       content.  */
 		    memset (paligned_mem, 0x89, size & ~psm1);

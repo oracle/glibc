@@ -121,7 +121,7 @@ _IO_file_doallocate (fp)
 	    fp->_flags |= _IO_LINE_BUF;
 	}
 #if _IO_HAVE_ST_BLKSIZE
-      if (st.st_blksize > 0)
+      if (st.st_blksize > 0 && st.st_blksize < _IO_BUFSIZ)
 	size = st.st_blksize;
 #endif
     }

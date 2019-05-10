@@ -19,7 +19,6 @@
 
 #include <execinfo.h>
 #include <stddef.h>
-#include <bp-checks.h>
 #include <sysdep.h>
 
 struct layout
@@ -40,7 +39,6 @@ __backtrace (void **array, int size)
   asm volatile ("flushw");
   asm volatile ("mov %%fp, %0" : "=r"(fp));
   current = (struct layout *__unbounded) (fp + STACK_BIAS);
-  current = BOUNDED_1 (current);
 
   for (count = 0; count < size; count++)
     {
@@ -48,7 +46,6 @@ __backtrace (void **array, int size)
       if (!current->next)
 	break;
       current = (struct layout *__unbounded) (current->next + STACK_BIAS);
-      current = BOUNDED_1 (current);
     }
 
   return count;

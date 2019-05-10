@@ -26,15 +26,18 @@ extern __typeof (strncmp) __strncmp_ppc attribute_hidden;
 extern __typeof (strncmp) __strncmp_power4 attribute_hidden;
 extern __typeof (strncmp) __strncmp_power7 attribute_hidden;
 extern __typeof (strncmp) __strncmp_power8 attribute_hidden;
+extern __typeof (strncmp) __strncmp_power9 attribute_hidden;
 
 /* Avoid DWARF definition DIE on ifunc symbol so that GDB can handle
    ifunc symbol properly.  */
 libc_ifunc (strncmp,
-            (hwcap2 & PPC_FEATURE2_ARCH_2_07)
-            ? __strncmp_power8 :
-              (hwcap & PPC_FEATURE_HAS_VSX)
-              ? __strncmp_power7 :
-		(hwcap & PPC_FEATURE_POWER4)
-		? __strncmp_power4
-            : __strncmp_ppc);
+	    (hwcap2 & PPC_FEATURE2_ARCH_3_00)
+	      ? __strncmp_power9 :
+	    (hwcap2 & PPC_FEATURE2_ARCH_2_07)
+	      ? __strncmp_power8 :
+	    (hwcap & PPC_FEATURE_HAS_VSX)
+	      ? __strncmp_power7 :
+	    (hwcap & PPC_FEATURE_POWER4)
+	      ? __strncmp_power4
+	    : __strncmp_ppc);
 #endif

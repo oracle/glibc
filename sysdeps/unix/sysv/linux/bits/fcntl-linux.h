@@ -300,6 +300,10 @@ struct f_owner_ex
 # define SPLICE_F_GIFT		8	/* Pages passed in are a gift.  */
 
 
+/* Flags for fallocate.  */
+# include <linux/falloc.h>
+
+
 /* File handle structure.  */
 struct file_handle
 {

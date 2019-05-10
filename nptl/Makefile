@@ -271,7 +271,7 @@ tests = tst-typesizes \
 	tst-initializers1 $(patsubst %,tst-initializers1-%,c89 gnu89 c99 gnu99) \
 	tst-mutex-errorcheck \
 	tst-minstack-cancel tst-minstack-exit tst-minstack-throw \
-	tst-thread-exit-clobber
+	tst-thread-exit-clobber tst-robust-fork
 xtests = tst-setuid1 tst-setuid1-static tst-mutexpp1 tst-mutexpp6 tst-mutexpp10
 test-srcs = tst-oddstacklimit
 

@@ -40,6 +40,7 @@ extra-libs := libresolv libnss_dns
 ifeq ($(have-thread-library),yes)
 extra-libs += libanl
 routines += gai_sigqueue
+tests += tst-res_hconf_reorder
 endif
 extra-libs-others = $(extra-libs)
 libresolv-routines := gethnamaddr res_comp res_debug	\
@@ -107,6 +108,9 @@ $(objpfx)libanl.so: $(common-objpfx)libc.so $(common-objpfx)libc_nonshared.a \
 		    $(shared-thread-library)
 
 $(objpfx)ga_test: $(objpfx)libanl.so $(shared-thread-library)
+
+$(objpfx)tst-res_hconf_reorder: $(libdl) $(shared-thread-library)
+tst-res_hconf_reorder-ENV = RESOLV_REORDER=on
 
 $(objpfx)tst-leaks: $(objpfx)libresolv.so
 tst-leaks-ENV = MALLOC_TRACE=$(objpfx)tst-leaks.mtrace

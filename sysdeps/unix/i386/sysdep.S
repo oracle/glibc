@@ -19,8 +19,6 @@
 #include <sysdep.h>
 #define _ERRNO_H
 #include <bits/errno.h>
-#include <bp-asm.h>
-#include <bp-sym.h>
 
 #if IS_IN (rtld)
 # include <dl-sysdep.h>		/* Defines RTLD_PRIVATE_ERRNO.  */

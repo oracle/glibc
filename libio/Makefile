@@ -44,7 +44,7 @@ routines	:=							      \
 	__fbufsize __freading __fwriting __freadable __fwritable __flbf	      \
 	__fpurge __fpending __fsetlocking				      \
 									      \
-	libc_fatal fmemopen
+	libc_fatal fmemopen vtables
 
 include ../Makeconfig
 

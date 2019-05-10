@@ -1035,7 +1035,7 @@ _IO_wfile_xsputn (f, data, n)
 libc_hidden_def (_IO_wfile_xsputn)
 
 
-const struct _IO_jump_t _IO_wfile_jumps =
+const struct _IO_jump_t _IO_wfile_jumps libio_vtable =
 {
   JUMP_INIT_DUMMY,
   JUMP_INIT(finish, _IO_new_file_finish),
@@ -1061,7 +1061,7 @@ const struct _IO_jump_t _IO_wfile_jumps =
 libc_hidden_data_def (_IO_wfile_jumps)
 
 
-const struct _IO_jump_t _IO_wfile_jumps_mmap =
+const struct _IO_jump_t _IO_wfile_jumps_mmap libio_vtable =
 {
   JUMP_INIT_DUMMY,
   JUMP_INIT(finish, _IO_new_file_finish),
@@ -1085,7 +1085,7 @@ const struct _IO_jump_t _IO_wfile_jumps_mmap =
   JUMP_INIT(imbue, _IO_default_imbue)
 };
 
-const struct _IO_jump_t _IO_wfile_jumps_maybe_mmap =
+const struct _IO_jump_t _IO_wfile_jumps_maybe_mmap libio_vtable =
 {
   JUMP_INIT_DUMMY,
   JUMP_INIT(finish, _IO_new_file_finish),

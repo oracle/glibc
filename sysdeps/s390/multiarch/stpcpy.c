@@ -1,4 +1,5 @@
-/* Copyright (C) 1992, 1995, 1997, 2002, 2004 Free Software Foundation, Inc.
+/* Multiple versions of stpcpy.
+   Copyright (C) 2015 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,46 +16,14 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+# include <string.h>
+# include <ifunc-resolve.h>
 
-#include <string.h>
-
-#undef __stpcpy
-#undef stpcpy
-
-#ifndef weak_alias
-# define __stpcpy stpcpy
-#endif
-
-#ifdef STPCPY
-extern __typeof (__stpcpy) STPCPY;
-# undef __stpcpy
-# define __stpcpy STPCPY
-#endif
-
-/* Copy SRC to DEST, returning the address of the terminating '\0' in DEST.  */
-char *
-__stpcpy (dest, src)
-     char *dest;
-     const char *src;
-{
-  register char *d = dest;
-  register const char *s = src;
-
-  do
-    *d++ = *s;
-  while (*s++ != '\0');
-
-  return d - 1;
-}
-#ifdef libc_hidden_def
-libc_hidden_def (__stpcpy)
-#endif
-#ifdef weak_alias
+s390_vx_libc_ifunc (__stpcpy)
 weak_alias (__stpcpy, stpcpy)
-#endif
-#ifdef libc_hidden_builtin_def
 libc_hidden_builtin_def (stpcpy)
-#endif
+
+#else
+# include <string/stpcpy.c>
+#endif /* !(defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc) */

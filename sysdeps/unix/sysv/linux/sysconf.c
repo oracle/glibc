@@ -88,7 +88,7 @@ __sysconf (int name)
       return HAS_CPUCLOCK (name);
 
     case _SC_ARG_MAX:
-#if !__ASSUME_ARG_MAX_STACK_BASED
+#ifndef __ASSUME_ARG_MAX_STACK_BASED
       /* Determine whether this is a kernel with an argument limit
 	 determined by the stack size.  */
       if (GLRO(dl_discover_osversion) ()

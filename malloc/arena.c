@@ -40,14 +40,6 @@
    mmap threshold, so that requests with a size just below that
    threshold can be fulfilled without creating too many heaps.  */
 
-
-#ifndef THREAD_STATS
-#define THREAD_STATS 0
-#endif
-
-/* If THREAD_STATS is non-zero, some statistics on mutex locking are
-   computed.  */
-
 /***************************************************************************/
 
 #define top(ar_ptr) ((ar_ptr)->top)
@@ -100,13 +92,6 @@ static mstate free_list;
    permitted to acquire arena locks subsequently, while list_lock is
    acquired.  */
 static mutex_t list_lock = MUTEX_INITIALIZER;
-
-#if THREAD_STATS
-static int stat_n_heaps;
-#define THREAD_STAT(x) x
-#else
-#define THREAD_STAT(x) do ; while(0)
-#endif
 
 /* Mapped memory in non-main arenas (reliable only for NO_THREADS). */
 static unsigned long arena_mem;
@@ -583,7 +568,6 @@ new_heap(size_t size, size_t top_pad)
   h = (heap_info *)p2;
   h->size = size;
   h->mprotect_size = size;
-  THREAD_STAT(stat_n_heaps++);
   LIBC_PROBE (memory_heap_new, 2, h, h->size);
   return h;
 }
@@ -811,8 +795,6 @@ _int_new_arena(size_t size)
 
   (void) mutex_lock (&a->mutex);
 
-  THREAD_STAT(++(a->stat_lock_loop));
-
   return a;
 }
 
@@ -844,7 +826,6 @@ get_free_list (void)
 	  LIBC_PROBE (memory_arena_reuse_free_list, 1, result);
 	  (void)mutex_lock(&result->mutex);
 	  tsd_setspecific(arena_key, (void *)result);
-	  THREAD_STAT(++(result->stat_lock_loop));
 	}
     }
 
@@ -941,7 +922,6 @@ reused_arena (mstate avoid_arena)
   }
   LIBC_PROBE (memory_arena_reuse, 2, result, avoid_arena);
   tsd_setspecific(arena_key, (void *)result);
-  THREAD_STAT(++(result->stat_lock_loop));
   next_to_use = result->next;
 
   return result;

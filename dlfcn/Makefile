@@ -35,12 +35,12 @@ endif
 ifeq (yes,$(build-shared))
 tests = glrefmain failtest tst-dladdr default errmsg1 tstcxaatexit \
 	bug-dlopen1 bug-dlsym1 tst-dlinfo bug-atexit1 bug-atexit2 \
-	bug-atexit3 tstatexit
+	bug-atexit3 tstatexit tst-rec-dlopen
 endif
 modules-names = glreflib1 glreflib2 glreflib3 failtestmod defaultmod1 \
 		defaultmod2 errmsg1mod modatexit modcxaatexit \
 		bug-dlsym1-lib1 bug-dlsym1-lib2 bug-atexit1-lib \
-		bug-atexit2-lib bug-atexit3-lib
+		bug-atexit2-lib bug-atexit3-lib moddummy1 moddummy2
 
 failtestmod.so-no-z-defs = yes
 glreflib2.so-no-z-defs = yes
@@ -122,6 +122,8 @@ LDLIBS-bug-atexit3-lib.so = -lstdc++ -lgcc_eh $(elfobjdir)/ld.so \
 $(objpfx)bug-atexit3: $(libdl)
 $(objpfx)bug-atexit3.out: $(objpfx)bug-atexit3-lib.so
 
+$(objpfx)tst-rec-dlopen: $(libdl)
+$(objpfx)tst-rec-dlopen.out: $(objpfx)moddummy1.so $(objpfx)moddummy2.so
 
 # Depend on libc.so so a DT_NEEDED is generated in the shared objects.
 # This ensures they will load libc.so for needed symbols if loaded by

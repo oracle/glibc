@@ -24,10 +24,7 @@
 
 /* Copy SRC to DEST, returning the address of the terminating '\0' in DEST.  */
 char *
-__stpcpy_chk (dest, src, destlen)
-     char *dest;
-     const char *src;
-     size_t destlen;
+__stpcpy_chk (char *dest, const char *src, size_t destlen)
 {
   char *d = dest;
   const char *s = src;

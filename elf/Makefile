@@ -35,6 +35,10 @@ dl-routines	= $(addprefix dl-,load lookup object reloc deps hwcaps \
 ifeq (yes,$(use-ldconfig))
 dl-routines += dl-cache
 endif
+
+# RHEL 7-specific change: Add rudimentary tunables support.
+dl-routines += dl-tunables
+
 all-dl-routines = $(dl-routines) $(sysdep-dl-routines)
 # But they are absent from the shared libc, because that code is in ld.so.
 elide-routines.os = $(all-dl-routines) dl-support enbl-secure dl-origin \

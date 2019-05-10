@@ -1,5 +1,5 @@
 /* logbl(). PowerPC/POWER7 version.
-   Copyright (C) 2012 Free Software Foundation, Inc.
+   Copyright (C) 2012-2014 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -35,14 +35,14 @@ static const union {
 long double
 __logbl (long double x)
 {
-  double xh, xl;
+  double xh;
   double ret;
 
   if (__builtin_expect (x == 0.0L, 0))
     /* Raise FE_DIVBYZERO and return -HUGE_VAL[LF].  */
     return -1.0L / __builtin_fabsl (x);
 
-  ldbl_unpack (x, &xh, &xl);
+  xh = ldbl_high (x);
   /* ret = x & 0x7ff0000000000000;  */
   asm (
     "xxland %x0,%x1,%x2\n"
@@ -58,15 +58,14 @@ __logbl (long double x)
     {
       /* POSIX specifies that denormal number is treated as
          though it were normalized.  */
-      int64_t lx, hx;
+      int64_t hx;
 
-      GET_LDOUBLE_WORDS64 (hx, lx, x);
+      EXTRACT_WORDS64 (hx, xh);
       return (long double) (-1023 - (__builtin_clzll (hx) - 12));
     }
   /* Test to avoid logb_downward (0.0) == -0.0.  */
   return ret == -0.0 ? 0.0 : ret;
 }
-
 #ifndef __logbl
 long_double_symbol (libm, __logbl, logbl);
 #endif

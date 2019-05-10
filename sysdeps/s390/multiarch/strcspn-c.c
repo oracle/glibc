@@ -1,4 +1,5 @@
-/* Copyright (C) 1991, 1994, 1996, 1997, 2003 Free Software Foundation, Inc.
+/* Default strcspn implementation for S/390.
+   Copyright (C) 2015 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,38 +16,13 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+# define STRCSPN  __strcspn_c
+# ifdef SHARED
+#  undef libc_hidden_builtin_def
+#  define libc_hidden_builtin_def(name)				\
+     __hidden_ver1 (__strcspn_c, __GI_strcspn, __strcspn_c);
+# endif /* SHARED */
 
-#if defined _LIBC || HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-# ifndef strchr
-#  define strchr index
-# endif
-#endif
-
-#undef strcspn
-
-#ifndef STRCSPN
-# define STRCSPN strcspn
-#endif
-
-/* Return the length of the maximum initial segment of S
-   which contains no characters from REJECT.  */
-size_t
-STRCSPN (const char *s, const char *reject)
-{
-  size_t count = 0;
-
-  while (*s != '\0')
-    if (strchr (reject, *s++) == NULL)
-      ++count;
-    else
-      return count;
-
-  return count;
-}
-libc_hidden_builtin_def (strcspn)
+# include <string/strcspn.c>
+#endif /* HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc */

@@ -38,10 +38,8 @@ ENTRY (__vfork)
 	RESTORE_PID
 #endif
 	cmn	x0, #4095
-	b.cs    1f
+	b.cs    .Lsyscall_error
 	RET
-1:
-	b	SYSCALL_ERROR
 
 PSEUDO_END (__vfork)
 libc_hidden_def (__vfork)

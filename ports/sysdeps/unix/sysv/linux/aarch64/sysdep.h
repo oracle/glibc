@@ -58,19 +58,8 @@
   .text;								      \
   ENTRY (name);								      \
     DO_CALL (syscall_name, args);					      \
-    cmn x0, #4095;
-
-/* Notice the use of 'RET' instead of 'ret' the assembler is case
-   insensitive and eglibc already uses the preprocessor symbol 'ret'
-   so we use the upper case 'RET' to force through a ret instruction
-   to the assembler */
-# define PSEUDO_RET							      \
-    b.cs 1f;								      \
-    RET;								      \
-    1:                                                                        \
-    b SYSCALL_ERROR
-# undef ret
-# define ret PSEUDO_RET
+    cmn x0, #4095;							      \
+    b.cs .Lsyscall_error
 
 # undef	PSEUDO_END
 # define PSEUDO_END(name)						      \
@@ -83,15 +72,7 @@
   ENTRY (name);								      \
     DO_CALL (syscall_name, args);
 
-/* Notice the use of 'RET' instead of 'ret' the assembler is case
-   insensitive and eglibc already uses the preprocessor symbol 'ret'
-   so we use the upper case 'RET' to force through a ret instruction
-   to the assembler */
-# define PSEUDO_RET_NOERRNO						      \
-    RET;
-
-# undef ret_NOERRNO
-# define ret_NOERRNO PSEUDO_RET_NOERRNO
+# define ret_NOERRNO ret
 
 # undef	PSEUDO_END_NOERRNO
 # define PSEUDO_END_NOERRNO(name)					      \
@@ -109,47 +90,38 @@
 # define PSEUDO_END_ERRVAL(name) \
   END (name)
 
-# define ret_ERRVAL PSEUDO_RET_NOERRNO
+# define ret_ERRVAL ret
 
+# define SYSCALL_ERROR  .Lsyscall_error
 # if NOT_IN_libc
-#  define SYSCALL_ERROR __local_syscall_error
 #  if RTLD_PRIVATE_ERRNO
 #   define SYSCALL_ERROR_HANDLER				\
-__local_syscall_error:						\
+.Lsyscall_error:						\
 	adrp	x1, C_SYMBOL_NAME(rtld_errno);			\
-	add	x1, x1, #:lo12:C_SYMBOL_NAME(rtld_errno);	\
 	neg     w0, w0;						\
-	str     w0, [x1];					\
+	str     w0, [x1, :lo12:C_SYMBOL_NAME(rtld_errno)];	\
 	mov	x0, -1;						\
 	RET;
 #  else
 
 #   define SYSCALL_ERROR_HANDLER				\
-__local_syscall_error:						\
-	stp     x29, x30, [sp, -32]!;				\
-	cfi_adjust_cfa_offset (32);				\
-	cfi_rel_offset (x29, 0);				\
-	cfi_rel_offset (x30, 8);				\
-        add     x29, sp, 0;					\
-        str     x19, [sp,16];					\
-	neg	x19, x0;					\
-	bl	C_SYMBOL_NAME(__errno_location);		\
-	str	x19, [x0];					\
+.Lsyscall_error:						\
+	adrp	x1, :gottprel:errno;				\
+	neg	w2, w0;						\
+	ldr	x1, [x1, :gottprel_lo12:errno];			\
+	mrs	x3, tpidr_el0;					\
 	mov	x0, -1;						\
-        ldr     x19, [sp,16];					\
-        ldp     x29, x30, [sp], 32;				\
-	cfi_adjust_cfa_offset (-32);				\
-	cfi_restore (x29);					\
-	cfi_restore (x30);					\
+	str	w2, [x1, x3];					\
 	RET;
 #  endif
 # else
-#  define SYSCALL_ERROR_HANDLER	/* Nothing here; code in sysdep.S is used.  */
-#  define SYSCALL_ERROR __syscall_error
+#  define SYSCALL_ERROR_HANDLER					\
+.Lsyscall_error:						\
+	b	__syscall_error;
 # endif
 
 /* Linux takes system call args in registers:
-	syscall number	in the SVC instruction
+	syscall number	x8
 	arg 1		x0
 	arg 2		x1
 	arg 3		x2
@@ -177,28 +149,8 @@ __local_syscall_error:						\
 
 # undef	DO_CALL
 # define DO_CALL(syscall_name, args)		\
-    DOARGS_##args				\
     mov x8, SYS_ify (syscall_name);		\
-    svc 0;					\
-    UNDOARGS_##args
-
-# define DOARGS_0 /* nothing */
-# define DOARGS_1 /* nothing */
-# define DOARGS_2 /* nothing */
-# define DOARGS_3 /* nothing */
-# define DOARGS_4 /* nothing */
-# define DOARGS_5 /* nothing */
-# define DOARGS_6 /* nothing */
-# define DOARGS_7 /* nothing */
-
-# define UNDOARGS_0 /* nothing */
-# define UNDOARGS_1 /* nothing */
-# define UNDOARGS_2 /* nothing */
-# define UNDOARGS_3 /* nothing */
-# define UNDOARGS_4 /* nothing */
-# define UNDOARGS_5 /* nothing */
-# define UNDOARGS_6 /* nothing */
-# define UNDOARGS_7 /* nothing */
+    svc 0
 
 #else /* not __ASSEMBLER__ */
 

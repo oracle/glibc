@@ -1,6 +1,6 @@
 /* Save current context.
 
-   Copyright (C) 2009-2012 Free Software Foundation, Inc.
+   Copyright (C) 2009-2014 Free Software Foundation, Inc.
 
    This file is part of the GNU C Library.
 
@@ -52,6 +52,9 @@ ENTRY(__getcontext)
 	/* Save the current SP */
 	mov	x2, sp
 	str     x2, [x0, oSP]
+
+	/* Initialize the pstate.  */
+	str	xzr, [x0, oPSTATE]
 
 	/* Figure out where to place the first context extension
 	   block.  */

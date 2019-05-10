@@ -78,6 +78,14 @@ CFLAGS-tst-inlcall.c = -fno-builtin
 CFLAGS-bug-strstr1.c = -fno-builtin
 CFLAGS-bug-strcasestr1.c = -fno-builtin
 
+# Disable any optimization which might result in function calls to the very
+# same functions we are trying to compile, thus creating an infinite loop.
+CFLAGS-.o += -fno-tree-loop-distribute-patterns
+CFLAGS-.os += -fno-tree-loop-distribute-patterns
+CFLAGS-.op += -fno-tree-loop-distribute-patterns
+CFLAGS-.ob += -fno-tree-loop-distribute-patterns
+CFLAGS-.oS += -fno-tree-loop-distribute-patterns
+
 ifeq ($(run-built-tests),yes)
 tests: $(objpfx)tst-svc.out
 $(objpfx)tst-svc.out: tst-svc.input $(objpfx)tst-svc

@@ -432,6 +432,16 @@ CFLAGS-rtld.c = $(SYSCONF-FLAGS)
 CPPFLAGS-.os += $(if $(filter $(@F),$(patsubst %,%.os,$(all-rtld-routines))),\
 		     -DNOT_IN_libc=1 -DIS_IN_rtld=1 -DIN_LIB=rtld)
 
+# Disable any optimization which might result in function calls during early
+# dynamic loader startup. We disable -ftree-loop-distribute-patterns which
+# might convert code into calls to functions like memcpy or memset when the PLT
+# is not yet setup.
+CFLAGS-.o += -fno-tree-loop-distribute-patterns
+CFLAGS-.os += -fno-tree-loop-distribute-patterns
+CFLAGS-.op += -fno-tree-loop-distribute-patterns
+CFLAGS-.ob += -fno-tree-loop-distribute-patterns
+CFLAGS-.oS += -fno-tree-loop-distribute-patterns
+
 test-modules = $(addprefix $(objpfx),$(addsuffix .so,$(strip $(modules-names))))
 generated += $(addsuffix .so,$(strip $(modules-names)))
 

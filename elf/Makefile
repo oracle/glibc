@@ -119,7 +119,8 @@ $(inst_auditdir)/sotruss-lib.so: $(objpfx)sotruss-lib.so $(+force)
 endif
 
 tests = tst-tls1 tst-tls2 tst-tls9 tst-leaks1 \
-	tst-array1 tst-array2 tst-array3 tst-array4 tst-array5
+	tst-array1 tst-array2 tst-array3 tst-array4 tst-array5 \
+	tst-audit11 tst-audit12
 tests-static = tst-tls1-static tst-tls2-static tst-stackguard1-static \
 	       tst-leaks1-static tst-array1-static tst-array5-static \
 	       tst-ptrguard1-static
@@ -216,7 +217,9 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-initorder2a tst-initorder2b tst-initorder2c \
 		tst-initorder2d \
 		tst-relsort1mod1 tst-relsort1mod2 tst-array2dep \
-		tst-array5dep
+		tst-array5dep \
+		tst-audit11mod1 tst-audit11mod2 tst-auditmod11 \
+		tst-audit12mod1 tst-audit12mod2 tst-audit12mod3 tst-auditmod12
 ifeq (yesyes,$(have-fpie)$(build-shared))
 modules-names += tst-piemod1
 tests += tst-pie1
@@ -1210,3 +1213,15 @@ $(objpfx)tst-unused-dep.out: $(objpfx)testobj1.so
 	  --library-path $(rpath-link)$(patsubst %,:%,$(sysdep-library-path)) \
 	  $< > $@
 	cmp $@ /dev/null > /dev/null
+
+$(objpfx)tst-audit11.out: $(objpfx)tst-auditmod11.so $(objpfx)tst-audit11mod1.so
+$(objpfx)tst-audit11: $(libdl)
+tst-audit11-ENV = LD_AUDIT=$(objpfx)tst-auditmod11.so
+$(objpfx)tst-audit11mod1.so: $(objpfx)tst-audit11mod2.so
+LDFLAGS-tst-audit11mod2.so = -Wl,--version-script=tst-audit11mod2.map,-soname,tst-audit11mod2.so
+
+$(objpfx)tst-audit12.out: $(objpfx)tst-auditmod12.so $(objpfx)tst-audit12mod1.so $(objpfx)tst-audit12mod3.so
+$(objpfx)tst-audit12: $(libdl)
+tst-audit12-ENV = LD_AUDIT=$(objpfx)tst-auditmod12.so
+$(objpfx)tst-audit12mod1.so: $(objpfx)tst-audit12mod2.so
+LDFLAGS-tst-audit12mod2.so = -Wl,--version-script=tst-audit12mod2.map

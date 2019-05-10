@@ -250,13 +250,6 @@ extern int obstack_exit_failure;
 #define obstack_memory_used(h) _obstack_memory_used (h)
 
 #if defined __GNUC__
-/* NextStep 2.0 cc is really gcc 1.93 but it defines __GNUC__ = 2 and
-   does not implement __extension__.  But that compiler doesn't define
-   __GNUC_MINOR__.  */
-# if __GNUC__ < 2 || (__NeXT__ && !__GNUC_MINOR__)
-#  define __extension__
-# endif
-
 /* For GNU C, if not -traditional,
    we can define these macros to compute all args only once
    without using a global variable.

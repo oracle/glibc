@@ -37,6 +37,9 @@ typedef unsigned char sa_family_t;
 
 #define __SOCKADDR_COMMON_SIZE	(2 * sizeof (unsigned char))
 
+/* Size of struct sockaddr_storage.  */
+#define _SS_SIZE	128
+
 #define _HAVE_SA_LEN	1	/* We have the sa_len field.  */
 
 #endif	/* bits/sockaddr.h */

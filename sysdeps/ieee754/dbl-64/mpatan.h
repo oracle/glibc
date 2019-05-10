@@ -177,6 +177,3 @@ __atan_twonm1[33] = {                             /* 2n-1   */
 
 #endif
 #endif
-
-#define  ONE       __atan_one.d
-#define  TWO       __atan_two.d

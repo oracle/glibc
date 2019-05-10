@@ -69,13 +69,13 @@ __mpexp(mp_no *x, mp_no *y, int p) {
   for (i=0; i<EX; i++)  a *= RADIXI;
   for (   ; i>EX; i--)  a *= RADIX;
   b = X[1]*RADIXI;   m2 = 24*EX;
-  for (; b<HALF; m2--)  { a *= TWO;   b *= TWO; }
+  for (; b<HALF; m2--)  { a *= 2;   b *= 2; }
   if (b == HALF) {
-    for (i=2; i<=p; i++) { if (X[i]!=ZERO)  break; }
-    if (i==p+1)  { m2--;  a *= TWO; }
+    for (i=2; i<=p; i++) { if (X[i]!=0)  break; }
+    if (i==p+1)  { m2--;  a *= 2; }
   }
   if ((m=m1+m2) <= 0) {
-    m=0;  a=ONE;
+    m=0;  a=1;
     for (i=n-1; i>0; i--,n--) { if (m1np[i][p]+m2>0)  break; }
   }
 
@@ -84,8 +84,8 @@ __mpexp(mp_no *x, mp_no *y, int p) {
   __mul(x,&mpt1,&mps,p);
 
   /* Evaluate the polynomial. Put result in mpt2 */
-  mpone.e=1;   mpone.d[0]=ONE;   mpone.d[1]=ONE;
-  mpk.e = 1;   mpk.d[0] = ONE;   mpk.d[1]=__mpexp_nn[n].d;
+  mpone.e=1;   mpone.d[0]=1;   mpone.d[1]=1;
+  mpk.e = 1;   mpk.d[0] = 1;   mpk.d[1]=__mpexp_nn[n].d;
   __dvd(&mps,&mpk,&mpt1,p);
   __add(&mpone,&mpt1,&mpak,p);
   for (k=n-1; k>1; k--) {
@@ -99,9 +99,9 @@ __mpexp(mp_no *x, mp_no *y, int p) {
 
   /* Raise polynomial value to the power of 2**m. Put result in y */
   for (k=0,j=0; k<m; ) {
-    __mul(&mpt2,&mpt2,&mpt1,p);  k++;
+    __sqr (&mpt2, &mpt1, p);  k++;
     if (k==m)  { j=1;  break; }
-    __mul(&mpt1,&mpt1,&mpt2,p);  k++;
+    __sqr (&mpt1, &mpt2, p);  k++;
   }
   if (j)  __cpy(&mpt1,y,p);
   else    __cpy(&mpt2,y,p);

@@ -159,11 +159,4 @@ extern const number __mpexp_half attribute_hidden;
 #endif
 #endif
 
-#define  RADIX     __mpexp_radix.d
-#define  RADIXI    __mpexp_radixi.d
-#define  ZERO      __mpexp_zero.d
-#define  ONE       __mpexp_one.d
-#define  TWO       __mpexp_two.d
-#define  HALF      __mpexp_half.d
-
 #endif

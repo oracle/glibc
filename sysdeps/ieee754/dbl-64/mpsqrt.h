@@ -51,7 +51,4 @@ extern const int __mpsqrt_mp[33] attribute_hidden;
 			     4,4,4,4,4,4,4,4,4};
 #endif
 
-#define  ONE       __mpsqrt_one.d
-#define  HALFRAD   __mpsqrt_halfrad.d
-
 #endif

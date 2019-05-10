@@ -1,5 +1,5 @@
 /* CPU specific memcmp implementations.  32 bit S/390 version.
-   Copyright (C) 2012 Free Software Foundation, Inc.
+   Copyright (C) 2012-2015 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -32,73 +32,73 @@
 ENTRY(__memcmp_z196)
 	.machine "z196"
 	.machinemode "zarch_nohighgprs"
-        ltr     %r4,%r4
-        je      .L_Z196_4
-        ahi     %r4,-1
-        srlk    %r1,%r4,8
-        ltr     %r1,%r1
-        jne     .L_Z196_2
+	ltr     %r4,%r4
+	je      .L_Z196_4
+	ahi     %r4,-1
+	srlk    %r1,%r4,8
+	ltr     %r1,%r1
+	jne     .L_Z196_2
 .L_Z196_3:
-        exrl    %r4,.L_Z196_14
+	exrl    %r4,.L_Z196_14
 .L_Z196_4:
-        ipm     %r2
-        sll     %r2,2
-        sra     %r2,30
-        br      %r14
+	ipm     %r2
+	sll     %r2,2
+	sra     %r2,30
+	br      %r14
 .L_Z196_17:
-        la      %r3,256(%r3)
-        la      %r2,256(%r2)
-        ahi     %r1,-1
-        je      .L_Z196_3
+	la      %r3,256(%r3)
+	la      %r2,256(%r2)
+	ahi     %r1,-1
+	je      .L_Z196_3
 .L_Z196_2:
-        pfd     1,512(%r3)
-        pfd     1,512(%r2)
-        clc     0(256,%r3),0(%r2)
-        je      .L_Z196_17
-        ipm     %r2
-        sll     %r2,2
-        sra     %r2,30
-        br      %r14
+	pfd     1,512(%r3)
+	pfd     1,512(%r2)
+	clc     0(256,%r3),0(%r2)
+	je      .L_Z196_17
+	ipm     %r2
+	sll     %r2,2
+	sra     %r2,30
+	br      %r14
 .L_Z196_14:
-        clc     0(1,%r3),0(%r2)
+	clc     0(1,%r3),0(%r2)
 END(__memcmp_z196)
 
 ENTRY(__memcmp_z10)
 	.machine "z10"
 	.machinemode "zarch_nohighgprs"
-        ltr     %r4,%r4
-        je      .L_Z10_4
-        ahi     %r4,-1
-        lr      %r1,%r4
-        srl     %r1,8
-        cijlh   %r1,0,.L_Z10_12
+	ltr     %r4,%r4
+	je      .L_Z10_4
+	ahi     %r4,-1
+	lr      %r1,%r4
+	srl     %r1,8
+	cijlh   %r1,0,.L_Z10_12
 .L_Z10_3:
-        exrl    %r4,.L_Z10_15
+	exrl    %r4,.L_Z10_15
 .L_Z10_4:
-        ipm     %r2
-        sll     %r2,2
-        sra     %r2,30
-        br      %r14
+	ipm     %r2
+	sll     %r2,2
+	sra     %r2,30
+	br      %r14
 .L_Z10_12:
-        pfd     1,512(%r3)
-        pfd     1,512(%r2)
-        clc     0(256,%r3),0(%r2)
-        jne     .L_Z10_4
-        la      %r3,256(%r3)
-        la      %r2,256(%r2)
-        brct    %r1,.L_Z10_12
-        j       .L_Z10_3
+	pfd     1,512(%r3)
+	pfd     1,512(%r2)
+	clc     0(256,%r3),0(%r2)
+	jne     .L_Z10_4
+	la      %r3,256(%r3)
+	la      %r2,256(%r2)
+	brct    %r1,.L_Z10_12
+	j       .L_Z10_3
 .L_Z10_15:
-        clc     0(1,%r3),0(%r2)
+	clc     0(1,%r3),0(%r2)
 END(__memcmp_z10)
 
-#endif
+#endif /* !NOT_IN_libc */
 
 #include "../memcmp.S"
 
 #ifdef NOT_IN_libc
 .globl   memcmp
-.set     memcmp,__memcmp_g5
+.set     memcmp,__memcmp_default
 .weak    bcmp
-.set	 bcmp,__memcmp_g5
+.set	 bcmp,__memcmp_default
 #endif

@@ -23,7 +23,7 @@
 #include <sys/param.h>
 
 
-static __thread char *last_value;
+static __thread char *last_value attribute_tls_model_ie;
 
 
 static const char *

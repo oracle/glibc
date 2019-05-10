@@ -89,6 +89,7 @@ char *alloca ();
 # include "../locale/localeinfo.h"
 # include <not-cancel.h>
 # include <bits/libc-lock.h>
+# define PRI_MACROS_BROKEN 0
 #endif
 
 /* Provide fallback values for macros that ought to be defined in <inttypes.h>.

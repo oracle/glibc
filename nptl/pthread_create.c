@@ -60,8 +60,7 @@ unsigned int __nptl_nthreads = 1;
 
 struct pthread *
 internal_function
-__find_in_stack_list (pd)
-     struct pthread *pd;
+__find_in_stack_list (struct pthread *pd)
 {
   list_t *entry;
   struct pthread *result = NULL;

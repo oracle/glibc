@@ -35,6 +35,7 @@
 #include <smp.h>
 #include <lowlevellock.h>
 #include <kernel-features.h>
+#include <libc-internal.h>
 
 
 /* Size and alignment of static TLS block.  */
@@ -276,8 +277,28 @@ extern void **__libc_dl_error_tsd (void) __attribute__ ((const));
 /* This can be set by the debugger before initialization is complete.  */
 static bool __nptl_initial_report_events __attribute_used__;
 
+/* Validate and set the default stacksize.  */
+static void
+set_default_stacksize (size_t stacksize)
+{
+  if (stacksize < PTHREAD_STACK_MIN)
+    stacksize = PTHREAD_STACK_MIN;
+
+  /* Make sure it meets the minimum size that allocate_stack
+     (allocatestack.c) will demand, which depends on the page size.  */
+  const uintptr_t pagesz = GLRO(dl_pagesize);
+  const size_t minstack = pagesz + __static_tls_size + MINIMAL_REST_STACK;
+
+  if (stacksize < minstack)
+    stacksize = minstack;
+
+  /* Round the resource limit up to page size.  */
+  stacksize = ALIGN_UP (stacksize, pagesz);
+  __default_pthread_attr.stacksize = stacksize;
+}
+
 void
-__pthread_initialize_minimal_internal (void)
+__pthread_initialize_minimal_internal (int argc, char **argv, char **envp)
 {
 #ifndef SHARED
   /* Unlike in the dynamically linked case the dynamic linker has not
@@ -401,29 +422,44 @@ __pthread_initialize_minimal_internal (void)
 
   __static_tls_size = roundup (__static_tls_size, static_tls_align);
 
-  /* Determine the default allowed stack size.  This is the size used
-     in case the user does not specify one.  */
-  struct rlimit limit;
-  if (__getrlimit (RLIMIT_STACK, &limit) != 0
-      || limit.rlim_cur == RLIM_INFINITY)
-    /* The system limit is not usable.  Use an architecture-specific
-       default.  */
-    limit.rlim_cur = ARCH_STACK_DEFAULT_SIZE;
-  else if (limit.rlim_cur < PTHREAD_STACK_MIN)
-    /* The system limit is unusably small.
-       Use the minimal size acceptable.  */
-    limit.rlim_cur = PTHREAD_STACK_MIN;
+  /* Initialize the environment.  libc.so gets initialized after us due to a
+     circular dependency and hence __environ is not available otherwise.  */
+  __environ = envp; 
 
-  /* Make sure it meets the minimum size that allocate_stack
-     (allocatestack.c) will demand, which depends on the page size.  */
-  const uintptr_t pagesz = GLRO(dl_pagesize);
-  const size_t minstack = pagesz + __static_tls_size + MINIMAL_REST_STACK;
-  if (limit.rlim_cur < minstack)
-    limit.rlim_cur = minstack;
+#ifndef SHARED
+  __libc_init_secure ();
+#endif
 
-  /* Round the resource limit up to page size.  */
-  limit.rlim_cur = (limit.rlim_cur + pagesz - 1) & -pagesz;
-  __default_pthread_attr.stacksize = limit.rlim_cur;
+  /* Get the default stack size from the environment variable if it is set and
+     is valid.  */
+  size_t stacksize = 0;
+  char *envval = __libc_secure_getenv ("GLIBC_PTHREAD_STACKSIZE");
+
+  if (__builtin_expect (envval != NULL && envval[0] != '\0', 0))
+    {
+      char *env_conv = envval;
+      size_t ret = strtoul (envval, &env_conv, 0);
+
+      if (*env_conv == '\0' && env_conv != envval)
+	stacksize = ret;
+    }
+
+  if (stacksize == 0)
+    {
+      /* Determine the default allowed stack size.  */
+      struct rlimit limit;
+      if (__getrlimit (RLIMIT_STACK, &limit) != 0
+	  || limit.rlim_cur == RLIM_INFINITY)
+	/* The system limit is not usable.  Use an architecture-specific
+	   default.  */
+	stacksize = ARCH_STACK_DEFAULT_SIZE;
+      else
+	stacksize = limit.rlim_cur;
+    }
+
+  /* Finally, set the default stack size.  This size is used when the user does
+     not specify a stack size during thread creation.  */
+  set_default_stacksize (stacksize);
   __default_pthread_attr.guardsize = GLRO (dl_pagesize);
 
 #ifdef SHARED

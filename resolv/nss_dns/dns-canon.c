@@ -1,4 +1,4 @@
-/* Copyright (C) 2004, 2006, 2008 Free Software Foundation, Inc.
+/* Copyright (C) 2004-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Ulrich Drepper <drepper@redhat.com>, 2004.
 
@@ -20,9 +20,11 @@
 #include <netdb.h>
 #include <resolv.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <arpa/nameser.h>
 #include <nsswitch.h>
-
+#include <resolv/resolv_context.h>
+#include <resolv/resolv-internal.h>
 
 #if PACKETSZ > 65536
 # define MAXPACKET	PACKETSZ
@@ -57,11 +59,19 @@ _nss_dns_getcanonname_r (const char *name, char *buffer, size_t buflen,
   } ansp = { .ptr = buf };
   enum nss_status status = NSS_STATUS_UNAVAIL;
 
+  struct resolv_context *ctx = __resolv_context_get ();
+  if (ctx == NULL)
+    {
+      *errnop = errno;
+      *h_errnop = NETDB_INTERNAL;
+      return NSS_STATUS_UNAVAIL;
+    }
+
   for (int i = 0; i < nqtypes; ++i)
     {
-      int r = __libc_res_nquery (&_res, name, ns_c_in, qtypes[i],
-				 buf, sizeof (buf), &ansp.ptr, NULL, NULL,
-				 NULL, NULL);
+      int r = __res_context_query (ctx, name, ns_c_in, qtypes[i],
+				   buf, sizeof (buf), &ansp.ptr, NULL, NULL,
+				   NULL, NULL);
       if (r > 0)
 	{
 	  /* We need to decode the response.  Just one question record.
@@ -102,6 +112,11 @@ _nss_dns_getcanonname_r (const char *name, char *buffer, size_t buflen,
 
 	      ptr += s;
 
+	      /* Check that there are enough bytes for the RR
+		 metadata.  */
+	      if (endptr - ptr < 10)
+		goto unavail;
+
 	      /* Check whether type and class match.  */
 	      uint_fast16_t type;
 	      NS_GET16 (type, ptr);
@@ -136,12 +151,24 @@ _nss_dns_getcanonname_r (const char *name, char *buffer, size_t buflen,
 	      if (__ns_get16 (ptr) != ns_c_in)
 		goto unavail;
 
-	      /* Also skip over the TTL.  */
+	      /* Also skip over class and TTL.  */
 	      ptr += sizeof (uint16_t) + sizeof (uint32_t);
 
-	      /* Skip over the data length and data.  */
-	      ptr += sizeof (uint16_t) + __ns_get16 (ptr);
+	      /* Skip over RDATA length and RDATA itself.  */
+	      uint16_t rdatalen = __ns_get16 (ptr);
+	      ptr += sizeof (uint16_t);
+	      /* Not enough room for RDATA.  */
+	      if (endptr - ptr < rdatalen)
+		goto unavail;
+	      ptr += rdatalen;
 	    }
+	}
+
+      /* Restore original buffer before retry.  */
+      if (ansp.ptr != buf)
+	{
+	  free (ansp.ptr);
+	  ansp.ptr = buf;
 	}
     }
 
@@ -150,6 +177,6 @@ _nss_dns_getcanonname_r (const char *name, char *buffer, size_t buflen,
 
   if (ansp.ptr != buf)
     free (ansp.ptr);
-
+  __resolv_context_put (ctx);
   return status;
 }

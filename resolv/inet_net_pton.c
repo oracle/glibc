@@ -15,10 +15,6 @@
  * SOFTWARE.
  */
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static const char rcsid[] = "$BINDId: inet_net_pton.c,v 1.11 1999/01/08 19:23:44 vixie Exp $";
-#endif
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -54,11 +50,7 @@ static int	inet_net_pton_ipv4 (const char *src, u_char *dst,
  *	Paul Vixie (ISC), June 1996
  */
 int
-inet_net_pton(af, src, dst, size)
-	int af;
-	const char *src;
-	void *dst;
-	size_t size;
+inet_net_pton (int af, const char *src, void *dst, size_t size)
 {
 	switch (af) {
 	case AF_INET:
@@ -86,10 +78,7 @@ inet_net_pton(af, src, dst, size)
  *	Paul Vixie (ISC), June 1996
  */
 static int
-inet_net_pton_ipv4(src, dst, size)
-	const char *src;
-	u_char *dst;
-	size_t size;
+inet_net_pton_ipv4 (const char *src, u_char *dst, size_t size)
 {
 	static const char xdigits[] = "0123456789abcdef";
 	int n, ch, tmp, dirty, bits;

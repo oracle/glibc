@@ -1,4 +1,4 @@
-/* Copyright (C) 1996, 1997, 1998, 2002, 2007 Free Software Foundation, Inc.
+/* Copyright (C) 1996-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1996.
 
@@ -22,7 +22,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-
+#include <resolv/res_hconf.h>
 
 #define LOOKUP_TYPE	struct hostent
 #define FUNCTION_NAME	gethostbyname
@@ -30,7 +30,7 @@
 #define ADD_PARAMS	const char *name
 #define ADD_VARIABLES	name
 #define NEED_H_ERRNO	1
-#define NEED__RES_HCONF	1
+#define NEED__RES	1
 #define POSTPROCESS \
   if (status == NSS_STATUS_SUCCESS)					      \
     _res_hconf_reorder_addrs (resbuf);

@@ -16,10 +16,6 @@
  * SOFTWARE.
  */
 
-#if !defined(_LIBC) && !defined(lint)
-static const char rcsid[] = "$BINDId: ns_samedomain.c,v 8.9 1999/10/15 21:06:51 vixie Exp $";
-#endif
-
 #include <sys/types.h>
 #include <arpa/nameser.h>
 #include <errno.h>
@@ -29,7 +25,7 @@ static const char rcsid[] = "$BINDId: ns_samedomain.c,v 8.9 1999/10/15 21:06:51 
  *	Check whether a name belongs to a domain.
  *
  * Inputs:
- *\li	a - the domain whose ancestory is being verified
+ *\li	a - the domain whose ancestry is being verified
  *\li	b - the potential ancestor we're checking against
  *
  * Return:

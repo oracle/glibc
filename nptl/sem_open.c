@@ -313,6 +313,9 @@ sem_open (const char *name, int oflag, ...)
       sem.newsem.value = value << SEM_VALUE_SHIFT;
       sem.newsem.nwaiters = 0;
 #endif
+      /* pad is used as a mutex on pre-v9 sparc and ignored otherwise.  */
+      sem.newsem.pad = 0;
+
       /* This always is a shared semaphore.  */
       sem.newsem.private = LLL_SHARED;
 

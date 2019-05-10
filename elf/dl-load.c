@@ -2101,10 +2101,14 @@ _dl_map_object (struct link_map *loader, const char *name,
 	  soname = ((const char *) D_PTR (l, l_info[DT_STRTAB])
 		    + l->l_info[DT_SONAME]->d_un.d_val);
 	  if (strcmp (name, soname) != 0)
-	    continue;
+#ifdef __arm__
+	    if (strcmp (name, "ld-linux.so.3")
+		|| strcmp (soname, "ld-linux-armhf.so.3"))
+#endif
+	      continue;
 
 	  /* We have a match on a new name -- cache it.  */
-	  add_name_to_object (l, soname);
+	  add_name_to_object (l, name);
 	  l->l_soname_added = 1;
 	}
 

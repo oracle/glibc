@@ -888,7 +888,8 @@ ucs4le_internal_loop_single (struct __gconv_step *step,
     if (__builtin_expect (wc < 0x80, 1))				      \
       /* It's an one byte sequence.  */					      \
       *outptr++ = (unsigned char) wc;					      \
-    else if (__builtin_expect (wc <= 0x7fffffff, 1))			      \
+    else if (__builtin_expect (wc <= 0x7fffffff				      \
+			       && (wc < 0xd800 || wc > 0xdfff), 1))	      \
       {									      \
 	size_t step;							      \
 	unsigned char *start;						      \

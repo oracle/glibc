@@ -28,9 +28,7 @@
    Returns 0 on success, -1 on errors.  */
 
 int
-__gettimeofday (tv, tz)
-     struct timeval *tv;
-     struct timezone *tz;
+__gettimeofday (struct timeval *tv, struct timezone *tz)
 {
   return INLINE_VSYSCALL (gettimeofday, 2, tv, tz);
 }

@@ -30,7 +30,7 @@
 	.section	".toc","aw"
 .LC__dl_hwcap:
 # ifdef SHARED
-#  ifdef IS_IN_rtld
+#  if IS_IN (rtld)
 	/* Inside ld.so we use the local alias to avoid runtime GOT
 	   relocations.  */
 	.tc _rtld_local_ro[TC],_rtld_local_ro
@@ -50,7 +50,7 @@ ENTRY (setjmp)
 	b JUMPTARGET (GLUE(__sigsetjmp,_ent))
 END (setjmp)
 
-#if defined SHARED && !defined IS_IN_rtld && !defined __NO_VMX__
+#if defined SHARED && !IS_IN (rtld) && !defined __NO_VMX__
 /* When called from within libc we need a special version of _setjmp
    that saves r2 since the call won't go via a plt call stub.  See
    bugz #269.  __GI__setjmp is used in csu/libc-start.c when
@@ -82,7 +82,7 @@ JUMPTARGET(GLUE(__sigsetjmp,_ent)):
 	std  r1,(JB_GPR1*8)(3)
 #endif
 	mflr r0
-#if defined SHARED && !defined IS_IN_rtld
+#if defined SHARED && !IS_IN (rtld)
 	ld   r5,FRAME_TOC_SAVE(r1)	/* Retrieve the callers TOC.  */
 	std  r5,(JB_GPR2*8)(3)
 #else
@@ -212,7 +212,7 @@ L(no_vmx):
 #else
 	li	r6,0
 #endif
-#ifdef IS_IN_rtld
+#if IS_IN (rtld)
 	li	r3,0
 	blr
 #elif defined SHARED

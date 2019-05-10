@@ -57,7 +57,7 @@ ENTRY(__sigsetjmp)
 #endif
 	std    %f4,40(%r2)
 	std    %f6,48(%r2)
-#ifdef IS_IN_rtld
+#if IS_IN (rtld)
 	/* In ld.so we never save the signal mask.  */
 	lhi    %r2,0
 	br     %r14

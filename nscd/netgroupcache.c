@@ -135,7 +135,6 @@ addgetnetgrentX (struct database_dyn *db, int fd, request_header *req,
   size_t buffilled = sizeof (*dataset);
   char *buffer = NULL;
   size_t nentries = 0;
-  bool use_malloc = false;
   size_t group_len = strlen (key) + 1;
   union
   {
@@ -153,7 +152,7 @@ addgetnetgrentX (struct database_dyn *db, int fd, request_header *req,
     }
 
   memset (&data, '\0', sizeof (data));
-  buffer = alloca (buflen);
+  buffer = xmalloc (buflen);
   first_needed.elem.next = &first_needed.elem;
   memcpy (first_needed.elem.name, key, group_len);
   data.needed_groups = &first_needed.elem;
@@ -236,21 +235,24 @@ addgetnetgrentX (struct database_dyn *db, int fd, request_header *req,
 
 				if (buflen - req->key_len - bufused < needed)
 				  {
-				    size_t newsize = MAX (2 * buflen,
-							  buflen + 2 * needed);
-				    if (use_malloc || newsize > 1024 * 1024)
-				      {
-					buflen = newsize;
-					char *newbuf = xrealloc (use_malloc
-								 ? buffer
-								 : NULL,
-								 buflen);
+				    buflen += MAX (buflen, 2 * needed);
+				    /* Save offset in the old buffer.  We don't
+				       bother with the NULL check here since
+				       we'll do that later anyway.  */
+				    size_t nhostdiff = nhost - buffer;
+				    size_t nuserdiff = nuser - buffer;
+				    size_t ndomaindiff = ndomain - buffer;
 
-					buffer = newbuf;
-					use_malloc = true;
-				      }
-				    else
-				      extend_alloca (buffer, buflen, newsize);
+				    char *newbuf = xrealloc (buffer, buflen);
+				    /* Fix up the triplet pointers into the new
+				       buffer.  */
+				    nhost = (nhost ? newbuf + nhostdiff
+					     : NULL);
+				    nuser = (nuser ? newbuf + nuserdiff
+					     : NULL);
+				    ndomain = (ndomain ? newbuf + ndomaindiff
+					       : NULL);
+				    buffer = newbuf;
 				  }
 
 				nhost = memcpy (buffer + bufused,
@@ -320,18 +322,8 @@ addgetnetgrentX (struct database_dyn *db, int fd, request_header *req,
 		      }
 		    else if (status == NSS_STATUS_UNAVAIL && e == ERANGE)
 		      {
-			size_t newsize = 2 * buflen;
-			if (use_malloc || newsize > 1024 * 1024)
-			  {
-			    buflen = newsize;
-			    char *newbuf = xrealloc (use_malloc
-						     ? buffer : NULL, buflen);
-
-			    buffer = newbuf;
-			    use_malloc = true;
-			  }
-			else
-			  extend_alloca (buffer, buflen, newsize);
+			buflen *= 2;
+			buffer = xrealloc (buffer, buflen);
 		      }
 		  }
 
@@ -473,8 +465,7 @@ addgetnetgrentX (struct database_dyn *db, int fd, request_header *req,
     }
 
  out:
-  if (use_malloc)
-    free (buffer);
+  free (buffer);
 
   *resultp = dataset;
 

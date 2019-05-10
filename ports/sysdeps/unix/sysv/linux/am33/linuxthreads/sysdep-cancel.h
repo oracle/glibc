@@ -23,7 +23,7 @@
 # include <linuxthreads/internals.h>
 #endif
 
-#if !defined NOT_IN_libc || defined IS_IN_libpthread || defined IS_IN_librt
+#if !defined NOT_IN_libc || defined IS_IN_libpthread || IS_IN (librt)
 
 # undef PSEUDO
 # define PSEUDO(name, syscall_name, args)				\
@@ -82,7 +82,7 @@
 # ifdef IS_IN_libpthread
 #  define CENABLE	call __pthread_enable_asynccancel,[],0;
 #  define CDISABLE	call __pthread_disable_asynccancel,[],0;
-# elif defined IS_IN_librt
+# elif IS_IN (librt)
 #  ifdef PIC
 #   define CENABLE	movm [a2],(sp); \
 			1: mov pc,a2; \

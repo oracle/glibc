@@ -1,3 +1,8 @@
+2014-03-18  Will Newton  <will.newton@linaro.org>
+
+	* sysdeps/unix/sysv/linux/aarch64/sysdep.h: Remove
+	inaccurate comment.
+
 2014-03-27  Andrew Pinski  <apinski@cavium.com>
 
 	* elf/sotruss.ksh: Convert to standard Bourne function syntax.

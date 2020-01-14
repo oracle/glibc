@@ -1,3 +1,7 @@
+2015-02-27  Wilco Dijkstra  wdijkstr@arm.com
+
+	* string/bzero.c (__bzero): Call memset for performance.
+
 2017-06-19  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
 	* scripts/gen-tunables.awk: Avoid multi-dimensional arrays.

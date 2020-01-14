@@ -42,7 +42,7 @@ extern __typeof (__redirect_strstr) __strstr_sse2 attribute_hidden;
 /* Avoid DWARF definition DIE on ifunc symbol so that GDB can handle
    ifunc symbol properly.  */
 extern __typeof (__redirect_strstr) __libc_strstr;
-libc_ifunc (__libc_strstr, HAS_SSE4_2 ? (use_unaligned_strstr () ?
+libc_ifunc (__libc_strstr, HAS_CPU_FEATURE (SSE4_2) ? (use_unaligned_strstr () ?
 					 __strstr_sse2_unaligned :
 					 __strstr_sse42) : __strstr_sse2)
 

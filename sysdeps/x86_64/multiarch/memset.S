@@ -24,11 +24,9 @@
 #if IS_IN (libc)
 ENTRY(memset)
 	.type	memset, @gnu_indirect_function
-	cmpl	$0, __cpu_features+KIND_OFFSET(%rip)
-	jne	1f
-	call	__init_cpu_features
-1:	leaq	__memset_x86_64(%rip), %rax
-	testl	$bit_Prefer_SSE_for_memop, __cpu_features+FEATURE_OFFSET+index_Prefer_SSE_for_memop(%rip)
+	LOAD_RTLD_GLOBAL_RO_RDX
+	leaq	__memset_x86_64(%rip), %rax
+	HAS_ARCH_FEATURE (Prefer_SSE_for_memop)
 	jz	2f
 	leaq	__memset_sse2(%rip), %rax
 2:	ret

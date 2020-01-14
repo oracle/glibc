@@ -71,11 +71,7 @@ int __have_atfcts;
 
 
 int
-OPENAT_NOT_CANCEL (fd, file, oflag, mode)
-     int fd;
-     const char *file;
-     int oflag;
-     mode_t mode;
+OPENAT_NOT_CANCEL (int fd, const char *file, int oflag, mode_t mode)
 {
 
   /* We have to add the O_LARGEFILE flag for openat64.  */
@@ -151,10 +147,7 @@ OPENAT_NOT_CANCEL (fd, file, oflag, mode)
    the directory associated with FD.  If OFLAG includes O_CREAT or
    O_TMPFILE, a fourth argument is the file protection.  */
 int
-__OPENAT (fd, file, oflag)
-     int fd;
-     const char *file;
-     int oflag;
+__OPENAT (int fd, const char *file, int oflag, ...)
 {
   mode_t mode = 0;
   if (__OPEN_NEEDS_MODE (oflag))

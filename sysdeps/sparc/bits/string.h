@@ -20,6 +20,9 @@
 # error "Never use <bits/string.h> directly; include <string.h> instead."
 #endif
 
+/* sparc uses the aligned string inline ABI.  */
+#define _STRING_INLINE_unaligned 0
+
 /* sparc32 and sparc64 strchr(x, '\0') perform better than
    __rawmemchr(x, '\0').  */
 #define _HAVE_STRING_ARCH_strchr 1

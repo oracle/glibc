@@ -40,30 +40,30 @@
 # define __GT_NOCREATE	2
 #endif
 
-#if STDC_HEADERS || _LIBC
+#if _LIBC || STDC_HEADERS
 # include <stddef.h>
 # include <stdlib.h>
 # include <string.h>
 #endif
 
-#if HAVE_FCNTL_H || _LIBC
+#if _LIBC || HAVE_FCNTL_H
 # include <fcntl.h>
 #endif
 
-#if HAVE_SYS_TIME_H || _LIBC
+#if _LIBC || HAVE_SYS_TIME_H
 # include <sys/time.h>
 #endif
 
-#if HAVE_STDINT_H || _LIBC
+#if _LIBC || HAVE_STDINT_H
 # include <stdint.h>
 #endif
 
-#if HAVE_UNISTD_H || _LIBC
+#if _LIBC || HAVE_UNISTD_H
 # include <unistd.h>
 #endif
 
 #include <sys/stat.h>
-#if STAT_MACROS_BROKEN
+#if !_LIBC && STAT_MACROS_BROKEN
 # undef S_ISDIR
 #endif
 #if !defined S_ISDIR && defined S_IFDIR
@@ -101,7 +101,7 @@
 # define __xstat64(version, path, buf) stat (path, buf)
 #endif
 
-#if ! (HAVE_SECURE_GETENV || _LIBC)
+#if ! (_LIBC || HAVE_SECURE_GETENV)
 # ifdef HAVE___SECURE_GETENV
 #  define __libc_secure_getenv __secure_getenv
 # else
@@ -267,7 +267,7 @@ __gen_tempname (char *tmpl, int suffixlen, int flags, int kind)
 #ifdef RANDOM_BITS
   RANDOM_BITS (random_time_bits);
 #else
-# if HAVE_GETTIMEOFDAY || _LIBC
+# if _LIBC || HAVE_GETTIMEOFDAY
   {
     struct timeval tv;
     __gettimeofday (&tv, NULL);

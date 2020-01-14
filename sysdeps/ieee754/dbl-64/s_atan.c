@@ -82,7 +82,7 @@ double atan(double x) {
     return x+x;
 
   /* Regular values of x, including denormals +-0 and +-INF */
-  u = (x<ZERO) ? -x : x;
+  u = (x<0) ? -x : x;
   if (u<C) {
     if (u<B) {
       if (u<A) {                                           /* u < A */
@@ -93,7 +93,7 @@ double atan(double x) {
 
 	EMULV(x,x,v,vv,t1,t2,t3,t4,t5)                       /* v+vv=x^2 */
 	s1=v*(f11.d+v*(f13.d+v*(f15.d+v*(f17.d+v*f19.d))));
-	ADD2(f9.d,ff9.d,s1,ZERO,s2,ss2,t1,t2)
+	ADD2(f9.d,ff9.d,s1,0,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
 	ADD2(f7.d,ff7.d,s1,ss1,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
@@ -101,8 +101,8 @@ double atan(double x) {
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
 	ADD2(f3.d,ff3.d,s1,ss1,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
-	MUL2(x,ZERO,s1,ss1,s2,ss2,t1,t2,t3,t4,t5,t6,t7,t8)
-	ADD2(x,ZERO,s2,ss2,s1,ss1,t1,t2)
+	MUL2(x,0,s1,ss1,s2,ss2,t1,t2,t3,t4,t5,t6,t7,t8)
+	ADD2(x,0,s2,ss2,s1,ss1,t1,t2)
 	if ((y=s1+(ss1-U5*s1)) == s1+(ss1+U5*s1))  return y;
 
 	return atanMp(x,pr);
@@ -124,14 +124,14 @@ double atan(double x) {
       z=u-hij[i][0].d;
       s1=z*(hij[i][11].d+z*(hij[i][12].d+z*(hij[i][13].d+
 	 z*(hij[i][14].d+z* hij[i][15].d))));
-      ADD2(hij[i][9].d,hij[i][10].d,s1,ZERO,s2,ss2,t1,t2)
-      MUL2(z,ZERO,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
+      ADD2(hij[i][9].d,hij[i][10].d,s1,0,s2,ss2,t1,t2)
+      MUL2(z,0,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
       ADD2(hij[i][7].d,hij[i][8].d,s1,ss1,s2,ss2,t1,t2)
-      MUL2(z,ZERO,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
+      MUL2(z,0,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
       ADD2(hij[i][5].d,hij[i][6].d,s1,ss1,s2,ss2,t1,t2)
-      MUL2(z,ZERO,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
+      MUL2(z,0,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
       ADD2(hij[i][3].d,hij[i][4].d,s1,ss1,s2,ss2,t1,t2)
-      MUL2(z,ZERO,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
+      MUL2(z,0,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
       ADD2(hij[i][1].d,hij[i][2].d,s1,ss1,s2,ss2,t1,t2)
       if ((y=s2+(ss2-U6*s2)) == s2+(ss2+U6*s2))  return __signArctan(x,y);
 
@@ -140,9 +140,9 @@ double atan(double x) {
   }
   else {
     if (u<D) { /* C <= u < D */
-      w=ONE/u;
+      w=1/u;
       EMULV(w,u,t1,t2,t3,t4,t5,t6,t7)
-      ww=w*((ONE-t1)-t2);
+      ww=w*((1-t1)-t2);
       i=(TWO52+TWO8*w)-TWO52;  i-=16;
       z=(w-cij[i][0].d)+ww;
       yy=HPI1-z*(cij[i][2].d+z*(cij[i][3].d+z*(cij[i][4].d+
@@ -152,12 +152,12 @@ double atan(double x) {
       else        u3=U32;  /* w >= 1/2 */
       if ((y=t1+(yy-u3)) == t1+(yy+u3))  return __signArctan(x,y);
 
-      DIV2(ONE,ZERO,u,ZERO,w,ww,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10)
+      DIV2(1,0,u,0,w,ww,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10)
       t1=w-hij[i][0].d;
       EADD(t1,ww,z,zz)
       s1=z*(hij[i][11].d+z*(hij[i][12].d+z*(hij[i][13].d+
 	 z*(hij[i][14].d+z* hij[i][15].d))));
-      ADD2(hij[i][9].d,hij[i][10].d,s1,ZERO,s2,ss2,t1,t2)
+      ADD2(hij[i][9].d,hij[i][10].d,s1,0,s2,ss2,t1,t2)
       MUL2(z,zz,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
       ADD2(hij[i][7].d,hij[i][8].d,s1,ss1,s2,ss2,t1,t2)
       MUL2(z,zz,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
@@ -173,18 +173,18 @@ double atan(double x) {
     }
     else {
       if (u<E) { /* D <= u < E */
-	w=ONE/u;   v=w*w;
+	w=1/u;   v=w*w;
 	EMULV(w,u,t1,t2,t3,t4,t5,t6,t7)
 	yy=w*v*(d3.d+v*(d5.d+v*(d7.d+v*(d9.d+v*(d11.d+v*d13.d)))));
-	ww=w*((ONE-t1)-t2);
+	ww=w*((1-t1)-t2);
 	ESUB(HPI,w,t3,cor)
 	yy=((HPI1+cor)-ww)-yy;
 	if ((y=t3+(yy-U4)) == t3+(yy+U4))  return __signArctan(x,y);
 
-	DIV2(ONE,ZERO,u,ZERO,w,ww,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10)
+	DIV2(1,0,u,0,w,ww,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10)
 	MUL2(w,ww,w,ww,v,vv,t1,t2,t3,t4,t5,t6,t7,t8)
 	s1=v*(f11.d+v*(f13.d+v*(f15.d+v*(f17.d+v*f19.d))));
-	ADD2(f9.d,ff9.d,s1,ZERO,s2,ss2,t1,t2)
+	ADD2(f9.d,ff9.d,s1,0,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
 	ADD2(f7.d,ff7.d,s1,ss1,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)

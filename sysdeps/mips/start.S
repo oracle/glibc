@@ -116,3 +116,5 @@ __data_start:
 	.long 0
 	.weak data_start
 	data_start = __data_start
+        .section        .note.GNU-stack,"",@progbits
+

@@ -364,3 +364,5 @@ END(MEMSET_NAME)
 libc_hidden_builtin_def (MEMSET_NAME)
 # endif
 #endif
+        .section        .note.GNU-stack,"",@progbits
+

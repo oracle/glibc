@@ -39,3 +39,5 @@ ENTRY (setjmp)
 	j	C_SYMBOL_NAME (__sigsetjmp)
 #endif
 	.end	setjmp
+        .section        .note.GNU-stack,"",@progbits
+

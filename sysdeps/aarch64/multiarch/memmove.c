@@ -31,13 +31,16 @@ extern __typeof (__redirect_memmove) __libc_memmove;
 extern __typeof (__redirect_memmove) __memmove_generic attribute_hidden;
 extern __typeof (__redirect_memmove) __memmove_thunderx attribute_hidden;
 extern __typeof (__redirect_memmove) __memmove_falkor attribute_hidden;
+extern __typeof (__redirect_memmove) __memmove_octeontx attribute_hidden;
 
 libc_ifunc (__libc_memmove,
             (IS_THUNDERX (midr)
 	     ? __memmove_thunderx
 	     : (IS_FALKOR (midr)
 		? __memmove_falkor
-		: __memmove_generic)));
+		: (IS_OCTEONTX (midr)
+		   ? __memmove_octeontx
+		   : __memmove_generic))));
 
 # undef memmove
 strong_alias (__libc_memmove, memmove);

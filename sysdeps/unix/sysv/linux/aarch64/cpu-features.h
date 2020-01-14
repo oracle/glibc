@@ -46,6 +46,9 @@
 #define IS_THUNDERX2(midr) (MIDR_IMPLEMENTOR(midr) == 'C'       \
 			   && MIDR_PARTNUM(midr) == 0xaf)
 
+#define IS_OCTEONTX(midr) (MIDR_IMPLEMENTOR(midr) == 'C'	\
+			   && (MIDR_PARTNUM(midr) == 0x0a2 || MIDR_PARTNUM(midr) == 0x0a3))
+
 #define IS_FALKOR(midr) (MIDR_IMPLEMENTOR(midr) == 'Q'			      \
                         && MIDR_PARTNUM(midr) == 0xc00)
 

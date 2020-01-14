@@ -1,3 +1,11 @@
+2018-02-02  Siddhesh Poyarekar  <siddhesh@sourceware.org>
+
+	* sysdeps/aarch64/memcmp.S: Use L() macro for labels.
+
+	* benchtests/bench-memcmp.c: Print json instead of plain text.
+	* benchtests/bench-memcmp.c (do_test): Call realloc_buf for
+	every test run.
+
 2017-12-13  Siddhesh Poyarekar  <siddhesh@sourceware.org>
 
 	* sysdeps/aarch64/strcmp.S (misaligned8): Compare dword at a

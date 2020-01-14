@@ -37,7 +37,7 @@ __syscall_error:
 	moveq r0, $EAGAIN	/* Yes; translate it to EAGAIN.  */
 #endif
 
-#ifndef IS_IN_rtld
+#if !IS_IN (rtld)
 	mov ip, lr
 	cfi_register (lr, ip)
 	mov r1, r0

@@ -35,6 +35,16 @@
 #include FATAL_PREPARE_INCLUDE
 #endif
 
+#ifndef BEFORE_ABORT
+# define BEFORE_ABORT           before_abort
+static void
+before_abort (int do_abort __attribute__ ((unused)),
+              bool written __attribute__ ((unused)),
+              int fd __attribute__ ((unused)))
+{
+}
+#endif
+
 struct str_list
 {
   const char *str;
@@ -45,7 +55,7 @@ struct str_list
 
 /* Abort with an error message.  */
 void
-__libc_message (int do_abort, const char *fmt, ...)
+__libc_message (enum __libc_message_action action, const char *fmt, ...)
 {
   va_list ap;
   va_list ap_copy;
@@ -124,7 +134,7 @@ __libc_message (int do_abort, const char *fmt, ...)
       if (TEMP_FAILURE_RETRY (__writev (fd, iov, nlist)) == total)
 	written = true;
 
-      if (do_abort)
+      if ((action & do_abort))
 	{
 	  total = ((total + 1 + GLRO(dl_pagesize) - 1)
 		   & ~(GLRO(dl_pagesize) - 1));
@@ -151,13 +161,14 @@ __libc_message (int do_abort, const char *fmt, ...)
 
   va_end (ap);
 
-  /* If we  had no success writing the message, use syslog.  */
-  if (! written)
-    vsyslog (LOG_ERR, fmt, ap_copy);
-
+  if ((action & do_abort))
+    {
+      if ((action & do_backtrace))
+	BEFORE_ABORT (do_abort, written, fd);
+    }
   va_end (ap_copy);
 
-  if (do_abort)
+  if ((action & do_abort))
     /* Kill the application.  */
     abort ();
 }
@@ -168,6 +179,6 @@ __libc_fatal (const char *message)
 {
   /* The loop is added only to keep gcc happy.  */
   while (1)
-    __libc_message (1, "%s", message);
+    __libc_message (do_abort | do_backtrace, "%s", message);
 }
 libc_hidden_def (__libc_fatal)

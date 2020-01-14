@@ -5370,7 +5370,8 @@ static void
 malloc_printerr (int action, const char *str, void *ptr)
 {
   if ((action & 5) == 5)
-    __libc_message (action & 2, "%s\n", str);
+    __libc_message ((action & 2) ? (do_abort | do_backtrace) : do_message,
+		    "%s\n", str);
   else if (action & 1)
     {
       char buf[2 * sizeof (uintptr_t) + 1];
@@ -5380,7 +5381,8 @@ malloc_printerr (int action, const char *str, void *ptr)
       while (cp > buf)
         *--cp = '0';
 
-      __libc_message (action & 2, "*** Error in `%s': %s: 0x%s ***\n",
+      __libc_message ((action & 2) ? (do_abort | do_backtrace) : do_message,
+		      "*** Error in `%s': %s: 0x%s ***\n",
                       __libc_argv[0] ? : "<unknown>", str, cp);
     }
   else if (action & 2)

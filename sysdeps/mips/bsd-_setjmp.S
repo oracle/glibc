@@ -38,7 +38,7 @@ ENTRY (_setjmp)
 #else
 	j	C_SYMBOL_NAME (__sigsetjmp)
 #endif
-	.end	_setjmp
+END (_setjmp)
 libc_hidden_def (_setjmp)
         .section        .note.GNU-stack,"",@progbits
 

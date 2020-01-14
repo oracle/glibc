@@ -101,10 +101,7 @@ libc_hidden_def (INTERNAL (strtol))
 
 
 INT
-strtol (nptr, endptr, base)
-     const STRING_TYPE *nptr;
-     STRING_TYPE **endptr;
-     int base;
+strtol (const STRING_TYPE *nptr, STRING_TYPE **endptr, int base)
 {
   return INTERNAL (__strtol_l) (nptr, endptr, base, 0, _NL_CURRENT_LOCALE);
 }

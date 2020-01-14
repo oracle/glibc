@@ -293,9 +293,6 @@ _dl_non_dynamic_init (void)
     _dl_profile_output
       = &"/var/tmp\0/var/profile"[__libc_enable_secure ? 9 : 0];
 
-  /* RHEL 7 specific change: Process tunables at startup.  */
-  _dl_process_tunable_env_entries ();
-
   if (__libc_enable_secure)
     {
       static const char unsecure_envvars[] =

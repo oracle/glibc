@@ -254,6 +254,7 @@ enum
 		break;							      \
 	      }								      \
 	    *outptr++ = SI;						      \
+	    curcs = sb;							      \
 	  }								      \
 									      \
 	if (__builtin_expect (outptr + 1 > outend, 0))			      \
@@ -262,7 +263,6 @@ enum
 	    break;							      \
 	  }								      \
 	*outptr++ = cp[0];						      \
-	curcs = sb;							      \
       }									      \
 									      \
     /* Now that we wrote the output increment the input pointer.  */	      \

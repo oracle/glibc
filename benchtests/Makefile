@@ -50,8 +50,11 @@ benchset := $(string-bench-all) $(stdlib-bench)
 CFLAGS-bench-ffs.c += -fno-builtin
 CFLAGS-bench-ffsll.c += -fno-builtin
 
+bench-malloc := malloc-thread
+
 $(addprefix $(objpfx)bench-,$(bench-math)): $(libm)
 $(addprefix $(objpfx)bench-,$(bench-pthread)): $(shared-thread-library)
+$(objpfx)bench-malloc-thread: $(shared-thread-library)
 
 
 

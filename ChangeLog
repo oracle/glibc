@@ -1,5 +1,10 @@
 2017-06-22  Siddhesh Poyarekar  <siddhesh@sourceware.org>
 
+	* benchtests/scripts/benchout_strings.schema.json: New file.
+	* benchtests/scripts/compare_strings.py: New file.
+
+2017-06-22  Siddhesh Poyarekar  <siddhesh@sourceware.org>
+
 	* benchtests/bench-memcpy-large.c: Include json-lib.h.
 	(do_one_test): Print json.
 	(do_test): Likewise.

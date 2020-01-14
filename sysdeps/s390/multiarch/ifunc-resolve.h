@@ -92,3 +92,23 @@
       return &RESOLVERFUNC##_c;						\
   }									\
  __asm__ (".type " #FUNC ", %gnu_indirect_function");
+
+/* Helper / base  macros for indirect function symbols
+   (See include/libc-symbols in upstream glibc).  */
+#define __ifunc_resolver(type_name, name, expr, arg, init, classifier)	\
+  classifier void *name##_ifunc (arg)					\
+  {									\
+    init ();								\
+    __typeof (type_name) *res = expr;					\
+    return res;								\
+  }
+
+#define __ifunc(type_name, name, expr, arg, init)			\
+  extern __typeof (type_name) name __attribute__			\
+			      ((ifunc (#name "_ifunc")));		\
+  __ifunc_resolver (type_name, name, expr, arg, init, static)
+
+#define s390_libc_ifunc_expr_init()
+#define s390_libc_ifunc_expr(TYPE_FUNC, FUNC, EXPR)		\
+  __ifunc (TYPE_FUNC, FUNC, EXPR, unsigned long int hwcap,	\
+	   s390_libc_ifunc_expr_init);

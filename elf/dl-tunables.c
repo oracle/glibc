@@ -27,7 +27,7 @@ void
 internal_function
 _dl_process_tunable_env_entries (void)
 {
-#if HAVE_ELISION
+#ifdef HAVE_ELISION
   char **ep;
   const char *envname = { "RHEL_GLIBC_TUNABLES" };
 # define TUNABLE_ELISION 0

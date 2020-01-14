@@ -1,3 +1,15 @@
+2017-03-15  Steve Ellcey  <sellcey@caviumnetworks.com>
+	            Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* sysdeps/aarch64/dl-machine.h: Include cpu-features.c.
+	(DL_PLATFORM_INIT): New define.
+	(dl_platform_init): New function.
+	* sysdeps/aarch64/ldsodefs.h: Include cpu-features.h.
+	* sysdeps/unix/sysv/linux/aarch64/cpu-features.c: New file.
+	* sysdeps/unix/sysv/linux/aarch64/cpu-features.h: Likewise.
+	* sysdeps/unix/sysv/linux/aarch64/dl-procinfo.c: Likewise.
+	* sysdeps/unix/sysv/linux/aarch64/libc-start.c: Likewise.
+
 2016-07-11  Szabolcs Nagy  <szabolcs.nagy@arm.com>
 
 	[BZ #18707]

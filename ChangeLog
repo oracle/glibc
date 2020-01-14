@@ -1,3 +1,13 @@
+2012-08-29  Andrew Pinski  <apinski@cavium.com>
+
+	* sysdeps/mips/fpu_control.h: Octeon3 has hardware control
+	word for the FPU.
+	* sysdeps/mips/preconfigure: Append octeon3 to the machine
+	variable.
+	* sysdeps/unix/sysv/linux/mips/configure.in: Add Octeon3 support
+	(lib32-fp/lib64-fp).
+	* sysdeps/unix/sysv/linux/mips/configure: Regnerate.
+
 2012-08-16  Andrew Pinski  <apinski@cavium.com>
 
 	* sysdeps/unix/sysv/linux/mips/nptl/lowlevellock.h

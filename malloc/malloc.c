@@ -1231,14 +1231,21 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    MINSIZE :                                                      \
    ((req) + SIZE_SZ + MALLOC_ALIGN_MASK) & ~MALLOC_ALIGN_MASK)
 
-/*  Same, except also perform argument check */
-
-#define checked_request2size(req, sz)                             \
-  if (REQUEST_OUT_OF_RANGE (req)) {					      \
-      __set_errno (ENOMEM);						      \
-      return 0;								      \
-    }									      \
-  (sz) = request2size (req);
+/* Same, except also perform an argument and result check.  First, we check
+   that the padding done by request2size didn't result in an integer
+   overflow.  Then we check (using REQUEST_OUT_OF_RANGE) that the resulting
+   size isn't so large that a later alignment would lead to another integer
+   overflow.  */
+#define checked_request2size(req, sz) \
+({				    \
+  (sz) = request2size (req);	    \
+  if (((sz) < (req))		    \
+      || REQUEST_OUT_OF_RANGE (sz)) \
+    {				    \
+  __set_errno (ENOMEM);		    \
+  return 0;			    \
+    }				    \
+})
 
 /*
    --------------- Physical chunk operations ---------------
@@ -2299,8 +2306,9 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
      rather than expanding top.
    */
 
-  if ((unsigned long) (nb) >= (unsigned long) (mp_.mmap_threshold) &&
-      (mp_.n_mmaps < mp_.n_mmaps_max))
+  if (av == NULL
+      || ((unsigned long) (nb) >= (unsigned long) (mp_.mmap_threshold)
+	  && (mp_.n_mmaps < mp_.n_mmaps_max)))
     {
       char *mm;           /* return value from mmap call*/
 
@@ -3058,19 +3066,14 @@ __libc_malloc (size_t bytes)
 
   arena_get (ar_ptr, bytes);
 
-  if (!ar_ptr)
-    return 0;
-
   victim = _int_malloc (ar_ptr, bytes);
+  /* Retry with another arena only if we were able to find a usable arena
+     before.  */
   if (!victim && ar_ptr != NULL)
     {
       LIBC_PROBE (memory_malloc_retry, 1, bytes);
       ar_ptr = arena_get_retry (ar_ptr, bytes);
-      if (__builtin_expect (ar_ptr != NULL, 1))
-        {
-          victim = _int_malloc (ar_ptr, bytes);
-          (void) mutex_unlock (&ar_ptr->mutex);
-        }
+      victim = _int_malloc (ar_ptr, bytes);
     }
 
   if (ar_ptr != NULL)
@@ -3303,19 +3306,13 @@ _mid_memalign (size_t alignment, size_t bytes, void *address)
     }
 
   arena_get (ar_ptr, bytes + alignment + MINSIZE);
-  if (!ar_ptr)
-    return 0;
 
   p = _int_memalign (ar_ptr, alignment, bytes);
-  if (!p)
+  if (!p && ar_ptr != NULL)
     {
       LIBC_PROBE (memory_memalign_retry, 2, bytes, alignment);
       ar_ptr = arena_get_retry (ar_ptr, bytes);
-      if (__builtin_expect (ar_ptr != NULL, 1))
-        {
-          p = _int_memalign (ar_ptr, alignment, bytes);
-          (void) mutex_unlock (&ar_ptr->mutex);
-        }
+      p = _int_memalign (ar_ptr, alignment, bytes);
     }
 
   if (ar_ptr != NULL)
@@ -4768,7 +4765,7 @@ mtrim (mstate av, size_t pad)
 
                 if (size > psm1)
                   {
-#ifdef MALLOC_DEBUG
+#if MALLOC_DEBUG
                     /* When debugging we simulate destroying the memory
                        content.  */
                     memset (paligned_mem, 0x89, size & ~psm1);

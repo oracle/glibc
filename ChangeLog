@@ -1,3 +1,7 @@
+2017-10-19  Wilco Dijkstra  <wdijkstr@arm.com>
+
+	* malloc/malloc.c (_int_free): Fix deadlock bug in consistency check.
+
 2017-10-18  Wilco Dijkstra  <wdijkstr@arm.com>
 
 	* malloc/malloc.c (malloc_state): Use int for have_fastchunks since

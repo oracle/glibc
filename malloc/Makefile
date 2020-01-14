@@ -142,7 +142,7 @@ lib := memusagestat
 include $(patsubst %,$(..)cppflags-iterator.mk,$(cpp-srcs-left))
 
 $(objpfx)memusagestat: $(memusagestat-modules:%=$(objpfx)%.o)
-	$(LINK.o) -o $@ $^ $(libgd-LDFLAGS) -lgd -lpng -lz -lm
+	$(LINK.o) -Wl,-z,now -o $@ $^ $(libgd-LDFLAGS) -lgd -lpng -lz -lm
 
 include ../Rules
 

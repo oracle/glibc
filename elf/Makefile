@@ -436,7 +436,8 @@ $(objpfx)pldd: $(pldd-modules:%=$(objpfx)%.o)
 
 SYSCONF-FLAGS := -D'SYSCONFDIR="$(sysconfdir)"'
 CFLAGS-ldconfig.c = $(SYSCONF-FLAGS) -D'LIBDIR="$(libdir)"' \
-		    -D'SLIBDIR="$(slibdir)"' -DIS_IN_ldconfig=1
+		    -D'SLIBDIR="$(slibdir)"' -DIS_IN_ldconfig=1 -DNOT_IN_libc=1
+libof-ldconfig = ldconfig
 CFLAGS-dl-cache.c = $(SYSCONF-FLAGS)
 CFLAGS-cache.c = $(SYSCONF-FLAGS)
 CFLAGS-rtld.c = $(SYSCONF-FLAGS)
@@ -453,6 +454,10 @@ CFLAGS-.os += -fno-tree-loop-distribute-patterns
 CFLAGS-.op += -fno-tree-loop-distribute-patterns
 CFLAGS-.ob += -fno-tree-loop-distribute-patterns
 CFLAGS-.oS += -fno-tree-loop-distribute-patterns
+
+cpp-srcs-left := $(all-rtld-routines:=.os)
+lib := rtld
+include $(patsubst %,$(..)cppflags-iterator.mk,$(cpp-srcs-left))
 
 test-modules = $(addprefix $(objpfx),$(addsuffix .so,$(strip $(modules-names))))
 generated += $(addsuffix .so,$(strip $(modules-names)))

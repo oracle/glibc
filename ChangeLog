@@ -1,3 +1,10 @@
+2012-10-25  Prasun Kapoor <prasun.kapoor@caviumnetworks.com>
+	    Chandrakala Chavva  <cchavva@caviumnetworks.com>
+
+	Bug #697
+	Make mmap64() work with 64 bit file offsets for n32 binaries.
+	* sysdeps/unix/sysv/linux/mips/mips64/n32/mmap64.c: New file.
+
 2012-07-11  Chandrakala Chavva  <cchavva@caviumnetworks.com>
 
 	* sysdeps/mips/bits/atomic.h (MIPS_SYNC): Set to syncw;syncw for Octeon.

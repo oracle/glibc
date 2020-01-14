@@ -22,9 +22,7 @@
 
 /* Copy SRC to DEST.  */
 wchar_t *
-wcscpy (dest, src)
-     wchar_t *dest;
-     const wchar_t *src;
+wcscpy (wchar_t *dest, const wchar_t *src)
 {
   wint_t c,d;
   wchar_t *wcp, *wcp2;

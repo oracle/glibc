@@ -42,7 +42,7 @@
 #define __INO64_T_TYPE		__UQUAD_TYPE
 #define __MODE_T_TYPE		__U32_TYPE
 #define __NLINK_T_TYPE		__U32_TYPE
-#define __OFF_T_TYPE		__SLONGWORD_TYPE
+#define __OFF_T_TYPE		__SYSCALL_SLONG_TYPE
 #define __OFF64_T_TYPE		__SQUAD_TYPE
 #define __PID_T_TYPE		__S32_TYPE
 #define __RLIM_T_TYPE		__ULONGWORD_TYPE

@@ -19,8 +19,15 @@
 #include <fcntl.h>
 #include <sysdep.h>
 
-/* Advice the system about the expected behaviour of the application with
-   respect to the file associated with FD.  */
+/* Copied from mips/mips64/n32 directory. The kernel expects 4 parameters 
+   for fadvise64 system call. Applies to both n32 and n64 ABI. This fixes
+   posix_fadvise tests from LTP 20080131 release. */
+
+/* The kernel expects four parameters for fadvise64 system call for n32 and 
+   n64 abi. The generic version invokes the system call with five parameters. 
+   The system call fails with EINVAL (an invalid value was specified for 
+   ADVICE) error message. This file is a modified version of the generic 
+   file to invoke the system call with four parameters. */
 
 int
 __posix_fadvise64_l64 (int fd, off64_t offset, off64_t len, int advise)

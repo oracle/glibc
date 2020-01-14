@@ -9,4 +9,7 @@ fanotify_mark	EXTRA	fanotify_mark	i:iiiis	fanotify_mark
 fstatfs		-	fstatfs		i:ip	__fstatfs	fstatfs fstatfs64 __fstatfs64
 statfs		-	statfs		i:sp	__statfs	statfs statfs64 __statfs64
 
+# The _NR_sendfile64 is not defined for n64 abi, calling sendfile64
+# fails with "system call not defined" error message. Default it to
+# sendfile(). Copied from sysdeps/unix/sysv/linux/wordsize-64 directory.
 sendfile	-	sendfile	i:iipi	sendfile	sendfile64

@@ -1,3 +1,9 @@
+2016-07-11  Szabolcs Nagy  <szabolcs.nagy@arm.com>
+
+	[BZ #18707]
+	* sysdeps/aarch64/Makefile (CFLAGS-mcount.c): Add -mgeneral-regs-only.
+	* sysdeps/aarch64/sysdep.h (CALL_MCOUNT): Save argument registers.
+
 2015-08-24  Wilco Dijkstra  <wdijkstr@arm.com>
 
 	* sysdeps/aarch64/fpu/math_private.h (libc_feholdsetround_aarch64_ctx):

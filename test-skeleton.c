@@ -427,3 +427,9 @@ main (int argc, char *argv[])
   return 0;
 #endif
 }
+
+/* The following functionality is only available if <pthread.h> was
+   included before this file.  */
+#ifdef _PTHREAD_H
+# include <support/xthread.h>
+#endif	/* _PTHREAD_H */

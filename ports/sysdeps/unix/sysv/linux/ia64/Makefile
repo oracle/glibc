@@ -14,8 +14,6 @@ endif
 
 ifeq ($(subdir),elf)
 sysdep-dl-routines += dl-static
-sysdep_routines += $(sysdep-dl-routines)
-sysdep-rtld-routines += $(sysdep-dl-routines)
 endif
 
 ifeq ($(subdir),rt)

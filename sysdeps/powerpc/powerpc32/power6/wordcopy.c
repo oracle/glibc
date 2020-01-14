@@ -28,10 +28,7 @@
    Both SRCP and DSTP should be aligned for memory operations on `op_t's.  */
 
 void
-_wordcopy_fwd_aligned (dstp, srcp, len)
-     long int dstp;
-     long int srcp;
-     size_t len;
+_wordcopy_fwd_aligned (long int dstp, long int srcp, size_t len)
 {
   op_t a0, a1;
 
@@ -80,10 +77,7 @@ _wordcopy_fwd_aligned (dstp, srcp, len)
   while (len != 0)
 
 void
-_wordcopy_fwd_dest_aligned (dstp, srcp, len)
-     long int dstp;
-     long int srcp;
-     size_t len;
+_wordcopy_fwd_dest_aligned (long int dstp, long int srcp, size_t len)
 {
   op_t a0, a1, a2;
   int sh_1, sh_2;
@@ -125,10 +119,7 @@ _wordcopy_fwd_dest_aligned (dstp, srcp, len)
    operations on `op_t's.  */
 
 void
-_wordcopy_bwd_aligned (dstp, srcp, len)
-     long int dstp;
-     long int srcp;
-     size_t len;
+_wordcopy_bwd_aligned (long int dstp, long int srcp, size_t len)
 {
   op_t a0, a1;
 
@@ -178,10 +169,7 @@ _wordcopy_bwd_aligned (dstp, srcp, len)
    operations on `op_t', but SRCP must *not* be aligned.  */
 
 void
-_wordcopy_bwd_dest_aligned (dstp, srcp, len)
-     long int dstp;
-     long int srcp;
-     size_t len;
+_wordcopy_bwd_dest_aligned (long int dstp, long int srcp, size_t len)
 {
   op_t a0, a1, a2;
   int sh_1, sh_2;

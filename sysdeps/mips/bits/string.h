@@ -1,4 +1,5 @@
-/* Copyright (C) 2002-2012 Free Software Foundation, Inc.
+/* Optimized, inlined string functions.  AArch64 version.
+   Copyright (C) 2015 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -12,12 +13,12 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library.  If not, see
+   License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sgidefs.h>
-
-#define __WORDSIZE	_MIPS_SZPTR
-#if _MIPS_SIM == _ABI64
-# define __WORDSIZE_TIME64_COMPAT32	1
+#ifndef _STRING_H
+# error "Never use <bits/string.h> directly; include <string.h> instead."
 #endif
+
+/* Use the unaligned string inline ABI.  */
+#define _STRING_INLINE_unaligned 1

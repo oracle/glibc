@@ -142,13 +142,13 @@ $(objpfx)tst-putenvmod.so: $(objpfx)tst-putenvmod.os $(link-libc-deps)
 	$(build-module)
 libof-tst-putenvmod = extramodules
 
-ifeq ($(build-shared),yes)
-link-libm = $(common-objpfx)math/libm.so
-else
-link-libm = $(common-objpfx)math/libm.a
-endif
-$(objpfx)bug-getcontext: $(link-libm)
-$(objpfx)tst-strtod-round: $(link-libm)
-$(objpfx)tst-tininess: $(link-libm)
-$(objpfx)tst-strtod-underflow: $(link-libm)
-$(objpfx)tst-makecontext: $(libdl)
+$(objpfx)bug-getcontext: $(libm)
+$(objpfx)tst-strtod-round: $(libm)
+$(objpfx)tst-tininess: $(libm)
+$(objpfx)tst-strtod-underflow: $(libm)
+$(objpfx)tst-strtod6: $(libm)
+
+tst-tls-atexit-lib.so-no-z-defs = yes
+
+$(objpfx)tst-tls-atexit: $(shared-thread-library) $(libdl)
+$(objpfx)tst-tls-atexit.out: $(objpfx)tst-tls-atexit-lib.so

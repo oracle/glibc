@@ -103,11 +103,7 @@ include ../Rules
 $(objpfx)libbsd-compat.a: $(dep-dummy-lib); $(make-dummy-lib)
 $(objpfx)libg.a: $(dep-dummy-lib); $(make-dummy-lib)
 
-ifeq ($(build-shared),yes)
-$(objpfx)tst-tsearch: $(common-objpfx)math/libm.so$(libm.so-version)
-else
-$(objpfx)tst-tsearch: $(common-objpfx)math/libm.a
-endif
+$(objpfx)tst-tsearch: $(libm)
 
 ifeq ($(build-bounded),yes)
 $(objpfx)tst-tsearch-bp: $(common-objpfx)math/libm_b.a

@@ -123,9 +123,4 @@ $(objpfx)tst-setvbuf1.out: tst-setvbuf1.expect $(objpfx)tst-setvbuf1
 	$(built-program-cmd) > $@ 2>&1
 	cmp tst-setvbuf1.expect $@
 
-ifeq ($(build-shared),yes)
-link-libm = $(common-objpfx)math/libm.so
-else
-link-libm = $(common-objpfx)math/libm.a
-endif
-$(objpfx)tst-printf-round: $(link-libm)
+$(objpfx)tst-printf-round: $(libm)

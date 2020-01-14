@@ -545,8 +545,8 @@ $(addprefix $(objpfx), \
     $(tests-nolibpthread), \
     $(tests) $(xtests) $(test-srcs))): $(objpfx)libpthread.so \
 				       $(objpfx)libpthread_nonshared.a
-$(objpfx)tst-unload: $(common-objpfx)dlfcn/libdl.so
-# $(objpfx)linklibc.so is used instead of $(common-objpfx)libc.so,
+$(objpfx)tst-unload: $(libdl)
+# $(objpfx)../libc.so is used instead of $(common-objpfx)libc.so,
 # since otherwise libpthread.so comes before libc.so when linking.
 $(addprefix $(objpfx), $(tests-reverse)): \
   $(objpfx)linklibc.so $(objpfx)libpthread.so \

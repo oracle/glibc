@@ -1,3 +1,9 @@
+2013-12-18  Marcus Shawcroft  <marcus.shawcroft@linaro.org>
+
+	[BZ #15128]
+	* sysdeps/aarch64/dl-trampoline.S (_dl_runtime_resolve): Save and
+	restore q0-q7.
+
 2018-02-22  Steve Ellcey  <sellcey@cavium.com>
 
 	* sysdeps/aarch64/multiarch/Makefile (sysdep_routines):

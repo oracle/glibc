@@ -244,8 +244,8 @@ extra-test-objs += $(addsuffix .os,$(strip $(modules-names)))
 # We need this variable to be sure the test modules get the right CPPFLAGS.
 test-extras += $(modules-names)
 
-# filtmod1.so has a special rule
-modules-names-nobuild := filtmod1
+# filtmod1.so, tst-big-note-lib.so have special rules.
+modules-names-nobuild := filtmod1 tst-big-note-lib
 
 ifneq (no,$(multi-arch))
 tests-static += ifuncmain1static ifuncmain1picstatic \
@@ -1239,3 +1239,8 @@ $(objpfx)tst-audit12mod1.so: $(objpfx)tst-audit12mod2.so
 LDFLAGS-tst-audit12mod2.so = -Wl,--version-script=tst-audit12mod2.map
 
 $(objpfx)tst-big-note: $(objpfx)tst-big-note-lib.so
+# Avoid creating an ABI tag note, which may come before the
+# artificial, large note in tst-big-note-lib.o and invalidate the
+# test.
+$(objpfx)tst-big-note-lib.so: $(objpfx)tst-big-note-lib.o
+	$(LINK.o) -shared -o $@ $(LDFLAGS.so) $<

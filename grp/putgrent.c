@@ -27,9 +27,7 @@
 /* Write an entry to the given stream.
    This must know the format of the group file.  */
 int
-putgrent (gr, stream)
-     const struct group *gr;
-     FILE *stream;
+putgrent (const struct group *gr, FILE *stream)
 {
   int retval;
 

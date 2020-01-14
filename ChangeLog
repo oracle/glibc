@@ -1,3 +1,10 @@
+2015-04-08  Florian Weimer  <fweimer@redhat.com>
+
+	Backport for MV bug#59958
+	* elf/pldd.c (main): Rewrite to use struct
+	scratch_buffer instead of extend_alloca.
+	* elf/pldd-xx.c (find_maps): Likewise.
+
 2014-05-20  Will Newton  <will.newton@linaro.org>
 	    Yvan Roux  <yvan.roux@linaro.org>
 

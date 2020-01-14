@@ -1,3 +1,14 @@
+2018-02-06  Joseph Myers  <joseph@codesourcery.com>
+
+	* sysdeps/unix/sysv/linux/bits/mman-linux.h [__USE_MISC]
+	(MAP_SHARED_VALIDATE): New macro.
+	* sysdeps/unix/sysv/linux/hppa/bits/mman.h [__USE_MISC]
+	(MAP_SHARED_VALIDATE): Likewise.
+	* sysdeps/unix/sysv/linux/x86/bits/mman.h [__USE_MISC]
+	(MAP_SHARED_VALIDATE): Likewise.
+	* sysdeps/unix/sysv/linux/aarch64/bits/mman.h [__USE_MISC]
+	(MAP_SHARED_VALIDATE): Likewise.
+
 2013-05-22  Edjunior Barbosa Machado  <emachado@linux.vnet.ibm.com>
 
 	* sysdeps/unix/sysv/linux/bits/siginfo.h (siginfo_t): Add si_addr_lsb

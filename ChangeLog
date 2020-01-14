@@ -1,3 +1,20 @@
+2014-10-14  Paul Pluzhnikov  <ppluzhnikov@google.com>
+
+	[BZ #12926]
+	* sysdeps/unix/sysv/linux/check_pf.c (make_request): Avoid
+	infinite loop when __recvmsg returns 0.
+
+2014-03-25  Andreas Schwab  <schwab@suse.de>
+
+	* sysdeps/unix/sysv/linux/check_pf.c (make_request): Add out_fail2
+	label to be used after in6ailist is initialized.
+
+2014-03-24  Andreas Schwab  <schwab@suse.de>
+
+	[BZ #16002]
+	* sysdeps/unix/sysv/linux/check_pf.c (make_request): Use
+	alloca_account and account alloca use for struct in6ailist.
+
 2016-05-23  Florian Weimer  <fweimer@redhat.com>
 
 	CVE-2016-4429

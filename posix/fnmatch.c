@@ -218,6 +218,8 @@ __wcschrnul (const wchar_t *s, wint_t c)
 # define MEMCHR(S, C, N) memchr (S, C, N)
 # define STRCOLL(S1, S2) strcoll (S1, S2)
 # define WIDE_CHAR_VERSION 0
+# include <locale/weight.h>
+# define FINDIDX findidx
 # include "fnmatch_loop.c"
 
 
@@ -243,6 +245,12 @@ __wcschrnul (const wchar_t *s, wint_t c)
 #  define MEMCHR(S, C, N) wmemchr (S, C, N)
 #  define STRCOLL(S1, S2) wcscoll (S1, S2)
 #  define WIDE_CHAR_VERSION 1
+/* Change the name the header defines so it doesn't conflict with
+   the <locale/weight.h> version included above.  */
+#  define findidx findidxwc
+#  include <locale/weightwc.h>
+#  undef findidx
+#  define FINDIDX findidxwc
 
 #  undef IS_CHAR_CLASS
 /* We have to convert the wide character string in a multibyte string.  But

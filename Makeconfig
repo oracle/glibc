@@ -389,6 +389,8 @@ endif
 # test modules.
 ifeq ($(bind-now),yes)
 LDFLAGS-lib.so += -Wl,-z,now
+# Extra flags for dynamically linked non-test main programs.
+link-extra-flags += -Wl,-z,now
 endif
 
 # Additional libraries to link into every test.
@@ -405,7 +407,8 @@ ifndef +link-pie
 						    S$(start-installed-name))\
 			  $(+preinit) $(link-extra-libs) \
 			  $(common-objpfx)libc% $(+postinit),$^) \
-	     $(link-extra-libs) $(link-libc) $(+postctorS) $(+postinit)
+	     $(link-extra-libs) $(link-extra-flags) $(link-libc) \
+	     $(+postctorS) $(+postinit)
 endif
 # Command for statically linking programs with the C library.
 ifndef +link-static
@@ -419,8 +422,8 @@ ifndef +link-static
 			   $(common-objpfx)libc% $(+postinit),$^) \
 	      $(link-extra-libs-static)
 +link-static-after-libc = $(+postctorT) $(+postinit)
-+link-static = $(+link-static-before-libc) $(link-libc-static) \
-	       $(+link-static-after-libc)
++link-static = $(+link-static-before-libc) $(link-extra-flags) \
+	       $(link-libc-static) $(+link-static-after-libc)
 +link-static-tests = $(+link-static-before-libc) $(link-libc-static-tests) \
 		     $(+link-static-after-libc)
 endif
@@ -438,7 +441,8 @@ ifeq (yes,$(build-shared))
 			   $(common-objpfx)libc% $(+postinit),$^) \
 	      $(link-extra-libs)
 +link-after-libc = $(+postctor) $(+postinit)
-+link = $(+link-before-libc) $(link-libc) $(+link-after-libc)
++link = $(+link-before-libc) $(link-extra-flags) $(link-libc) \
+	$(+link-after-libc)
 +link-tests = $(+link-before-libc) $(link-libc-tests) $(+link-after-libc)
 else
 +link = $(+link-static)

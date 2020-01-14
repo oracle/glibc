@@ -1721,7 +1721,6 @@ static struct malloc_par mp_ =
 };
 
 
-/*  Non public mallopt parameters.  */
 #define M_ARENA_TEST -7
 #define M_ARENA_MAX  -8
 

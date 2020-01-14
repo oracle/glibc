@@ -1,3 +1,12 @@
+2016-10-26  Siddhesh Poyarekar  <siddhesh@sourceware.org>
+
+	* manual/memory.texi (M_ARENA_TEST): Add documentation.
+	(M_ARENA_MAX): Likewise.
+	* malloc/malloc.c: Remove obsolete comment.
+
+	* manual/memory.texi: Add environment variable alternatives to
+	setting mallopt parameters.
+
 2016-09-06  Florian Weimer  <fweimer@redhat.com>
 
 	Convert malloc to __libc_lock.  Automated part, using this Perl

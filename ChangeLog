@@ -1,3 +1,14 @@
+2018-03-06  Siddhesh Poyarekar  <siddhesh@sourceware.org>
+
+	* sysdeps/aarch64/memcmp.S: Widen comparison to 16 bytes at a
+	time.
+
+	* benchtests/bench-strncmp.c (test_main): Remove 0 length tests.
+	(do_test_limit): Likewise.
+	* benchtests/bench-strncmp.c (do_test_limit): Reallocate buffers
+	for every implementation.
+	(do_test): Likewise.
+
 2018-02-22  Siddhesh Poyarekar  <siddhesh@sourceware.org>
 
 	* sysdeps/aarch64/strcmp.S (do_misaligned): Jump back to

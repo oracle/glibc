@@ -1,3 +1,8 @@
+2013-06-28  Marcus Shawcroft  <marcus.shawcroft@linaro.org>
+
+	* sysdeps/aarch64/dl-machine.h (elf_machine_dynamic): De-reference
+	_GLOBAL_OFFSET_TABLE_.
+
 2016-05-10  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
 	[BZ #21428]

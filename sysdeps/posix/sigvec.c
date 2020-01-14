@@ -43,10 +43,7 @@ static struct sigvec_wrapper_data sigvec_wrapper_data[NSIG];
    reset to SIG_DFL before `sv_handler' is entered.  If OVEC is non-NULL,
    it is filled in with the old information for SIG.  */
 int
-__sigvec (sig, vec, ovec)
-     int sig;
-     const struct sigvec *vec;
-     struct sigvec *ovec;
+__sigvec (int sig, const struct sigvec *vec, struct sigvec *ovec)
 {
   struct sigaction old;
 
@@ -159,8 +156,7 @@ weak_alias (__sigvec, sigvec)
 
 #ifndef SA_RESETHAND
 static void
-sigvec_wrapper_handler (sig)
-     int sig;
+sigvec_wrapper_handler (int sig)
 {
   struct sigvec_wrapper_data *data;
   struct sigaction act;

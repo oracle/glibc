@@ -345,8 +345,7 @@ $(objpfx)ld.so: $(objpfx)librtld.os $(ld-map)
 	  | $(AWK) '($$7 ~ /^UND(|EF)$$/ && $$1 != "0:" && $$4 != "REGISTER") { print; p=1 } END { exit p != 0 }'
 
 # interp.c exists just to get this string into the libraries.
-CFLAGS-interp.c = -D'RUNTIME_LINKER="$(rtlddir)/$(rtld-installed-name)"' \
-		  -DNOT_IN_libc=1
+CFLAGS-interp.c = -D'RUNTIME_LINKER="$(rtlddir)/$(rtld-installed-name)"'
 $(objpfx)interp.os: $(common-objpfx)config.make
 
 ifneq (ld.so,$(rtld-installed-name))

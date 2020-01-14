@@ -461,7 +461,7 @@ link-libc-deps = $(common-objpfx)libc.so $(common-objpfx)linkobj/libc.so \
 # build shared libraries in place from the installed *_pic.a files.
 # $(LDLIBS-%.so) may contain -l switches to generate run-time dependencies
 # on other shared objects.
-lib%.so: lib%_pic.a $(+preinit) $(+postinit) $(+interp)
+lib%.so: lib%_pic.a $(+preinit) $(+postinit)
 	$(build-shlib)
 
 define build-shlib-helper

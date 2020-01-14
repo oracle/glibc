@@ -61,9 +61,7 @@ isprime (unsigned int number)
    The contents of the table is zeroed, especially the field used
    becomes zero.  */
 int
-hcreate_r (nel, htab)
-     size_t nel;
-     struct hsearch_data *htab;
+hcreate_r (size_t nel, struct hsearch_data *htab)
 {
   /* Test for correct arguments.  */
   if (htab == NULL)
@@ -117,8 +115,7 @@ libc_hidden_def (hcreate_r)
 /* After using the hash table it has to be destroyed. The used memory can
    be freed and the local static variable can be marked as not used.  */
 void
-hdestroy_r (htab)
-     struct hsearch_data *htab;
+hdestroy_r (struct hsearch_data *htab)
 {
   /* Test for correct arguments.  */
   if (htab == NULL)

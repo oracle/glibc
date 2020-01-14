@@ -70,10 +70,7 @@ static int pedantic;
 #else
 static void flood (__ptr_t, int, size_t);
 static void
-flood (ptr, val, size)
-     __ptr_t ptr;
-     int val;
-     size_t size;
+flood (__ptr_t ptr, int val, size_t size)
 {
   char *cp = ptr;
   while (size--)

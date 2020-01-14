@@ -1383,6 +1383,8 @@ typedef struct malloc_chunk *mbinptr;
 
 /* Take a chunk off a bin list */
 #define unlink(P, BK, FD) {                                            \
+    if (__builtin_expect (chunksize(P) != prev_size (next_chunk(P)), 0))      \
+      malloc_printerr (check_action, "corrupted size vs. prev_size", P);      \
     FD = P->fd;								      \
     BK = P->bk;								      \
     if (__builtin_expect (FD->bk != P || BK->fd != P, 0))		      \

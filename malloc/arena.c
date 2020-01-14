@@ -420,14 +420,14 @@ ptmalloc_init (void)
   __libc_lock_lock (main_arena.mutex);
   malloc_consolidate (&main_arena);
 
-  TUNABLE_SET_VAL_WITH_CALLBACK (check, NULL, set_mallopt_check);
-  TUNABLE_SET_VAL_WITH_CALLBACK (top_pad, NULL, set_top_pad);
-  TUNABLE_SET_VAL_WITH_CALLBACK (perturb, NULL, set_perturb_byte);
-  TUNABLE_SET_VAL_WITH_CALLBACK (mmap_threshold, NULL, set_mmap_threshold);
-  TUNABLE_SET_VAL_WITH_CALLBACK (trim_threshold, NULL, set_trim_threshold);
-  TUNABLE_SET_VAL_WITH_CALLBACK (mmap_max, NULL, set_mmaps_max);
-  TUNABLE_SET_VAL_WITH_CALLBACK (arena_max, NULL, set_arena_max);
-  TUNABLE_SET_VAL_WITH_CALLBACK (arena_test, NULL, set_arena_test);
+  TUNABLE_GET (check, int32_t, TUNABLE_CALLBACK (set_mallopt_check));
+  TUNABLE_GET (top_pad, size_t, TUNABLE_CALLBACK (set_top_pad));
+  TUNABLE_GET (perturb, int32_t, TUNABLE_CALLBACK (set_perturb_byte));
+  TUNABLE_GET (mmap_threshold, size_t, TUNABLE_CALLBACK (set_mmap_threshold));
+  TUNABLE_GET (trim_threshold, size_t, TUNABLE_CALLBACK (set_trim_threshold));
+  TUNABLE_GET (mmap_max, int32_t, TUNABLE_CALLBACK (set_mmaps_max));
+  TUNABLE_GET (arena_max, size_t, TUNABLE_CALLBACK (set_arena_max));
+  TUNABLE_GET (arena_test, size_t, TUNABLE_CALLBACK (set_arena_test));
   __libc_lock_unlock (main_arena.mutex);
 #else
   const char *s = NULL;

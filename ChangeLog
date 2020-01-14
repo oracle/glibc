@@ -1,3 +1,7 @@
+2013-11-14  Steve Ellcey  <sellcey@mips.com>
+
+        * sysdeps/mips/strcmp.c: New.
+
 2013-09-23  Steve Ellcey  <sellcey@mips.com>
 
 	* sysdeps/mips/math_private.h (libc_feholdexcept_mips): New function.

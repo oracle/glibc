@@ -1762,7 +1762,7 @@ nscd_run_worker (void *p)
       else
 	{
 	  /* Get the key.  */
-	  char keybuf[MAXKEYLEN];
+	  char keybuf[MAXKEYLEN + 1];
 
 	  if (__builtin_expect (TEMP_FAILURE_RETRY (read (fd, keybuf,
 							  req.key_len))
@@ -1774,6 +1774,7 @@ nscd_run_worker (void *p)
 			 strerror_r (errno, buf, sizeof (buf)));
 	      goto close_and_out;
 	    }
+	  keybuf[req.key_len] = '\0';
 
 	  if (__builtin_expect (debug_level, 0) > 0)
 	    {

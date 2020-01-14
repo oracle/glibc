@@ -661,6 +661,7 @@ build_pt_chown
 build_nscd
 link_obsolete_rpc
 libc_cv_nss_crypt
+experimental_malloc
 enable_werror
 all_warnings
 force_install
@@ -762,6 +763,7 @@ enable_kernel
 enable_all_warnings
 enable_werror
 enable_multi_arch
+enable_experimental_malloc
 enable_nss_crypt
 enable_obsolete_rpc
 enable_systemtap
@@ -1427,6 +1429,8 @@ Optional Features:
   --disable-werror        do not build with -Werror
   --enable-multi-arch     enable single DSO with optimizations for multiple
                           architectures
+  --disable-experimental-malloc
+                          disable experimental malloc features
   --enable-nss-crypt      enable libcrypt to use nss
   --enable-obsolete-rpc   build and install the obsolete RPC code for
                           link-time usage
@@ -3828,6 +3832,15 @@ if test "${enable_multi_arch+set}" = set; then :
 else
   multi_arch=default
 fi
+
+
+# Check whether --enable-experimental-malloc was given.
+if test "${enable_experimental_malloc+set}" = set; then :
+  enableval=$enable_experimental_malloc; experimental_malloc=$enableval
+else
+  experimental_malloc=yes
+fi
+
 
 
 # Check whether --enable-nss-crypt was given.

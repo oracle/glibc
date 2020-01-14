@@ -213,6 +213,19 @@ This frontend allows users to specify tunables as a colon-separated list in a
 single environment variable @env{GLIBC_TUNABLES}.
 @end table
 
+@item --enable-obsolete-nsl
+By default, libnsl is only built as shared library for backward
+compatibility and the NSS modules libnss_compat, libnss_nis and
+libnss_nisplus are not built at all.
+Use this option to enable libnsl with all depending NSS modules and
+header files.
+
+@item --disable-experimental-malloc
+By default, a per-thread cache is enabled in @code{malloc}.  While
+this cache can be disabled on a per-application basis using tunables
+(set glibc.malloc.tcache_count to zero), this option can be used to
+remove it from the build completely.
+
 @item --build=@var{build-system}
 @itemx --host=@var{host-system}
 These options are for cross-compiling.  If you specify both options and

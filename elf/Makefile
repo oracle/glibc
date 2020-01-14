@@ -137,7 +137,9 @@ tests = tst-tls1 tst-tls2 tst-tls9 tst-leaks1 \
 	tst-audit11 tst-audit12
 tests-static = tst-tls1-static tst-tls2-static tst-stackguard1-static \
 	       tst-leaks1-static tst-array1-static tst-array5-static \
-	       tst-ptrguard1-static
+	       tst-ptrguard1-static tst-dl-iter-static \
+	       tst-tlsalign-static tst-tlsalign-extern-static \
+	       tst-linkall-static tst-env-setuid tst-env-setuid-tunables
 ifeq (yes,$(build-shared))
 tests-static += tst-tls9-static
 tst-tls9-static-ENV = \
@@ -1254,3 +1256,81 @@ $(objpfx)tst-big-note: $(objpfx)tst-big-note-lib.so
 # test.
 $(objpfx)tst-big-note-lib.so: $(objpfx)tst-big-note-lib.o
 	$(LINK.o) -shared -o $@ $(LDFLAGS.so) $<
+
+# Override -z defs, so that we can reference an undefined symbol.
+# Force lazy binding for the same reason.
+LDFLAGS-tst-latepthreadmod.so = \
+  -Wl,-z,lazy -Wl,--unresolved-symbols=ignore-all
+# Do not optimize sibling calls as the test relies on a JMP_SLOT relocation for
+# function this_function_is_not_defined.
+CFLAGS-tst-latepthreadmod.c = -fno-optimize-sibling-calls
+$(objpfx)tst-latepthreadmod.so: $(shared-thread-library)
+$(objpfx)tst-latepthread: $(libdl)
+$(objpfx)tst-latepthread.out: $(objpfx)tst-latepthreadmod.so
+
+# The test modules are parameterized by preprocessor macros.
+$(patsubst %,$(objpfx)%.os,$(tst-tls-many-dynamic-modules)): \
+  $(objpfx)tst-tls-manydynamic%mod.os : tst-tls-manydynamicmod.c
+	$(compile-command.c) \
+	  -DNAME=tls_global_$* -DSETTER=set_value_$* -DGETTER=get_value_$*
+$(objpfx)tst-tls-manydynamic: $(libdl) $(shared-thread-library)
+$(objpfx)tst-tls-manydynamic.out: \
+  $(patsubst %,$(objpfx)%.so,$(tst-tls-many-dynamic-modules))
+
+tst-prelink-ENV = LD_TRACE_PRELINKING=1
+
+$(objpfx)tst-prelink-conflict.out: $(objpfx)tst-prelink.out
+	grep stdout $< | grep conflict | $(AWK) '{ print $$10, $$11 }' > $@
+
+$(objpfx)tst-prelink-cmp.out: tst-prelink.exp \
+			      $(objpfx)tst-prelink-conflict.out
+	cmp $^ > $@; \
+	$(evaluate-test)
+
+$(objpfx)tst-ldconfig-X.out : tst-ldconfig-X.sh $(objpfx)ldconfig
+	$(SHELL) $< '$(common-objpfx)' '$(test-wrapper-env)' \
+		 '$(run-program-env)' > $@; \
+	$(evaluate-test)
+
+$(objpfx)tst-dlsym-error: $(libdl)
+
+# Test static linking of all the libraries we can possibly link
+# together.  Note that in some configurations this may be less than the
+# complete list of libraries we build but we try to maxmimize this list.
+$(objpfx)tst-linkall-static: \
+  $(common-objpfx)math/libm.a \
+  $(common-objpfx)resolv/libresolv.a \
+  $(common-objpfx)dlfcn/libdl.a \
+  $(common-objpfx)login/libutil.a \
+  $(common-objpfx)rt/librt.a \
+  $(common-objpfx)resolv/libanl.a \
+  $(static-thread-library)
+
+# If we are using NSS crypto and we have the ability to link statically
+# then we include libcrypt.a, otherwise we leave out libcrypt.a and
+# link as much as we can into the tst-linkall-static test.  This assumes
+# that linking with libcrypt.a does everything required to include the
+# static NSS crypto library.
+ifeq (yesyes,$(nss-crypt)$(static-nss-crypt))
+$(objpfx)tst-linkall-static: \
+  $(common-objpfx)crypt/libcrypt.a
+endif
+# If we are not using NSS crypto then we always have the ability to link
+# with libcrypt.a.
+ifeq (no,$(nss-crypt))
+$(objpfx)tst-linkall-static: \
+  $(common-objpfx)crypt/libcrypt.a
+endif
+
+# The application depends on the DSO, and the DSO loads the plugin.
+# The plugin also depends on the DSO. This creates the circular
+# dependency via dlopen that we're testing to make sure works.
+$(objpfx)tst-nodelete-dlclose-dso.so: $(libdl)
+$(objpfx)tst-nodelete-dlclose-plugin.so: $(objpfx)tst-nodelete-dlclose-dso.so
+$(objpfx)tst-nodelete-dlclose: $(objpfx)tst-nodelete-dlclose-dso.so
+$(objpfx)tst-nodelete-dlclose.out: $(objpfx)tst-nodelete-dlclose-dso.so \
+				   $(objpfx)tst-nodelete-dlclose-plugin.so
+
+tst-env-setuid-ENV = MALLOC_CHECK_=2 MALLOC_MMAP_THRESHOLD_=4096
+tst-env-setuid-tunables-ENV = \
+	GLIBC_TUNABLES=glibc.malloc.check=2:glibc.malloc.mmap_threshold=4096

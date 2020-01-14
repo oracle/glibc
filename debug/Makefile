@@ -15,6 +15,9 @@
 # License along with the GNU C Library; if not, see
 # <http://www.gnu.org/licenses/>.
 
+# Copyright (c) 2012 Panasonic Mobile Communications Co., Ltd.
+# 2012-05-16 Modified for backtrace on MIPS64
+
 #
 #	Sub-makefile for debug portion of the library.
 #
@@ -47,6 +50,7 @@ routines  = backtrace backtracesyms backtracesymsfd noophooks \
 	    $(static-only-routines)
 static-only-routines := warning-nop stack_chk_fail_local
 
+CFLAGS-segfault.c = -fasynchronous-unwind-tables
 CFLAGS-backtrace.c = -fno-omit-frame-pointer
 CFLAGS-sprintf_chk.c = $(libio-mtsafe)
 CFLAGS-snprintf_chk.c = $(libio-mtsafe)

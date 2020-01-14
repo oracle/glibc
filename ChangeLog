@@ -1,3 +1,8 @@
+2012-07-26  Chandrakala Chavva  <cchavva@caviumnetworks.com>
+
+	Patch from NSN
+	* debug/Makefile (CFLAGS-segfault.c): Compile with unwind tables.
+
 2012-07-11  Andrew Pinski  <apinski@cavium.com>
 
 	Bug #2964

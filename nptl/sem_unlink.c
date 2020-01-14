@@ -25,8 +25,7 @@
 
 
 int
-sem_unlink (name)
-     const char *name;
+sem_unlink (const char *name)
 {
   char *fname;
   size_t namelen;

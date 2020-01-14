@@ -1,3 +1,7 @@
+2017-06-19  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* scripts/gen-tunables.awk: Avoid multi-dimensional arrays.
+
 2017-07-24  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 	    H.J. Lu  <hongjiu.lu@intel.com>
 

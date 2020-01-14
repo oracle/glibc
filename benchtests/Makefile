@@ -153,11 +153,19 @@ bench-func: $(binaries-bench)
 	$(PYTHON) scripts/validate_benchout.py $(objpfx)bench.out \
 		scripts/benchout.schema.json
 
-$(timing-type) $(binaries-bench) $(binaries-benchset) \
-	$(binaries-bench-malloc): %: %.o $(objpfx)json-lib.o \
+ifeq ($(bind-now),yes)
+link-bench-bind-now = -Wl,-z,now
+endif
+
+bench-link-targets = $(timing-type) $(binaries-bench) $(binaries-benchset) \
+	$(binaries-bench-malloc)
+
+$(bench-link-targets): %: %.o $(objpfx)json-lib.o \
   $(sort $(filter $(common-objpfx)lib%,$(link-libc))) \
   $(addprefix $(csu-objpfx),start.o) $(+preinit) $(+postinit)
 	$(+link)
+
+$(bench-link-targets): LDFLAGS += $(link-bench-bind-now)
 
 $(objpfx)bench-%.c: %-inputs $(bench-deps)
 	{ if [ -n "$($*-INCLUDE)" ]; then \

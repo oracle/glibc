@@ -30,9 +30,7 @@
 
 
 int
-timer_gettime (timerid, value)
-     timer_t timerid;
-     struct itimerspec *value;
+timer_gettime (timer_t timerid, struct itimerspec *value)
 {
 #undef timer_gettime
   struct timer *kt = (struct timer *) timerid;

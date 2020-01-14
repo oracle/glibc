@@ -25,8 +25,7 @@
 
 
 int
-raise (sig)
-     int sig;
+raise (int sig)
 {
   struct pthread *pd = THREAD_SELF;
   pid_t pid = THREAD_GETMEM (pd, pid);

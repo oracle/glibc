@@ -27,9 +27,7 @@
 
 /* Get file-specific information about descriptor FD.  */
 long int
-__fpathconf (fd, name)
-     int fd;
-     int name;
+__fpathconf (int fd, int name)
 {
   if (fd < 0)
     {

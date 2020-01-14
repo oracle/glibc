@@ -245,6 +245,12 @@ elf_machine_rela (struct link_map *map, const ElfW(Rela) *reloc,
       struct link_map *sym_map = RESOLVE_MAP (&sym, version, r_type);
       ElfW(Addr) value = sym_map == NULL ? 0 : sym_map->l_addr + sym->st_value;
 
+      if (sym != NULL
+	  && __glibc_unlikely (ELFW(ST_TYPE) (sym->st_info) == STT_GNU_IFUNC)
+	  && __glibc_likely (sym->st_shndx != SHN_UNDEF)
+	  && __glibc_likely (!skip_ifunc))
+	value = elf_ifunc_invoke (value);
+
       switch (r_type)
 	{
 	case R_AARCH64_COPY:

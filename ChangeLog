@@ -1,3 +1,7 @@
+2013-07-12  Marcus Shawcroft  <marcus.shawcroft@linaro.org>
+
+	* sysdeps/aarch64/Makefile (CFLAGS-backtrace.c): Define.
+
 2013-05-21  Joseph Myers  <joseph@codesourcery.com>
 
 	[BZ #15506]

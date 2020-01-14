@@ -5,6 +5,9 @@ See the end for copying conditions.
 Please send GNU C library bug reports via <http://sourceware.org/bugzilla/>
 using `glibc' in the "product" field.
 
+* The tunables feature is now enabled by default.  This allows users to tweak
+  behavior of the GNU C Library using the GLIBC_TUNABLES environment variable.
+
 Version 2.17
 
 * The following bugs are resolved with this release:

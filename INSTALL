@@ -153,25 +153,35 @@ will be used, and CFLAGS sets optimization options for the compiler.
      By default, the GNU C Library is built with `-Werror'.  If you wish
      to build without this option (for example, if building with a newer
      version of GCC than this version of the GNU C Library was tested
-     with, so new warnings cause the build with `-Werror' to fail), you
-     can configure with `--disable-werror'.
+     with, so new warnings cause the build with '-Werror' to fail), you
+     can configure with '--disable-werror'.
 
-`--build=BUILD-SYSTEM'
-`--host=HOST-SYSTEM'
-     These options are for cross-compiling.  If you specify both
-     options and BUILD-SYSTEM is different from HOST-SYSTEM, `configure'
-     will prepare to cross-compile the GNU C Library from BUILD-SYSTEM
-     to be used on HOST-SYSTEM.  You'll probably need the
-     `--with-headers' option too, and you may have to override
-     CONFIGURE's selection of the compiler and/or binutils.
+'--disable-mathvec'
+     By default for x86_64, the GNU C Library is built with the vector
+     math library.  Use this option to disable the vector math library.
 
-     If you only specify `--host', `configure' will prepare for a
-     native compile but use what you specify instead of guessing what
-     your system is. This is most useful to change the CPU submodel.
-     For example, if `configure' guesses your machine as
-     `i586-pc-linux-gnu' but you want to compile a library for 386es,
-     give `--host=i386-pc-linux-gnu' or just `--host=i386-linux' and add
-     the appropriate compiler flags (`-mcpu=i386' will do the trick) to
+'--enable-tunables'
+     Tunables support allows additional library parameters to be
+     customized at runtime.  This is an experimental feature and affects
+     startup time and is thus disabled by default.
+
+'--build=BUILD-SYSTEM'
+'--host=HOST-SYSTEM'
+     These options are for cross-compiling.  If you specify both options
+     and BUILD-SYSTEM is different from HOST-SYSTEM, 'configure' will
+     prepare to cross-compile the GNU C Library from BUILD-SYSTEM to be
+     used on HOST-SYSTEM.  You'll probably need the '--with-headers'
+     option too, and you may have to override CONFIGURE's selection of
+     the compiler and/or binutils.
+
+     If you only specify '--host', 'configure' will prepare for a native
+     compile but use what you specify instead of guessing what your
+     system is.  This is most useful to change the CPU submodel.  For
+     example, if 'configure' guesses your machine as 'i686-pc-linux-gnu'
+     but you want to compile a library for 586es, give
+     '--host=i586-pc-linux-gnu' or just '--host=i586-linux' and add the
+     appropriate compiler flags ('-mcpu=i586' will do the trick) to
+>>>>>>> 67e58f3... Add framework for tunables
      CFLAGS.
 
      If you specify just `--build', `configure' will get confused.

@@ -260,4 +260,24 @@
 /* The pt_chown binary is being built and used by grantpt.  */
 #define HAVE_PT_CHOWN 0
 
+/* Define if the compiler supports __builtin_trap without
+   any external dependencies such as making a function call.  */
+#define HAVE_BUILTIN_TRAP 0
+
+/* ports/sysdeps/mips/configure.in  */
+/* Define if using the IEEE 754-2008 NaN encoding on the MIPS target.  */
+#undef HAVE_MIPS_NAN2008
+
+/* The PowerPC64 ELFv2 ABI is being used.  */
+#undef HAVE_ELFV2_ABI
+
+/* PowerPC32 uses fcfid for integer to floating point conversions.  */
+#define HAVE_PPC_FCFID 0
+
+/* PowerPC32 uses fctidz for floating point to long long conversions.  */
+#define HAVE_PPC_FCTIDZ 0
+
+/* Build glibc with tunables support.  */
+#define HAVE_TUNABLES 0
+
 #endif

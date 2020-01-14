@@ -44,6 +44,7 @@ tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 tests-static := \
 	 tst-interpose-static-nothread \
 	 tst-interpose-static-thread \
+	 tst-malloc-usable-static
 
 test-srcs = tst-mtrace
 
@@ -168,6 +169,7 @@ endif
 
 tst-mcheck-ENV = MALLOC_CHECK_=3
 tst-malloc-usable-ENV = MALLOC_CHECK_=3
+tst-malloc-usable-static-ENV = $(tst-malloc-usable-ENV)
 
 # Uncomment this for test releases.  For public releases it is too expensive.
 #CPPFLAGS-malloc.o += -DMALLOC_DEBUG=1

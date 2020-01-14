@@ -36,8 +36,9 @@ ifeq (yes,$(use-ldconfig))
 dl-routines += dl-cache
 endif
 
-# RHEL 7-specific change: Add rudimentary tunables support.
+ifeq (yes,$(have-tunables))
 dl-routines += dl-tunables
+endif
 
 all-dl-routines = $(dl-routines) $(sysdep-dl-routines)
 # But they are absent from the shared libc, because that code is in ld.so.

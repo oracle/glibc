@@ -2649,7 +2649,9 @@ process_envvars (enum mode *modep)
 
       if (__access ("/etc/suid-debug", F_OK) != 0)
 	{
+#if !HAVE_TUNABLES
 	  unsetenv ("MALLOC_CHECK_");
+#endif
 	  GLRO(dl_debug_mask) = 0;
 	}
 

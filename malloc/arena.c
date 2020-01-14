@@ -22,6 +22,11 @@
 /* Get the implementation for check_may_shrink_heap.  */
 #include <malloc-sysdep.h>
 
+#if HAVE_TUNABLES
+# define TUNABLE_NAMESPACE malloc
+#endif
+#include <elf/dl-tunables.h>
+
 /* Compile-time constants.  */
 
 #define HEAP_MIN_SIZE (32 * 1024)
@@ -310,6 +315,34 @@ __malloc_fork_unlock_child (void)
 
 #endif  /* !NO_THREADS */
 
+#if HAVE_TUNABLES
+static inline int do_set_mallopt_check (int32_t value);
+void
+TUNABLE_CALLBACK (set_mallopt_check) (void *valp)
+{
+  int32_t value = *(int32_t *) valp;
+  do_set_mallopt_check (value);
+  if (check_action != 0)
+    __malloc_check_init ();
+}
+
+# define TUNABLE_CALLBACK_FNDECL(__name, __type) \
+static inline int do_ ## __name (__type value);				      \
+void									      \
+TUNABLE_CALLBACK (__name) (void *valp)					      \
+{									      \
+  __type value = *(__type *) valp;					      \
+  do_ ## __name (value);						      \
+}
+
+TUNABLE_CALLBACK_FNDECL (set_mmap_threshold, size_t)
+TUNABLE_CALLBACK_FNDECL (set_mmaps_max, int32_t)
+TUNABLE_CALLBACK_FNDECL (set_top_pad, size_t)
+TUNABLE_CALLBACK_FNDECL (set_perturb_byte, int32_t)
+TUNABLE_CALLBACK_FNDECL (set_trim_threshold, size_t)
+TUNABLE_CALLBACK_FNDECL (set_arena_max, size_t)
+TUNABLE_CALLBACK_FNDECL (set_arena_test, size_t)
+#else
 /* Initialization routine. */
 #include <string.h>
 extern char **_environ;
@@ -344,6 +377,7 @@ next_env_entry (char ***position)
 
   return result;
 }
+#endif
 
 
 #ifdef SHARED
@@ -378,6 +412,24 @@ ptmalloc_init (void)
 #endif
 
   thread_arena = &main_arena;
+
+#if HAVE_TUNABLES
+  /* Ensure initialization/consolidation and do it under a lock so that a
+     thread attempting to use the arena in parallel waits on us till we
+     finish.  */
+  __libc_lock_lock (main_arena.mutex);
+  malloc_consolidate (&main_arena);
+
+  TUNABLE_SET_VAL_WITH_CALLBACK (check, NULL, set_mallopt_check);
+  TUNABLE_SET_VAL_WITH_CALLBACK (top_pad, NULL, set_top_pad);
+  TUNABLE_SET_VAL_WITH_CALLBACK (perturb, NULL, set_perturb_byte);
+  TUNABLE_SET_VAL_WITH_CALLBACK (mmap_threshold, NULL, set_mmap_threshold);
+  TUNABLE_SET_VAL_WITH_CALLBACK (trim_threshold, NULL, set_trim_threshold);
+  TUNABLE_SET_VAL_WITH_CALLBACK (mmap_max, NULL, set_mmaps_max);
+  TUNABLE_SET_VAL_WITH_CALLBACK (arena_max, NULL, set_arena_max);
+  TUNABLE_SET_VAL_WITH_CALLBACK (arena_test, NULL, set_arena_test);
+  __libc_lock_unlock (main_arena.mutex);
+#else
   const char *s = NULL;
   if (__builtin_expect (_environ != NULL, 1))
     {
@@ -446,9 +498,13 @@ ptmalloc_init (void)
       if (check_action != 0)
         __malloc_check_init ();
     }
+#endif
+
+#if HAVE_MALLOC_INIT_HOOK
   void (*hook) (void) = atomic_forced_read (__malloc_initialize_hook);
   if (hook != NULL)
     (*hook)();
+#endif
   __malloc_initialized = 1;
 }
 

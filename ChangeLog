@@ -1,3 +1,7 @@
+2014-08-12  Sean Anderson  <seanga2@gmail.com>
+
+	* malloc/malloc.c: Fix typo in comment.
+
 2013-02-05  Roland McGrath  <roland@hack.frob.com>
 
 	* sysdeps/generic/malloc-sysdep.h: Include <stdbool.h> and <unistd.h>.

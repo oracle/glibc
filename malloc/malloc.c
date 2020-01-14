@@ -2770,12 +2770,17 @@ systrim (size_t pad, mstate av)
   char *current_brk;     /* address returned by pre-check sbrk call */
   char *new_brk;         /* address returned by post-check sbrk call */
   size_t pagesz;
+  long  top_area;
 
   pagesz = GLRO (dl_pagesize);
   top_size = chunksize (av->top);
 
+  top_area = top_size - MINSIZE - 1;
+  if (top_area <= pad)
+    return 0;
+
   /* Release in pagesize units, keeping at least one page */
-  extra = (top_size - pad - MINSIZE - 1) & ~(pagesz - 1);
+  extra = (top_area - pad) & ~(pagesz - 1);
 
   /*
      Only proceed if end of memory is where we last set it.

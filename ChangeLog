@@ -1,3 +1,14 @@
+2013-07-06  Andrew Pinski  <apinski@cavium.com>
+
+	* elf/elf.h (R_AARCH64_TLS_DTPMOD64): Rename based on the new ABI.
+	(R_AARCH64_TLS_DTPREL64): Likewise.
+	(R_AARCH64_TLS_TPREL64 ): Likewise.
+	* sysdeps/aarch64/dl-machine.h (AARCH64_R): New define.
+	(elf_machine_runtime_setup): Use ElfW(Addr).
+	(elf_machine_type_class): Use reloc names based on AARCH64_R.
+	(elf_machine_rela): Likewise.  Also Use ELFW(R_TYPE).
+	(elf_machine_lazy_rel): Likewise.
+
 2013-07-01  Andrew Pinski  <apinski@cavium.com>
 
 	* sysdeps/aarch64/crti.S: Include sysdep.h for the macros.

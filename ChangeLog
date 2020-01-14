@@ -1,3 +1,7 @@
+2015-10-14  Carlos O'Donell  <carlos@redhat.com>
+
+	* include/stap-probe.h: Fix macro definition formatting.
+
 2015-08-24  Siddhesh Poyarekar  <siddhesh@redhat.com>
 
 	* malloc/arena.c (arena_get_retry): Don't use main_arena if it

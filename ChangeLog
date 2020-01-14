@@ -1,3 +1,9 @@
+2017-01-19  Siddhesh Poyarekar  <siddhesh@sourceware.org>
+
+	* elf/dl-tunables (get_next_env): Always advance envp.
+	* stdlib/tst-empty-env.c: New test case.
+	* stdlib/Makefile (tests): Use it.
+
 2016-01-10  Siddhesh Poyarekar  <siddhesh@sourceware.org>
 
 	* elf/dl-tunables.c (tunables_unsetenv): Remove function.

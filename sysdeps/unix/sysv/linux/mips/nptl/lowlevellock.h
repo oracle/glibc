@@ -319,7 +319,7 @@ extern int __lll_timedwait_tid (int *, const struct timespec *)
     0;									\
   })
 
-#ifdef _MIPS_ARCH_XLP
+#if defined(_MIPS_ARCH_XLP) || defined(_MIPS_ARCH_OCTEON2)
 /* The generic version using a single atomic_compare_and_exchange_acq takes
    less time for non-XLP processors, so we use below for XLP only.  */
 # define __libc_lock_trylock(NAME)					\

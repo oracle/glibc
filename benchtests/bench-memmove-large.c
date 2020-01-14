@@ -1,5 +1,5 @@
-/* Measure memmove functions.
-   Copyright (C) 2013 Free Software Foundation, Inc.
+/* Measure memmove functions with large data sizes.
+   Copyright (C) 2016-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,68 +16,29 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#define BASE_PAGE_SIZE (1024 * 1024)
+#define START_SIZE (4 * 1024)
+#define MIN_PAGE_SIZE (getpagesize () + 16 * 1024 * 1024)
 #define TEST_MAIN
-#ifdef TEST_BCOPY
-# define TEST_NAME "bcopy"
-#else
-# define TEST_NAME "memmove"
-#endif
+#define TEST_NAME "memmove"
+#define TIMEOUT (20 * 60)
 #include "bench-string.h"
 
-char *simple_memmove (char *, const char *, size_t);
-
-#ifdef TEST_BCOPY
-typedef void (*proto_t) (const char *, char *, size_t);
-void simple_bcopy (const char *, char *, size_t);
-
-IMPL (simple_bcopy, 0)
-IMPL (bcopy, 1)
-
-void
-simple_bcopy (const char *src, char *dst, size_t n)
-{
-  simple_memmove (dst, src, n);
-}
-#else
-typedef char *(*proto_t) (char *, const char *, size_t);
-
-IMPL (simple_memmove, 0)
 IMPL (memmove, 1)
-#endif
 
-char *
-inhibit_loop_to_libcall
-simple_memmove (char *dst, const char *src, size_t n)
-{
-  char *ret = dst;
-  if (src < dst)
-    {
-      dst += n;
-      src += n;
-      while (n--)
-	*--dst = *--src;
-    }
-  else
-    while (n--)
-      *dst++ = *src++;
-  return ret;
-}
+typedef char *(*proto_t) (char *, const char *, size_t);
 
 static void
 do_one_test (impl_t *impl, char *dst, char *src, const char *orig_src,
 	     size_t len)
 {
-  size_t i, iters = INNER_LOOP_ITERS;
+  size_t i, iters = 16;
   timing_t start, stop, cur;
 
   TIMING_NOW (start);
   for (i = 0; i < iters; ++i)
     {
-#ifdef TEST_BCOPY
-      CALL (impl, src, dst, len);
-#else
       CALL (impl, dst, src, len);
-#endif
     }
   TIMING_NOW (stop);
 
@@ -92,11 +53,11 @@ do_test (size_t align1, size_t align2, size_t len)
   size_t i, j;
   char *s1, *s2;
 
-  align1 &= 63;
+  align1 &= 127;
   if (align1 + len >= page_size)
     return;
 
-  align2 &= 63;
+  align2 &= 127;
   if (align2 + len >= page_size)
     return;
 
@@ -126,33 +87,16 @@ test_main (void)
     printf ("\t%s", impl->name);
   putchar ('\n');
 
-  for (i = 0; i < 14; ++i)
+  for (i = START_SIZE; i <= MIN_PAGE_SIZE; i <<= 1)
     {
-      do_test (0, 32, 1 << i);
-      do_test (32, 0, 1 << i);
-      do_test (0, i, 1 << i);
-      do_test (i, 0, 1 << i);
-    }
-
-  for (i = 0; i < 32; ++i)
-    {
-      do_test (0, 32, i);
-      do_test (32, 0, i);
-      do_test (0, i, i);
-      do_test (i, 0, i);
-    }
-
-  for (i = 3; i < 32; ++i)
-    {
-      if ((i & (i - 1)) == 0)
-	continue;
-      do_test (0, 32, 16 * i);
-      do_test (32, 0, 16 * i);
-      do_test (0, i, 16 * i);
-      do_test (i, 0, 16 * i);
+      do_test (0, 64, i + 7);
+      do_test (0, 3, i + 15);
+      do_test (3, 0, i + 31);
+      do_test (3, 7, i + 63);
+      do_test (9, 5, i + 127);
     }
 
   return ret;
 }
 
-#include "../test-skeleton.c"
+#include <support/test-driver.c>

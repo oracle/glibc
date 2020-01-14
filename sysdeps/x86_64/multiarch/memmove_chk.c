@@ -25,11 +25,20 @@
 extern __typeof (__memmove_chk) __memmove_chk_sse2 attribute_hidden;
 extern __typeof (__memmove_chk) __memmove_chk_ssse3 attribute_hidden;
 extern __typeof (__memmove_chk) __memmove_chk_ssse3_back attribute_hidden;
+# ifdef HAVE_AVX512_ASM_SUPPORT
+extern __typeof (__memmove_chk) __memmove_chk_avx512_no_vzeroupper attribute_hidden;
+# endif
 
 #include "debug/memmove_chk.c"
 
 libc_ifunc (__memmove_chk,
-	    HAS_CPU_FEATURE (SSSE3)
+#ifdef HAVE_AVX512_ASM_SUPPORT
+	    HAS_ARCH_FEATURE (AVX512F_Usable)
+	      && HAS_ARCH_FEATURE (Prefer_No_VZEROUPPER)
+	    ? __memmove_chk_avx512_no_vzeroupper
+	    :
+#endif
+	    (HAS_CPU_FEATURE (SSSE3)
 	    ? (HAS_ARCH_FEATURE (Fast_Copy_Backward)
 	       ? __memmove_chk_ssse3_back : __memmove_chk_ssse3)
-	    : __memmove_chk_sse2);
+	    : __memmove_chk_sse2));

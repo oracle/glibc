@@ -17,7 +17,8 @@ sysdep_routines += strncat-c stpncpy-c strncpy-c strcmp-ssse3 strncmp-ssse3 \
 		   strcat-ssse3 strncat-ssse3 strlen-sse2-pminub \
 		   strnlen-sse2-no-bsf strrchr-sse2-no-bsf strchr-sse2-no-bsf \
 		   memcmp-ssse3 strstr-sse2-unaligned \
-		   memset-avx512-no-vzeroupper
+		   memset-avx512-no-vzeroupper memcpy-avx512-no-vzeroupper \
+		   mempcpy-avx512-no-vzeroupper memmove-avx512-no-vzeroupper
 ifeq (yes,$(config-cflags-sse4))
 sysdep_routines += strcspn-c strpbrk-c strspn-c strstr-c strcasestr-c varshift
 CFLAGS-varshift.c += -msse4

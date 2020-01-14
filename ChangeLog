@@ -1,5 +1,10 @@
 2012-07-11  Chandrakala Chavva  <cchavva@caviumnetworks.com>
 
+	* sysdeps/mips/bits/atomic.h (MIPS_SYNC): Set to syncw;syncw for Octeon.
+	* sysdeps/mips/sys/asm.h (MIPS_SYNC): Ditto.
+
+2012-07-11  Chandrakala Chavva  <cchavva@caviumnetworks.com>
+
 	Backported from alpha to fix ltp set{re,res}{g,u}id.c tests.
 	* sysdeps/unix/sysv/linux/mips/setreuid.c: New file.
 	* sysdeps/unix/sysv/linux/mips/setresuid.c: New file.

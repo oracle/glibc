@@ -114,5 +114,6 @@ libc {
     __abort_msg;
     # Used from other libraries
     __libc_secure_getenv;
+    __strtof_nan; __strtod_nan; __strtold_nan;
   }
 }

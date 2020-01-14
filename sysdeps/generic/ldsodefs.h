@@ -315,7 +315,7 @@ struct rtld_global
   /* The object to be initialized first.  */
   EXTERN struct link_map *_dl_initfirst;
 
-#if HP_TIMING_AVAIL || HP_SMALL_TIMING_AVAIL
+#if HP_SMALL_TIMING_AVAIL
   /* Start time on CPU clock.  */
   EXTERN hp_timing_t _dl_cpuclock_offset;
 #endif
@@ -537,11 +537,6 @@ struct rtld_global_ro
 
   /* All search directories defined at startup.  */
   EXTERN struct r_search_path_elem *_dl_init_all_dirs;
-
-#if HP_TIMING_AVAIL || HP_SMALL_TIMING_AVAIL
-  /* Overhead of a high-precision timing measurement.  */
-  EXTERN hp_timing_t _dl_hp_timing_overhead;
-#endif
 
 #ifdef NEED_DL_SYSINFO
   /* Syscall handling improvements.  This is very specific to x86.  */

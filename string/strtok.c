@@ -23,6 +23,10 @@ static char *olds;
 
 #undef strtok
 
+#ifndef STRTOK
+# define STRTOK strtok
+#endif
+
 /* Parse S into tokens separated by characters in DELIM.
    If S is NULL, the last string strtok() was called with is
    used.  For example:
@@ -33,9 +37,7 @@ static char *olds;
 		// s = "abc\0=-def\0"
 */
 char *
-strtok (s, delim)
-     char *s;
-     const char *delim;
+STRTOK (char *s, const char *delim)
 {
   char *token;
 

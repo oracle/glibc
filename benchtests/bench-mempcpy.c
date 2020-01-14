@@ -1,7 +1,6 @@
-/* Support for high precision, low overhead timing functions.  i686 version.
-   Copyright (C) 1998, 2002 Free Software Foundation, Inc.
+/* Measure mempcpy functions.
+   Copyright (C) 2013 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-   Contributed by Ulrich Drepper <drepper@cygnus.com>, 1998.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -17,7 +16,22 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <hp-timing.h>
+#define MEMCPY_RESULT(dst, len) (dst) + (len)
+#define TEST_MAIN
+#define TEST_NAME "mempcpy"
+#include "bench-string.h"
 
-/* We have to define the variable for the overhead.  */
-hp_timing_t _dl_hp_timing_overhead;
+char *simple_mempcpy (char *, const char *, size_t);
+
+IMPL (simple_mempcpy, 0)
+IMPL (mempcpy, 1)
+
+char *
+simple_mempcpy (char *dst, const char *src, size_t n)
+{
+  while (n--)
+    *dst++ = *src++;
+  return dst;
+}
+
+#include "bench-memcpy.c"

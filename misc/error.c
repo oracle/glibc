@@ -100,7 +100,7 @@ print_errno_message (int errnum)
 
 #if defined HAVE_STRERROR_R || _LIBC
   char errbuf[1024];
-# if STRERROR_R_CHAR_P || _LIBC
+# if _LIBC || STRERROR_R_CHAR_P
   s = __strerror_r (errnum, errbuf, sizeof errbuf);
 # else
   if (__strerror_r (errnum, errbuf, sizeof errbuf) == 0)

@@ -30,6 +30,8 @@
 #include "mpa.h"
 #include <math_private.h>
 
+#include <stap-probe.h>
+
 #ifndef SECTION
 # define SECTION
 #endif
@@ -60,12 +62,21 @@ __slowexp(double x) {
   __sub(&mpy,&mpcor,&mpz,p);
   __mp_dbl(&mpw, &w, p);
   __mp_dbl(&mpz, &z, p);
-  if (w == z) return w;
+  if (w == z) {
+    /* Track how often we get to the slow exp code plus
+       its input/output values.  */
+    LIBC_PROBE (slowexp_p6, 2, &x, &w);
+    return w;
+  }
   else  {                   /* if calculating is not exactly   */
     p = 32;
     __dbl_mp(x,&mpx,p);
     __mpexp(&mpx, &mpy, p);
     __mp_dbl(&mpy, &res, p);
+ 
+    /* Track how often we get to the uber-slow exp code plus
+       its input/output values.  */
+    LIBC_PROBE (slowexp_p32, 2, &x, &res);
     return res;
   }
 }

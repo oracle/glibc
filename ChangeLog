@@ -1,5 +1,12 @@
 2014-12-17  Roland McGrath  <roland@hack.frob.com>
 
+	* malloc/malloc.c (systrim): Use ALIGN_DOWN.
+
+	* Makefile ($(objpfx)check-local-headers.out): Redirect stdin from
+	/dev/null.
+
+2014-12-17  Roland McGrath  <roland@hack.frob.com>
+
 	* malloc/malloc.c (alloc_perturb, free_perturb): Remove inline keyword.
 
 2014-12-11  Steve Ellcey  <sellcey@imgtec.com>

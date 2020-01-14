@@ -787,6 +787,82 @@ Inquire about the number of functions which can be registered as termination
 functions for @code{atexit}; @pxref{Cleanups on Exit}.
 
 @comment unistd.h
+@comment GNU
+@item _SC_LEVEL1_ICACHE_SIZE
+Inquire about the size of the Level 1 instruction cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL1_ICACHE_ASSOC
+Inquire about the associativity of the Level 1 instruction cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL1_ICACHE_LINESIZE
+Inquire about the line length of the Level 1 instruction cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL1_DCACHE_SIZE
+Inquire about the size of the Level 1 data cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL1_DCACHE_ASSOC
+Inquire about the associativity of the Level 1 data cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL1_DCACHE_LINESIZE
+Inquire about the line length of the Level 1 data cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL2_CACHE_SIZE
+Inquire about the size of the Level 2 cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL2_CACHE_ASSOC
+Inquire about the associativity of the Level 2 cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL2_CACHE_LINESIZE
+Inquire about the line length of the Level 2 cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL3_CACHE_SIZE
+Inquire about the size of the Level 3 cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL3_CACHE_ASSOC
+Inquire about the associativity of the Level 3 cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL3_CACHE_LINESIZE
+Inquire about the line length of the Level 3 cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL4_CACHE_SIZE
+Inquire about the size of the Level 4 cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL4_CACHE_ASSOC
+Inquire about the associativity of the Level 4 cache.
+
+@comment unistd.h
+@comment GNU
+@item _SC_LEVEL4_CACHE_LINESIZE
+Inquire about the line length of the Level 4 cache.
+
+
+@comment unistd.h
 @comment X/Open
 @item _SC_XOPEN_VERSION
 Inquire about the parameter corresponding to @code{_XOPEN_VERSION}.

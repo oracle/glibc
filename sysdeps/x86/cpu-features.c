@@ -200,18 +200,17 @@ no_cpuid:
   cpu_features->model = model;
   cpu_features->kind = kind;
 
-#if IS_IN (rtld)
   /* Reuse dl_platform, dl_hwcap and dl_hwcap_mask for x86.  */
   GLRO(dl_platform) = NULL;
   GLRO(dl_hwcap) = 0;
-#if !HAVE_TUNABLES
+#if !HAVE_TUNABLES && defined SHARED
   /* The glibc.tune.hwcap_mask tunable is initialized already, so no need to do
      this.  */
   GLRO(dl_hwcap_mask) = HWCAP_IMPORTANT;
 #endif
 
-  /* Can we call xgetbv?  */
-  if (HAS_CPU_FEATURE (OSXSAVE))
+#ifdef __x86_64__
+  if (cpu_features->kind == arch_kind_intel)
     {
       unsigned int xcrlow;
       unsigned int xcrhigh;
@@ -325,4 +324,13 @@ no_cpuid:
   cpu_features->family = family;
   cpu_features->model = model;
   cpu_features->kind = kind;
+#else
+  if (CPU_FEATURES_CPU_P (cpu_features, SSE2))
+    GLRO(dl_hwcap) |= HWCAP_X86_SSE2;
+
+  if (CPU_FEATURES_ARCH_P (cpu_features, I686))
+    GLRO(dl_platform) = "i686";
+  else if (CPU_FEATURES_ARCH_P (cpu_features, I586))
+    GLRO(dl_platform) = "i586";
+#endif
 }

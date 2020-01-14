@@ -95,7 +95,7 @@ libpthread-routines = nptl-init vars events version \
 		      sem_init sem_destroy \
 		      sem_open sem_close sem_unlink \
 		      sem_getvalue \
-		      sem_wait sem_trywait sem_timedwait sem_post \
+		      sem_wait sem_timedwait sem_post \
 		      cleanup cleanup_defer cleanup_compat \
 		      cleanup_defer_compat unwind \
 		      pt-longjmp pt-cleanup\

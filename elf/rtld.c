@@ -2597,6 +2597,11 @@ process_envvars (enum mode *modep)
   GLRO(dl_profile_output)
     = &"/var/tmp\0/var/profile"[INTUSE(__libc_enable_secure) ? 9 : 0];
 
+  /* RHEL 7 specific change:
+     Without the tunables farmework we simulate tunables only for
+     use with enabling transactional memory.  */
+  _dl_process_tunable_env_entries ();
+
   while ((envline = _dl_next_ld_env_entry (&runp)) != NULL)
     {
       size_t len = 0;

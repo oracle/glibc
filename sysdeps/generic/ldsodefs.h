@@ -557,6 +557,9 @@ struct rtld_global_ro
      platforms.  */
   EXTERN uint64_t _dl_hwcap2;
 
+  /* RHEL 7 specific change: Is elision enabled for this process?  */
+  EXTERN bool _dl_elision_enabled;
+
 #ifdef SHARED
   /* We add a function table to _rtld_global which is then used to
      call the function instead of going through the PLT.  The result
@@ -892,6 +895,10 @@ extern void _dl_show_auxv (void) internal_function;
 /* Return all environment variables starting with `LD_', one after the
    other.  */
 extern char *_dl_next_ld_env_entry (char ***position) internal_function;
+
+/* RHEL 7 specific change:
+   Manually process RHEL 7-specific tunable entries.  */
+extern void _dl_process_tunable_env_entries (void) internal_function;
 
 /* Return an array with the names of the important hardware capabilities.  */
 extern const struct r_strlenpair *_dl_important_hwcaps (const char *platform,

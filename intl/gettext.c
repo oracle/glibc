@@ -52,8 +52,7 @@
    LC_MESSAGES locale.  If not found, returns MSGID itself (the default
    text).  */
 char *
-GETTEXT (msgid)
-     const char *msgid;
+GETTEXT (const char *msgid)
 {
   return DCGETTEXT (NULL, msgid, LC_MESSAGES);
 }

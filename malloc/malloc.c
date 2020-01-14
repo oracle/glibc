@@ -1060,7 +1060,7 @@ static void*  _int_realloc(mstate, mchunkptr, INTERNAL_SIZE_T,
 static void*  _int_memalign(mstate, size_t, size_t);
 static void*  _int_valloc(mstate, size_t);
 static void*  _int_pvalloc(mstate, size_t);
-static void malloc_printerr(int action, const char *str, void *ptr);
+static void malloc_printerr(int action, const char *str, void *ptr, mstate av);
 
 static void* internal_function mem2mem_check(void *p, size_t sz);
 static int internal_function top_check(void);
@@ -1430,7 +1430,8 @@ typedef struct malloc_chunk* mbinptr;
   BK = P->bk;                                                          \
   if (__builtin_expect (FD->bk != P || BK->fd != P, 0)) {	       \
     mutex_unlock(&(AV)->mutex);					       \
-    malloc_printerr (check_action, "corrupted double-linked list", P); \
+    malloc_printerr (check_action, "corrupted double-linked list", P,  \
+		     AV);					       \
     mutex_lock(&(AV)->mutex);					       \
   } else {							       \
     FD->bk = BK;                                                       \
@@ -1669,6 +1670,15 @@ typedef struct malloc_chunk* mfastbinptr;
 #define noncontiguous(M)       (((M)->flags &  NONCONTIGUOUS_BIT) != 0)
 #define set_noncontiguous(M)   ((M)->flags |=  NONCONTIGUOUS_BIT)
 #define set_contiguous(M)      ((M)->flags &= ~NONCONTIGUOUS_BIT)
+
+/* ARENA_CORRUPTION_BIT is set if a memory corruption was detected on the
+   arena.  Such an arena is no longer used to allocate chunks.  Chunks
+   allocated in that arena before detecting corruption are not freed.  */
+
+#define ARENA_CORRUPTION_BIT (4U)
+
+#define arena_is_corrupt(A)    (((A)->flags & ARENA_CORRUPTION_BIT))
+#define set_arena_corrupt(A)   ((A)->flags |= ARENA_CORRUPTION_BIT)
 
 /*
    Set value of max_fast.
@@ -2281,8 +2291,9 @@ static void* sysmalloc(INTERNAL_SIZE_T nb, mstate av)
     rather than expanding top.
   */
 
-  if ((unsigned long)(nb) >= (unsigned long)(mp_.mmap_threshold) &&
-      (mp_.n_mmaps < mp_.n_mmaps_max)) {
+  if (av == NULL
+      || ((unsigned long) (nb) >= (unsigned long) (mp_.mmap_threshold)
+	  && (mp_.n_mmaps < mp_.n_mmaps_max))) {
 
     char* mm;             /* return value from mmap call*/
 
@@ -2353,6 +2364,10 @@ static void* sysmalloc(INTERNAL_SIZE_T nb, mstate av)
       }
     }
   }
+
+  /* There are no usable arenas and mmap also failed.  */
+  if (av == NULL)
+    return 0;
 
   /* Record incoming configuration of top */
 
@@ -2519,7 +2534,7 @@ static void* sysmalloc(INTERNAL_SIZE_T nb, mstate av)
     else if (contiguous(av) && old_size && brk < old_end) {
       /* Oops!  Someone else killed our space..  Can't touch anything.  */
       mutex_unlock(&av->mutex);
-      malloc_printerr (3, "break adjusted to free malloc space", brk);
+      malloc_printerr (3, "break adjusted to free malloc space", brk, av);
       mutex_lock(&av->mutex);
     }
 
@@ -2793,7 +2808,7 @@ munmap_chunk(mchunkptr p)
   if (__builtin_expect (((block | total_size) & (GLRO(dl_pagesize) - 1)) != 0, 0))
     {
       malloc_printerr (check_action, "munmap_chunk(): invalid pointer",
-		       chunk2mem (p));
+		       chunk2mem (p), NULL);
       return;
     }
 
@@ -2861,21 +2876,20 @@ __libc_malloc(size_t bytes)
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(bytes, RETURN_ADDRESS (0));
 
-  arena_lookup(ar_ptr);
+  arena_get(ar_ptr, bytes);
 
-  arena_lock(ar_ptr, bytes);
-  if(!ar_ptr)
-    return 0;
   victim = _int_malloc(ar_ptr, bytes);
-  if(!victim) {
+  /* Retry with another arena only if we were able to find a usable arena
+     before.  */
+  if (!victim && ar_ptr != NULL) {
     LIBC_PROBE (memory_malloc_retry, 1, bytes);
     ar_ptr = arena_get_retry(ar_ptr, bytes);
-    if (__builtin_expect(ar_ptr != NULL, 1)) {
-      victim = _int_malloc(ar_ptr, bytes);
-      (void)mutex_unlock(&ar_ptr->mutex);
-    }
-  } else
+    victim = _int_malloc (ar_ptr, bytes);
+  }
+
+  if (ar_ptr != NULL)
     (void)mutex_unlock(&ar_ptr->mutex);
+
   assert(!victim || chunk_is_mmapped(mem2chunk(victim)) ||
 	 ar_ptr == arena_for_chunk(mem2chunk(victim)));
   return victim;
@@ -2946,6 +2960,11 @@ __libc_realloc(void* oldmem, size_t bytes)
   /* its size */
   const INTERNAL_SIZE_T oldsize = chunksize(oldp);
 
+  if (chunk_is_mmapped (oldp))
+    ar_ptr = NULL;
+  else
+    ar_ptr = arena_for_chunk (oldp);
+
   /* Little security check which won't hurt performance: the
      allocator never wrapps around at the end of the address space.
      Therefore we can exclude some size values which might appear
@@ -2953,7 +2972,8 @@ __libc_realloc(void* oldmem, size_t bytes)
   if (__builtin_expect ((uintptr_t) oldp > (uintptr_t) -oldsize, 0)
       || __builtin_expect (misaligned_chunk (oldp), 0))
     {
-      malloc_printerr (check_action, "realloc(): invalid pointer", oldmem);
+      malloc_printerr (check_action, "realloc(): invalid pointer", oldmem,
+		       ar_ptr);
       return NULL;
     }
 
@@ -2977,7 +2997,6 @@ __libc_realloc(void* oldmem, size_t bytes)
     return newmem;
   }
 
-  ar_ptr = arena_for_chunk(oldp);
 #if THREAD_STATS
   if(!mutex_trylock(&ar_ptr->mutex))
     ++(ar_ptr->stat_lock_direct);
@@ -3043,18 +3062,17 @@ __libc_memalign(size_t alignment, size_t bytes)
     }
 
   arena_get(ar_ptr, bytes + alignment + MINSIZE);
-  if(!ar_ptr)
-    return 0;
+
   p = _int_memalign(ar_ptr, alignment, bytes);
-  if(!p) {
+  if(!p && ar_ptr != NULL) {
     LIBC_PROBE (memory_memalign_retry, 2, bytes, alignment);
     ar_ptr = arena_get_retry (ar_ptr, bytes);
-    if (__builtin_expect(ar_ptr != NULL, 1)) {
-      p = _int_memalign(ar_ptr, alignment, bytes);
-      (void)mutex_unlock(&ar_ptr->mutex);
-    }
-  } else
+    p = _int_memalign (ar_ptr, alignment, bytes);
+  }
+
+  if (ar_ptr != NULL)
     (void)mutex_unlock(&ar_ptr->mutex);
+
   assert(!p || chunk_is_mmapped(mem2chunk(p)) ||
 	 ar_ptr == arena_for_chunk(mem2chunk(p)));
   return p;
@@ -3088,18 +3106,16 @@ __libc_valloc(size_t bytes)
     return (*hook)(pagesz, bytes, RETURN_ADDRESS (0));
 
   arena_get(ar_ptr, bytes + pagesz + MINSIZE);
-  if(!ar_ptr)
-    return 0;
   p = _int_valloc(ar_ptr, bytes);
-  if(!p) {
+  if(!p && ar_ptr != NULL) {
     LIBC_PROBE (memory_valloc_retry, 1, bytes);
     ar_ptr = arena_get_retry (ar_ptr, bytes);
-    if (__builtin_expect(ar_ptr != NULL, 1)) {
-      p = _int_memalign(ar_ptr, pagesz, bytes);
-      (void)mutex_unlock(&ar_ptr->mutex);
-    }
-  } else
+    p = _int_memalign(ar_ptr, pagesz, bytes);
+  }
+
+  if (ar_ptr != NULL)
     (void)mutex_unlock (&ar_ptr->mutex);
+
   assert(!p || chunk_is_mmapped(mem2chunk(p)) ||
 	 ar_ptr == arena_for_chunk(mem2chunk(p)));
 
@@ -3134,15 +3150,15 @@ __libc_pvalloc(size_t bytes)
 
   arena_get(ar_ptr, bytes + 2*pagesz + MINSIZE);
   p = _int_pvalloc(ar_ptr, bytes);
-  if(!p) {
+  if(!p && ar_ptr != NULL) {
     LIBC_PROBE (memory_pvalloc_retry, 1, bytes);
     ar_ptr = arena_get_retry (ar_ptr, bytes + 2*pagesz + MINSIZE);
-    if (__builtin_expect(ar_ptr != NULL, 1)) {
-      p = _int_memalign(ar_ptr, pagesz, rounded_bytes);
-      (void)mutex_unlock(&ar_ptr->mutex);
-    }
-  } else
+    p = _int_memalign(ar_ptr, pagesz, rounded_bytes);
+  }
+
+  if (ar_ptr != NULL)
     (void)mutex_unlock(&ar_ptr->mutex);
+
   assert(!p || chunk_is_mmapped(mem2chunk(p)) ||
 	 ar_ptr == arena_for_chunk(mem2chunk(p)));
 
@@ -3184,43 +3200,54 @@ __libc_calloc(size_t n, size_t elem_size)
   sz = bytes;
 
   arena_get(av, sz);
-  if(!av)
-    return 0;
-
-  /* Check if we hand out the top chunk, in which case there may be no
-     need to clear. */
-#if MORECORE_CLEARS
-  oldtop = top(av);
-  oldtopsize = chunksize(top(av));
-#if MORECORE_CLEARS < 2
-  /* Only newly allocated memory is guaranteed to be cleared.  */
-  if (av == &main_arena &&
-      oldtopsize < mp_.sbrk_base + av->max_system_mem - (char *)oldtop)
-    oldtopsize = (mp_.sbrk_base + av->max_system_mem - (char *)oldtop);
-#endif
-  if (av != &main_arena)
+  if(av)
     {
-      heap_info *heap = heap_for_ptr (oldtop);
-      if (oldtopsize < (char *) heap + heap->mprotect_size - (char *) oldtop)
-	oldtopsize = (char *) heap + heap->mprotect_size - (char *) oldtop;
-    }
+
+      /* Check if we hand out the top chunk, in which case there may be no
+	 need to clear. */
+#if MORECORE_CLEARS
+      oldtop = top(av);
+      oldtopsize = chunksize(top(av));
+# if MORECORE_CLEARS < 2
+      /* Only newly allocated memory is guaranteed to be cleared.  */
+      if (av == &main_arena &&
+	  oldtopsize < mp_.sbrk_base + av->max_system_mem - (char *)oldtop)
+	oldtopsize = (mp_.sbrk_base + av->max_system_mem - (char *)oldtop);
+# endif
+      if (av != &main_arena)
+	{
+	  heap_info *heap = heap_for_ptr (oldtop);
+	  if (oldtopsize < ((char *) heap + heap->mprotect_size -
+			    (char *) oldtop))
+	    oldtopsize = (char *) heap + heap->mprotect_size - (char *) oldtop;
+	}
 #endif
+    }
+  else
+    {
+      /* No usable arenas.  */
+      oldtop = 0;
+      oldtopsize = 0;
+    }
   mem = _int_malloc(av, sz);
 
 
   assert(!mem || chunk_is_mmapped(mem2chunk(mem)) ||
 	 av == arena_for_chunk(mem2chunk(mem)));
 
-  if (mem == 0) {
+  if (mem == 0 && av != NULL) {
     LIBC_PROBE (memory_calloc_retry, 1, sz);
     av = arena_get_retry (av, sz);
-    if (__builtin_expect(av != NULL, 1)) {
-      mem = _int_malloc(av, sz);
-      (void)mutex_unlock(&av->mutex);
-    }
-    if (mem == 0) return 0;
-  } else
+    mem = _int_malloc(av, sz);
+  }
+
+  if (av != NULL)
     (void)mutex_unlock(&av->mutex);
+
+  /* Allocation failed even after a retry.  */
+  if (mem == 0)
+    return 0;
+
   p = mem2chunk(mem);
 
   /* Two optional cases in which clearing not necessary */
@@ -3310,6 +3337,16 @@ _int_malloc(mstate av, size_t bytes)
 
   checked_request2size(bytes, nb);
 
+  /* There are no usable arenas.  Fall back to sysmalloc to get a chunk from
+     mmap.  */
+  if (__glibc_unlikely (av == NULL))
+    {
+      void *p = sysmalloc (nb, av);
+      if (p != NULL)
+       alloc_perturb (p, bytes);
+      return p;
+    }
+
   /*
     If the size qualifies as a fastbin, first check corresponding bin.
     This code is safe to execute even if av is not yet initialized, so we
@@ -3334,7 +3371,7 @@ _int_malloc(mstate av, size_t bytes)
 	  errstr = "malloc(): memory corruption (fast)";
 	errout:
 	  mutex_unlock(&av->mutex);
-	  malloc_printerr (check_action, errstr, chunk2mem (victim));
+	  malloc_printerr (check_action, errstr, chunk2mem (victim), av);
 	  mutex_lock(&av->mutex);
 	  return NULL;
 	}
@@ -3421,9 +3458,9 @@ _int_malloc(mstate av, size_t bytes)
       if (__builtin_expect (victim->size <= 2 * SIZE_SZ, 0)
 	  || __builtin_expect (victim->size > av->system_mem, 0))
 	{
-	  void *p = chunk2mem(victim);
 	  mutex_unlock(&av->mutex);
-	  malloc_printerr (check_action, "malloc(): memory corruption", p);
+	  malloc_printerr (check_action, "malloc(): memory corruption",
+			   chunk2mem (victim), av);
 	  mutex_lock(&av->mutex);
 	}
       size = chunksize(victim);
@@ -3801,7 +3838,7 @@ _int_free(mstate av, mchunkptr p, int have_lock)
     errout:
       if (have_lock || locked)
 	(void)mutex_unlock(&av->mutex);
-      malloc_printerr (check_action, errstr, chunk2mem(p));
+      malloc_printerr (check_action, errstr, chunk2mem(p), av);
       if (have_lock)
 	mutex_lock(&av->mutex);
       return;
@@ -4196,7 +4233,7 @@ _int_realloc(mstate av, mchunkptr oldp, INTERNAL_SIZE_T oldsize,
       errstr = "realloc(): invalid old size";
     errout:
       mutex_unlock(&av->mutex);
-      malloc_printerr (check_action, errstr, chunk2mem(oldp));
+      malloc_printerr (check_action, errstr, chunk2mem(oldp), av);
       mutex_lock(&av->mutex);
       return NULL;
     }
@@ -4436,7 +4473,7 @@ static void*
 _int_valloc(mstate av, size_t bytes)
 {
   /* Ensure initialization/consolidation */
-  if (have_fastchunks(av)) malloc_consolidate(av);
+  if (av && have_fastchunks(av)) malloc_consolidate(av);
   return _int_memalign(av, GLRO(dl_pagesize), bytes);
 }
 
@@ -4451,7 +4488,7 @@ _int_pvalloc(mstate av, size_t bytes)
   size_t pagesz;
 
   /* Ensure initialization/consolidation */
-  if (have_fastchunks(av)) malloc_consolidate(av);
+  if (av && have_fastchunks(av)) malloc_consolidate(av);
   pagesz = GLRO(dl_pagesize);
   return _int_memalign(av, pagesz, (bytes + pagesz - 1) & ~(pagesz - 1));
 }
@@ -4463,6 +4500,10 @@ _int_pvalloc(mstate av, size_t bytes)
 
 static int mtrim(mstate av, size_t pad)
 {
+  /* Don't touch corrupt arenas.  */
+  if (arena_is_corrupt (av))
+    return 0;
+
   /* Ensure initialization/consolidation */
   malloc_consolidate (av);
 
@@ -4956,8 +4997,14 @@ libc_hidden_def (__libc_mallopt)
 extern char **__libc_argv attribute_hidden;
 
 static void
-malloc_printerr(int action, const char *str, void *ptr)
+malloc_printerr(int action, const char *str, void *ptr, mstate ar_ptr)
 {
+  /* Avoid using this arena in future.  We do not attempt to synchronize this
+     with anything else because we minimally want to ensure that __libc_message
+     gets its resources safely without stumbling on the current corruption.  */
+  if (ar_ptr)
+    set_arena_corrupt (ar_ptr);
+
   if ((action & 5) == 5)
     __libc_message (action & 2, "%s\n", str);
   else if (action & 1)

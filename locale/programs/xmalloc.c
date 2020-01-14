@@ -81,8 +81,7 @@ xmalloc (size_t n)
 /* Allocate memory for N elements of S bytes, with error checking.  */
 
 VOID *
-xcalloc (n, s)
-     size_t n, s;
+xcalloc (size_t n, size_t s)
 {
   VOID *p;
 

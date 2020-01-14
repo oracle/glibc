@@ -63,8 +63,8 @@ ENTRY (__socket)
 	movl %edx, %ebx
 	cfi_restore (3)
 
-	/* %eax is < 0 if there was an error.  */
-	cmpl $-125, %eax
+	/* %eax is in [-4095, -1] if there was an error.  */
+	cmpl $-4095, %eax
 	jae SYSCALL_ERROR_LABEL
 
 	/* Successful; return the syscall's value.  */
@@ -108,8 +108,8 @@ ENTRY (__socket)
 	cfi_restore (6)
 	cfi_adjust_cfa_offset(-4)
 
-	/* %eax is < 0 if there was an error.  */
-	cmpl $-125, %eax
+	/* %eax is in [-4095, -1] if there was an error.  */
+	cmpl $-4095, %eax
 	jae SYSCALL_ERROR_LABEL
 
 	/* Successful; return the syscall's value.  */

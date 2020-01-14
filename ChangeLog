@@ -1,3 +1,7 @@
+2014-11-05  Richard Earnshaw  <rearnsha@arm.com>
+
+	* sysdeps/aarch64/strchrnul.S: New file.
+
 2014-06-19  Richard Earnshaw  <rearnsha@arm.com>
 
 	* sysdeps/aarch64/strchr.S: New file.

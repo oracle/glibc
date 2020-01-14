@@ -1,3 +1,11 @@
+2012-07-11  Chandrakala Chavva  <cchavva@caviumnetworks.com>
+
+	Backported from alpha to fix ltp set{re,res}{g,u}id.c tests.
+	* sysdeps/unix/sysv/linux/mips/setreuid.c: New file.
+	* sysdeps/unix/sysv/linux/mips/setresuid.c: New file.
+	* sysdeps/unix/sysv/linux/mips/setregid.c: New file.
+	* sysdeps/unix/sysv/linux/mips/setresgid.c: New file.
+
 2012-07-11  Adam Nemet  <anemet@caviumnetworks.com>
 	    Chandrakala Chavva  <cchavva@caviumnetworks.com>
 

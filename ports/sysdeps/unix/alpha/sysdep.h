@@ -26,7 +26,7 @@
 # include <regdef.h>
 #endif
 
-#ifdef IS_IN_rtld
+#if IS_IN (rtld)
 # include <dl-sysdep.h>         /* Defines RTLD_PRIVATE_ERRNO.  */
 #endif
 
@@ -346,7 +346,7 @@ __LABEL(name)						\
 
 #include <stdint.h>
 
-#ifdef IS_IN_rtld
+#if IS_IN (rtld)
 # ifdef __ASSEMBLER__
 #  define PTR_MANGLE(dst, src, tmp)				\
 	ldah	tmp, __pointer_chk_guard_local($29) !gprelhigh;	\

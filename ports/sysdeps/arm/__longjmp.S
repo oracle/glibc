@@ -52,7 +52,7 @@ ENTRY (__longjmp)
 #endif
 
 #ifdef NEED_HWCAP
-# ifdef IS_IN_rtld
+# if IS_IN (rtld)
 	ldr	a2, 1f
 	ldr	a3, .Lrtld_local_ro
 0:	add	a2, pc, a2
@@ -104,7 +104,7 @@ ENTRY (__longjmp)
 	DO_RET(lr)
 
 #ifdef NEED_HWCAP
-# ifdef IS_IN_rtld
+# if IS_IN (rtld)
 1:	.long	_GLOBAL_OFFSET_TABLE_ - 0b - 8
 .Lrtld_local_ro:
 	.long	C_SYMBOL_NAME(_rtld_local_ro)(GOTOFF)

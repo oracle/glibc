@@ -4,27 +4,36 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <unistd.h>
 
 
 static jmp_buf mainloop;
 static sigset_t mainsigset;
-static int pass;
+static volatile sig_atomic_t pass;
 
+static void
+write_message (const char *message)
+{
+  ssize_t unused __attribute__ ((unused));
+  for (int i = 0; i < pass; ++i)
+    unused = write (STDOUT_FILENO, " ", 1);
+  unused = write (STDOUT_FILENO, message, strlen (message));
+}
 
 static void
 stackoverflow_handler (int sig)
 {
   stack_t altstack;
   pass++;
+  assert (pass < 5);
   sigaltstack (NULL, &altstack);
-  /* Using printf is not really kosher in signal handlers but we know
-     it will work.  */
-  printf ("%*sin signal handler\n", pass, "");
+  write_message ("in signal handler\n");
   if (altstack.ss_flags & SS_ONSTACK)
-    printf ("%*son alternate stack\n", pass, "");
+    write_message ("on alternate stack\n");
   siglongjmp (mainloop, pass);
 }
 
@@ -106,6 +115,11 @@ do_test (void)
     printf ("disabling alternate stack failed\n");
   else
     printf ("disabling alternate stack succeeded \n");
+
+  /* Restore the signal handlers, in case we trigger a crash after the
+     tests above.  */
+  signal (SIGBUS, SIG_DFL);
+  signal (SIGSEGV, SIG_DFL);
 
   return 0;
 }

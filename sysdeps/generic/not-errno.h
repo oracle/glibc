@@ -1,4 +1,5 @@
-/* Copyright (C) 2007, 2009, 2011 Free Software Foundation, Inc.
+/* Syscall wrapper that do not set errno.  Generic version.
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -12,32 +13,7 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library.  If not, see
+   License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
-#include <fcntl.h>
-#include <sysdep-cancel.h>
-
-
-/* Reserve storage for the data of the file associated with FD.  */
-int
-__access (const char *file, int type)
-{
-#ifdef __NR_fallocate
-  if (SINGLE_THREAD_P)
-    return INLINE_SYSCALL (fallocate, 4, fd, mode, offset, len);
-
-  int result;
-  int oldtype = LIBC_CANCEL_ASYNC ();
-
-  result = INLINE_SYSCALL (fallocate, 4, fd, mode, offset, len);
-
-  LIBC_CANCEL_RESET (oldtype);
-
-  return result;
-#else
-  __set_errno (ENOSYS);
-  return -1;
-#endif
-}
+extern __typeof (__access) __access_noerrno attribute_hidden;

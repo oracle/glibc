@@ -1,3 +1,11 @@
+2012-07-11  Chandrakala Chavva  <cchavva@caviumnetworks.com>
+	    Andrew Pinski  <apinski@cavium.com>
+
+	* sysdeps/mips/tls-macros.h (TLS_IE): Use "k0" for Octeon1.
+	(TLS_LE): Likewise.
+	* sysdeps/mips/nptl/tls.h (READ_THREAD_POINTER): Return
+	"k0" for Octeon1.
+
 2012-10-25  Prasun Kapoor <prasun.kapoor@caviumnetworks.com>
 	    Chandrakala Chavva  <cchavva@caviumnetworks.com>
 

@@ -1,3 +1,8 @@
+2018-02-09  Wilco Dijkstra  <wdijkstr@arm.com>
+
+	* sysdeps/aarch64/fpu/fpu_control.h: Use builtins for accessing
+	FPCR/FPSR.
+
 2018-01-16  Szabolcs Nagy  <szabolcs.nagy@arm.com>
 
 	* sysdeps/unix/sysv/linux/aarch64/bits/hwcap.h (HWCAP_SHA3): Define.

@@ -63,6 +63,34 @@
 #else	/* __ASSEMBLER__ */
 
 # include <sys/param.h>
+# include <sys/types.h>
+# include <sysdep.h>
+# include <stdbool.h>
+
+/* Ugly hack to make it possible to select a strstr and strcasestr
+   implementation that avoids using the stack for 16-byte aligned
+   SSE temporaries.  Doing so makes it possible to call the functions
+   with a stack that's not 16-byte aligned as can happen, for example,
+   as a result of compiling the functions' callers with the GCC
+   -mpreferred-stack-boubdary=2 or =3 option, or with the ICC
+   -falign-stack=assume-4-byte option.  See rhbz 1150282 for details.
+
+   The ifunc selector uses the unaligned version by default if this
+   file exists and is accessible.  */
+# define ENABLE_STRSTR_UNALIGNED_PATHNAME \
+    "/etc/sysconfig/64bit_strstr_via_64bit_strstr_sse2_unaligned"
+
+static bool __attribute__ ((unused))
+use_unaligned_strstr (void)
+{
+  struct stat unaligned_strstr_etc_sysconfig_file;
+
+  /* TLS may not have been set up yet, so avoid using stat since it tries to
+     set errno.  */
+  return INTERNAL_SYSCALL (stat, , 2,
+                           ENABLE_STRSTR_UNALIGNED_PATHNAME,
+                           &unaligned_strstr_etc_sysconfig_file) == 0;
+}
 
 enum
   {

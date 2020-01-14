@@ -1,5 +1,5 @@
-/* Measure memcpy functions.
-   Copyright (C) 2013 Free Software Foundation, Inc.
+/* Measure memcpy functions with large data sizes.
+   Copyright (C) 2016-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -18,35 +18,17 @@
 
 #ifndef MEMCPY_RESULT
 # define MEMCPY_RESULT(dst, len) dst
-# define MIN_PAGE_SIZE 131072
+# define START_SIZE (64 * 1024)
+# define MIN_PAGE_SIZE (getpagesize () + 32 * 1024 * 1024)
 # define TEST_MAIN
 # define TEST_NAME "memcpy"
+# define TIMEOUT (20 * 60)
 # include "bench-string.h"
 
-char *simple_memcpy (char *, const char *, size_t);
-char *builtin_memcpy (char *, const char *, size_t);
-
-IMPL (simple_memcpy, 0)
-IMPL (builtin_memcpy, 0)
 IMPL (memcpy, 1)
-
-char *
-simple_memcpy (char *dst, const char *src, size_t n)
-{
-  char *ret = dst;
-  while (n--)
-    *dst++ = *src++;
-  return ret;
-}
-
-char *
-builtin_memcpy (char *dst, const char *src, size_t n)
-{
-  return __builtin_memcpy (dst, src, n);
-}
 #endif
 
-# include "json-lib.h"
+#include "json-lib.h"
 
 typedef char *(*proto_t) (char *, const char *, size_t);
 
@@ -54,8 +36,12 @@ static void
 do_one_test (json_ctx_t *json_ctx, impl_t *impl, char *dst, const char *src,
 	     size_t len)
 {
-  size_t i, iters = INNER_LOOP_ITERS;
+  size_t i, iters = 16;
   timing_t start, stop, cur;
+
+  /* Must clear the destination buffer updated by the previous run.  */
+  for (i = 0; i < len; i++)
+    dst[i] = 0;
 
   if (CALL (impl, dst, src, len) != MEMCPY_RESULT (dst, len))
     {
@@ -133,7 +119,7 @@ test_main (void)
 
   json_attr_object_begin (&json_ctx, "functions");
   json_attr_object_begin (&json_ctx, "memcpy");
-  json_attr_string (&json_ctx, "bench-variant", "default");
+  json_attr_string (&json_ctx, "bench-variant", "large");
 
   json_array_begin (&json_ctx, "ifuncs");
   FOR_EACH_IMPL (impl, 0)
@@ -141,41 +127,13 @@ test_main (void)
   json_array_end (&json_ctx);
 
   json_array_begin (&json_ctx, "results");
-  for (i = 0; i < 18; ++i)
+  for (i = START_SIZE; i <= MIN_PAGE_SIZE; i <<= 1)
     {
-      do_test (&json_ctx, 0, 0, 1 << i);
-      do_test (&json_ctx, i, 0, 1 << i);
-      do_test (&json_ctx, 0, i, 1 << i);
-      do_test (&json_ctx, i, i, 1 << i);
+      do_test (&json_ctx, 0, 0, i + 7);
+      do_test (&json_ctx, 0, 3, i + 15);
+      do_test (&json_ctx, 3, 0, i + 31);
+      do_test (&json_ctx, 3, 5, i + 63);
     }
-
-  for (i = 0; i < 32; ++i)
-    {
-      do_test (&json_ctx, 0, 0, i);
-      do_test (&json_ctx, i, 0, i);
-      do_test (&json_ctx, 0, i, i);
-      do_test (&json_ctx, i, i, i);
-    }
-
-  for (i = 3; i < 32; ++i)
-    {
-      if ((i & (i - 1)) == 0)
-	continue;
-      do_test (&json_ctx, 0, 0, 16 * i);
-      do_test (&json_ctx, i, 0, 16 * i);
-      do_test (&json_ctx, 0, i, 16 * i);
-      do_test (&json_ctx, i, i, 16 * i);
-    }
-
-  for (i = 32; i < 64; ++i)
-    {
-      do_test (&json_ctx, 0, 0, 32 * i);
-      do_test (&json_ctx, i, 0, 32 * i);
-      do_test (&json_ctx, 0, i, 32 * i);
-      do_test (&json_ctx, i, i, 32 * i);
-    }
-
-  do_test (&json_ctx, 0, 0, getpagesize ());
 
   json_array_end (&json_ctx);
   json_attr_object_end (&json_ctx);
@@ -185,4 +143,4 @@ test_main (void)
   return ret;
 }
 
-#include "../test-skeleton.c"
+#include <support/test-driver.c>

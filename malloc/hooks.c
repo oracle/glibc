@@ -121,11 +121,7 @@ malloc_check_get_size (mchunkptr p)
        size -= c)
     {
       if (c <= 0 || size < (c + 2 * SIZE_SZ))
-        {
-          malloc_printerr (check_action, "malloc_check_get_size: memory corruption",
-                           chunk2mem (p));
-          return 0;
-        }
+	malloc_printerr ("malloc_check_get_size: memory corruption");
     }
 
   /* chunk2mem size.  */
@@ -231,17 +227,12 @@ mem2chunk_check (void *mem, unsigned char **magic_p)
   return p;
 }
 
-/* Check for corruption of the top chunk, and try to recover if
-   necessary. */
-
+/* Check for corruption of the top chunk.  */
 static int
 internal_function
 top_check (void)
 {
   mchunkptr t = top (&main_arena);
-  char *brk, *new_brk;
-  INTERNAL_SIZE_T front_misalign, sbrk_size;
-  unsigned long pagesz = GLRO (dl_pagesize);
 
   if (t == initial_top (&main_arena) ||
       (!chunk_is_mmapped (t) &&
@@ -251,31 +242,7 @@ top_check (void)
         (char *) t + chunksize (t) == mp_.sbrk_base + main_arena.system_mem)))
     return 0;
 
-  malloc_printerr (check_action, "malloc: top chunk is corrupt", t);
-
-  /* Try to set up a new top chunk. */
-  brk = MORECORE (0);
-  front_misalign = (unsigned long) chunk2mem (brk) & MALLOC_ALIGN_MASK;
-  if (front_misalign > 0)
-    front_misalign = MALLOC_ALIGNMENT - front_misalign;
-  sbrk_size = front_misalign + mp_.top_pad + MINSIZE;
-  sbrk_size += pagesz - ((unsigned long) (brk + sbrk_size) & (pagesz - 1));
-  new_brk = (char *) (MORECORE (sbrk_size));
-  if (new_brk == (char *) (MORECORE_FAILURE))
-    {
-      __set_errno (ENOMEM);
-      return -1;
-    }
-  /* Call the `morecore' hook if necessary.  */
-  void (*hook) (void) = atomic_forced_read (__after_morecore_hook);
-  if (hook)
-    (*hook)();
-  main_arena.system_mem = (new_brk - mp_.sbrk_base) + sbrk_size;
-
-  top (&main_arena) = (mchunkptr) (brk + front_misalign);
-  set_head (top (&main_arena), (sbrk_size - front_misalign) | PREV_INUSE);
-
-  return 0;
+  malloc_printerr ("malloc: top chunk is corrupt");
 }
 
 static void *
@@ -306,12 +273,7 @@ free_check (void *mem, const void *caller)
   __libc_lock_lock (main_arena.mutex);
   p = mem2chunk_check (mem, NULL);
   if (!p)
-    {
-      __libc_lock_unlock (main_arena.mutex);
-
-      malloc_printerr (check_action, "free(): invalid pointer", mem);
-      return;
-    }
+    malloc_printerr ("free(): invalid pointer");
   if (chunk_is_mmapped (p))
     {
       __libc_lock_unlock (main_arena.mutex);
@@ -346,10 +308,7 @@ realloc_check (void *oldmem, size_t bytes, const void *caller)
   const mchunkptr oldp = mem2chunk_check (oldmem, &magic_p);
   __libc_lock_unlock (main_arena.mutex);
   if (!oldp)
-    {
-      malloc_printerr (check_action, "realloc(): invalid pointer", oldmem);
-      return malloc_check (bytes, NULL);
-    }
+    malloc_printerr ("realloc(): invalid pointer");
   const INTERNAL_SIZE_T oldsize = chunksize (oldp);
 
   checked_request2size (bytes + 1, nb);

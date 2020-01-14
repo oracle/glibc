@@ -1095,7 +1095,6 @@ parameter to be set, and @var{value} the new value to be set.  Possible
 choices for @var{param}, as defined in @file{malloc.h}, are:
 
 @table @code
-@comment TODO: @item M_CHECK_ACTION
 @item M_MMAP_MAX
 The maximum number of chunks to allocate with @code{mmap}.  Setting this
 to zero disables all use of @code{mmap}.

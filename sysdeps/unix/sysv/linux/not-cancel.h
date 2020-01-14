@@ -19,6 +19,7 @@
 
 #include <sys/types.h>
 #include <sysdep.h>
+#include <unistd.h>   /* for __libc_enable_secure */
 
 /* Uncancelable open.  */
 #define open_not_cancel(name, flags, mode) \

@@ -1,3 +1,12 @@
+2018-09-18  Patrick McGehearty  <patrick.mcgehearty@oracle.com>
+	    Gerd Rausch <gerd.rausch@oracle.com>
+
+	[Orabug 28481550/29851177] Resolve funlockfile/flockfile issue.
+	* nptl/sysdeps/pthread/flockfile.c (__flockfile):
+	Match behavior of LOCK_STREAM.
+	* nptl/sysdeps/pthread/funlockfile.c (__funlockfile):
+	Match behavior of UNLOCK_STREAM.
+
 2018-05-23  Florian Weimer  <fweimer@redhat.com>
 
 	Implement allocate_once.

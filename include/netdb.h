@@ -3,7 +3,7 @@
 
 #ifndef _ISOMAC
 /* Macros for accessing h_errno from inside libc.  */
-# if !defined NOT_IN_libc || defined IN_LIB
+# if !defined NOT_IN_libc || IS_IN_LIB
 #  undef  h_errno
 #  ifdef _LIBC_REENTRANT
 #   include <tls.h>
@@ -16,7 +16,7 @@ extern __thread int h_errno attribute_tls_model_ie;
 #  else
 extern int h_errno;
 #  endif	/* _LIBC_REENTRANT */
-# endif /* !NOT_IN_libc || IN_LIB */
+# endif /* !NOT_IN_libc || IS_IN_LIB */
 # define __set_h_errno(x) (h_errno = (x))
 
 libc_hidden_proto (hstrerror)

@@ -94,7 +94,7 @@ STUPID_STRNCPY (CHAR *dst, const CHAR *src, size_t n)
 typedef CHAR *(*proto_t) (CHAR *, const CHAR *, size_t);
 
 static void
-do_one_test (impl_t *impl, CHAR *dst, const char *src, size_t len, size_t n)
+do_one_test (impl_t *impl, CHAR *dst, const CHAR *src, size_t len, size_t n)
 {
   if (CALL (impl, dst, src, n) != STRNCPY_RESULT (dst, len, n))
     {

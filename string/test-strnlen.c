@@ -80,7 +80,7 @@ do_test (size_t align, size_t len, size_t maxlen, int max_char)
   CHAR *buf = (CHAR *) (buf1);
 
   for (i = 0; i < len; ++i)
-    buf[align + i] = 1 + 7 * i % max_char;
+    buf[align + i] = 1 + 11111 * i % max_char;
   buf[align + len] = 0;
 
   FOR_EACH_IMPL (impl, 0)

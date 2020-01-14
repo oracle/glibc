@@ -44,8 +44,10 @@ pthread_cancel_init (void)
 
   if (__builtin_expect (libgcc_s_handle != NULL, 1))
     {
-      /* Force gcc to reload all values.  */
-      asm volatile ("" ::: "memory");
+      /* Order reads so as to prevent speculation of loads
+	 of libgcc_s_{resume,personality,forcedunwind,getcfa}
+	 to points prior to the write barrier.  */
+      atomic_read_barrier ();
       return;
     }
 
@@ -71,9 +73,14 @@ pthread_cancel_init (void)
   libgcc_s_forcedunwind = forcedunwind;
   PTR_MANGLE (getcfa);
   libgcc_s_getcfa = getcfa;
-  /* Make sure libgcc_s_handle is written last.  Otherwise,
-     pthread_cancel_init might return early even when the pointer the
-     caller is interested in is not initialized yet.  */
+  /* At the point at which any thread writes the handle
+     to libgcc_s_handle, the initialization is complete.
+     The writing of libgcc_s_handle is atomic. All other
+     threads reading libgcc_s_handle do so atomically. Any
+     thread that does not execute this function must issue
+     a read barrier to ensure that all of the above has
+     actually completed and that the values of the
+     function pointers are correct.   */
   atomic_write_barrier ();
   libgcc_s_handle = handle;
 }
@@ -90,13 +97,19 @@ __unwind_freeres (void)
     }
 }
 
-void
-_Unwind_Resume (struct _Unwind_Exception *exc)
+static __always_inline void
+_maybe_pthread_cancel_init (void)
 {
   if (__builtin_expect (libgcc_s_handle == NULL, 0))
     pthread_cancel_init ();
   else
     atomic_read_barrier ();
+}
+
+void
+_Unwind_Resume (struct _Unwind_Exception *exc)
+{
+  _maybe_pthread_cancel_init ();
 
   void (*resume) (struct _Unwind_Exception *exc) = libgcc_s_resume;
   PTR_DEMANGLE (resume);
@@ -109,10 +122,7 @@ __gcc_personality_v0 (int version, _Unwind_Action actions,
 		      struct _Unwind_Exception *ue_header,
 		      struct _Unwind_Context *context)
 {
-  if (__builtin_expect (libgcc_s_handle == NULL, 0))
-    pthread_cancel_init ();
-  else
-    atomic_read_barrier ();
+  _maybe_pthread_cancel_init ();
 
   _Unwind_Reason_Code (*personality)
     (int, _Unwind_Action, _Unwind_Exception_Class, struct _Unwind_Exception *,
@@ -125,10 +135,7 @@ _Unwind_Reason_Code
 _Unwind_ForcedUnwind (struct _Unwind_Exception *exc, _Unwind_Stop_Fn stop,
 		      void *stop_argument)
 {
-  if (__builtin_expect (libgcc_s_handle == NULL, 0))
-    pthread_cancel_init ();
-  else
-    atomic_read_barrier ();
+  _maybe_pthread_cancel_init ();
 
   _Unwind_Reason_Code (*forcedunwind)
     (struct _Unwind_Exception *, _Unwind_Stop_Fn, void *)
@@ -140,10 +147,7 @@ _Unwind_ForcedUnwind (struct _Unwind_Exception *exc, _Unwind_Stop_Fn stop,
 _Unwind_Word
 _Unwind_GetCFA (struct _Unwind_Context *context)
 {
-  if (__builtin_expect (libgcc_s_handle == NULL, 0))
-    pthread_cancel_init ();
-  else
-    atomic_read_barrier ();
+  _maybe_pthread_cancel_init ();
 
   _Unwind_Word (*getcfa) (struct _Unwind_Context *) = libgcc_s_getcfa;
   PTR_DEMANGLE (getcfa);

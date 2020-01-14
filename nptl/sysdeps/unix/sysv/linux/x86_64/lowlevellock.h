@@ -72,7 +72,7 @@
 
 #ifndef __ASSEMBLER__
 
-#if !defined NOT_IN_libc || IS_IN (rtld)
+#if IS_IN (libc) || IS_IN (rtld)
 /* In libc.so or ld.so all futexes are private.  */
 # ifdef __ASSUME_PRIVATE_FUTEX
 #  define __lll_private_flag(fl, private) \
@@ -244,7 +244,7 @@ LLL_STUB_UNWIND_INFO_END
    value is zero.  In case the operation failed, the cmpxchg instruction
    has loaded the current value of the memory work which is guaranteed
    to be nonzero.  */
-#if defined NOT_IN_libc || defined UP
+#if !IS_IN (libc) || defined UP
 # define __lll_trylock_asm LOCK_INSTR "cmpxchgl %2, %1"
 #else
 # define __lll_trylock_asm "cmpl $0, __libc_multiple_threads(%%rip)\n\t"      \
@@ -281,7 +281,7 @@ LLL_STUB_UNWIND_INFO_END
 		       : "memory");					      \
      ret; })
 
-#if defined NOT_IN_libc || defined UP
+#if !IS_IN (libc) || defined UP
 # define __lll_lock_asm_start LOCK_INSTR "cmpxchgl %4, %2\n\t"		      \
 			      "jnz 1f\n\t"
 #else
@@ -451,7 +451,7 @@ LLL_STUB_UNWIND_INFO_END
 		       : "memory", "cx", "cc", "r10", "r11");		      \
      result; })
 
-#if defined NOT_IN_libc || defined UP
+#if !IS_IN (libc) || defined UP
 # define __lll_unlock_asm_start LOCK_INSTR "decl %0\n\t"		      \
 				"jne 1f\n\t"
 #else

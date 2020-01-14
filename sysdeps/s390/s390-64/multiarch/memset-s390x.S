@@ -27,7 +27,7 @@
 
        .text
 
-#ifndef NOT_IN_libc
+#if IS_IN (libc)
 
 ENTRY(__memset_z196)
 	.machine "z196"
@@ -99,11 +99,11 @@ ENTRY(__memset_mvcle)
 	br	%r14
 END(__memset_mvcle)
 
-#endif /* !NOT_IN_libc */
+#endif /* !IS_IN (libc) */
 
 #include "../memset.S"
 
-#ifdef NOT_IN_libc
+#if !IS_IN (libc)
 .globl   memset
 .set     memset,__memset_default
 #endif

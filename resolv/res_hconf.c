@@ -359,7 +359,7 @@ _res_hconf_init (void)
 }
 
 
-#ifndef NOT_IN_libc
+#if IS_IN (libc)
 /* List of known interfaces.  */
 libc_freeres_ptr (
 static struct netaddr

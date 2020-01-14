@@ -17,7 +17,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#if !defined NOT_IN_libc && (defined SHARED || defined USE_AS_STRCAT)
+#if IS_IN (libc) && (defined SHARED || defined USE_AS_STRCAT)
 
 # ifndef USE_AS_STRCAT
 

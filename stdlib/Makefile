@@ -139,7 +139,6 @@ LDFLAGS-tst-putenv = $(no-as-needed)
 $(objpfx)tst-putenvmod.so: $(objpfx)tst-putenvmod.os
 	$(build-module)
 libof-tst-putenvmod = extramodules
-CFLAGS-tst-putenvmod.c = -DNOT_IN_libc=1
 
 ifeq ($(build-shared),yes)
 link-libm = $(common-objpfx)math/libm.so

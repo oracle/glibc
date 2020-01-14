@@ -27,7 +27,7 @@
    INLINE_SYSCALL (open, 2, (const char *) (name), (flags))
 
 /* Uncancelable openat.  */
-#if !defined NOT_IN_libc || IS_IN (libpthread) || IS_IN (librt)
+#if IS_IN (libc) || IS_IN (libpthread) || IS_IN (librt)
 extern int __openat_nocancel (int fd, const char *fname, int oflag,
 			      mode_t mode) attribute_hidden;
 extern int __openat64_nocancel (int fd, const char *fname, int oflag,

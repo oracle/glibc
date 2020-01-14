@@ -4849,7 +4849,7 @@
 
 	* libio/genops.c (_IO_unbuffer_write): Conditionalize locking code on
 	[_IO_MTSAFE_IO].
-	* libio/libioP.h [!_IO_MTSAFE_IO && !NOT_IN_libc]
+	* libio/libioP.h [!_IO_MTSAFE_IO && !IS_IN (libc)]
 	(_IO_acquire_lock, _IO_acquire_lock_clear_flags2, _IO_release_lock):
 	New macros.
 
@@ -5014,7 +5014,7 @@
 	including <string.h>.
 
 	* sysdeps/x86_64/multiarch/memmove.c: Don't include <stddef.h>.
-	[!NOT_IN_libc]: Move #define and #undef of memmove to just before
+	[!IS_IN (libc)]: Move #define and #undef of memmove to just before
 	and after including <string.h>.  Move declarations of
 	__memmove_sse2, __memmove_ssse3, and __memmove_ssse3_back
 	to before #include "string/memmove.c".
@@ -7322,7 +7322,7 @@
 2012-05-30  Richard Henderson  <rth@twiddle.net>
 
 	* sysdeps/unix/make-syscalls.sh: Protect symbol_version output
-	with #ifndef NOT_IN_libc.
+	with #if IS_IN (libc).
 
 	* scripts/abilist.awk: Accept 8 fields.  Handle Alpha functions
 	marked to avoid plt entry.

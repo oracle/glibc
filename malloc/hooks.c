@@ -220,7 +220,9 @@ top_check(void)
 	(char*)t + chunksize(t) == mp_.sbrk_base + main_arena.system_mem)))
     return 0;
 
+  mutex_unlock(&main_arena);
   malloc_printerr (check_action, "malloc: top chunk is corrupt", t);
+  mutex_lock(&main_arena);
 
   /* Try to set up a new top chunk. */
   brk = MORECORE(0);

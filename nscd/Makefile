@@ -87,6 +87,9 @@ endif
 ifeq (yes,$(have-ssp))
 CFLAGS-nonlib += -fstack-protector
 endif
+ifeq (yes,$(have-ssp-strong))
+CFLAGS-nonlib += -fstack-protector-strong
+endif
 
 ifeq (yesyes,$(have-fpie)$(build-shared))
 LDFLAGS-nscd = -Wl,-z,now

@@ -1,3 +1,7 @@
+2017-12-14  Siddhesh Poyarekar  <siddhesh@sourceware.org>
+
+	* benchtests/bench-strcmp.c: Print output in JSON format.
+
 2017-11-20  Siddhesh Poyarekar  <siddhesh@sourceware.org>
 
 	* sysdeps/aarch64/memset-reg.h: New file.

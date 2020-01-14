@@ -1015,7 +1015,9 @@ static void*  _int_realloc(mstate, mchunkptr, INTERNAL_SIZE_T,
 			   INTERNAL_SIZE_T);
 static void*  _int_memalign(mstate, size_t, size_t);
 static void*  _mid_memalign(size_t, size_t, void *);
-static void malloc_printerr(int action, const char *str, void *ptr);
+
+static void malloc_printerr(int action, const char *str, void *ptr)
+  __attribute__ ((noreturn));
 
 static void* internal_function mem2mem_check(void *p, size_t sz);
 static int internal_function top_check(void);
@@ -5381,24 +5383,8 @@ extern char **__libc_argv attribute_hidden;
 static void
 malloc_printerr (int action, const char *str, void *ptr)
 {
-  if ((action & 5) == 5)
-    __libc_message ((action & 2) ? (do_abort | do_backtrace) : do_message,
-		    "%s\n", str);
-  else if (action & 1)
-    {
-      char buf[2 * sizeof (uintptr_t) + 1];
-
-      buf[sizeof (buf) - 1] = '\0';
-      char *cp = _itoa_word ((uintptr_t) ptr, &buf[sizeof (buf) - 1], 16, 0);
-      while (cp > buf)
-        *--cp = '0';
-
-      __libc_message ((action & 2) ? (do_abort | do_backtrace) : do_message,
-		      "*** Error in `%s': %s: 0x%s ***\n",
-                      __libc_argv[0] ? : "<unknown>", str, cp);
-    }
-  else if (action & 2)
-    abort ();
+  __libc_message (do_abort, "%s\n", str);
+  __builtin_unreachable ();
 }
 
 #include <sys/param.h>

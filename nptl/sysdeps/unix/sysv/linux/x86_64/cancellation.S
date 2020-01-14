@@ -21,7 +21,7 @@
 #include <kernel-features.h>
 #include "lowlevellock.h"
 
-#ifdef IS_IN_libpthread
+#if IS_IN (libpthread)
 # ifdef SHARED
 #  define __pthread_unwind __GI___pthread_unwind
 # endif

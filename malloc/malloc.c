@@ -408,13 +408,6 @@ void *(*__morecore)(ptrdiff_t) = __default_morecore;
 
 #include <string.h>
 
-
-/* Force a value to be in a register and stop the compiler referring
-   to the source (mostly memory location) again.  */
-#define force_reg(val) \
-  ({ __typeof (val) _v; asm ("" : "=r" (_v) : "0" (val)); _v; })
-
-
 /*
   MORECORE-related declarations. By default, rely on sbrk
 */
@@ -2500,7 +2493,7 @@ static void* sysmalloc(INTERNAL_SIZE_T nb, mstate av)
 
   if (brk != (char*)(MORECORE_FAILURE)) {
     /* Call the `morecore' hook if necessary.  */
-    void (*hook) (void) = force_reg (__after_morecore_hook);
+    void (*hook) (void) = atomic_forced_read (__after_morecore_hook);
     if (__builtin_expect (hook != NULL, 0))
       (*hook) ();
   } else {
@@ -2640,7 +2633,7 @@ static void* sysmalloc(INTERNAL_SIZE_T nb, mstate av)
 	  snd_brk = (char*)(MORECORE(0));
 	} else {
 	  /* Call the `morecore' hook if necessary.  */
-	  void (*hook) (void) = force_reg (__after_morecore_hook);
+	  void (*hook) (void) = atomic_forced_read (__after_morecore_hook);
 	  if (__builtin_expect (hook != NULL, 0))
 	    (*hook) ();
 	}
@@ -2791,7 +2784,7 @@ static int systrim(size_t pad, mstate av)
 
       MORECORE(-extra);
       /* Call the `morecore' hook if necessary.  */
-      void (*hook) (void) = force_reg (__after_morecore_hook);
+      void (*hook) (void) = atomic_forced_read (__after_morecore_hook);
       if (__builtin_expect (hook != NULL, 0))
 	(*hook) ();
       new_brk = (char*)(MORECORE(0));
@@ -2895,8 +2888,8 @@ __libc_malloc(size_t bytes)
   mstate ar_ptr;
   void *victim;
 
-  __malloc_ptr_t (*hook) (size_t, const __malloc_ptr_t)
-    = force_reg (__malloc_hook);
+  void *(*hook) (size_t, const void *)
+    = atomic_forced_read (__malloc_hook);
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(bytes, RETURN_ADDRESS (0));
 
@@ -2926,8 +2919,8 @@ __libc_free(void* mem)
   mstate ar_ptr;
   mchunkptr p;                          /* chunk corresponding to mem */
 
-  void (*hook) (__malloc_ptr_t, const __malloc_ptr_t)
-    = force_reg (__free_hook);
+  void (*hook) (void *, const void *)
+    = atomic_forced_read (__free_hook);
   if (__builtin_expect (hook != NULL, 0)) {
     (*hook)(mem, RETURN_ADDRESS (0));
     return;
@@ -2967,8 +2960,8 @@ __libc_realloc(void* oldmem, size_t bytes)
 
   void* newp;             /* chunk to return */
 
-  __malloc_ptr_t (*hook) (__malloc_ptr_t, size_t, const __malloc_ptr_t) =
-    force_reg (__realloc_hook);
+  void *(*hook) (void *, size_t, const void *) =
+    atomic_forced_read (__realloc_hook);
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(oldmem, bytes, RETURN_ADDRESS (0));
 
@@ -3058,9 +3051,8 @@ _mid_memalign (size_t alignment, size_t bytes, void *address)
   mstate ar_ptr;
   void *p;
 
-  __malloc_ptr_t (*hook) __MALLOC_PMT ((size_t, size_t,
-					const __malloc_ptr_t)) =
-    force_reg (__memalign_hook);
+  void *(*hook) (size_t, size_t, const void *) =
+    atomic_forced_read (__memalign_hook);
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(alignment, bytes, address);
 
@@ -3160,8 +3152,8 @@ __libc_calloc(size_t n, size_t elem_size)
     }
   }
 
-  __malloc_ptr_t (*hook) __MALLOC_PMT ((size_t, const __malloc_ptr_t)) =
-    force_reg (__malloc_hook);
+  void *(*hook) (size_t, const void *) =
+    atomic_forced_read (__malloc_hook);
   if (__builtin_expect (hook != NULL, 0)) {
     sz = bytes;
     mem = (*hook)(sz, RETURN_ADDRESS (0));

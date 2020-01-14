@@ -1,3 +1,7 @@
+2013-02-05  Roland McGrath  <roland@hack.frob.com>
+
+	* sysdeps/generic/malloc-sysdep.h: Include <stdbool.h> and <unistd.h>.
+
 2015-02-17  Carlos O'Donell  <carlos@redhat.com>
 
 	* dl-reloc.c: Inlucde libc-internal.h.

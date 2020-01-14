@@ -29,12 +29,7 @@
 
 /* Change the owner and group of FILE.  */
 int
-fchownat (fd, file, owner, group, flag)
-     int fd;
-     const char *file;
-     uid_t owner;
-     gid_t group;
-     int flag;
+fchownat (int fd, const char *file, uid_t owner, gid_t group, int flag)
 {
   int result;
 

@@ -1,5 +1,14 @@
 2015-04-08  Florian Weimer  <fweimer@redhat.com>
 
+	* grp/initgroups.c: Include <scratch_buffer.h> instead of
+	<alloca.h>.
+	* grp/compat-initgroups.c (compat_call): Rewrite to use struct
+	scratch_buffer instead of extend_alloca.
+	* nscd/initgrcache.c: Include <scratch_buffer.h>, now needed by
+	grp/compat-initgroups.c.
+
+2015-04-08  Florian Weimer  <fweimer@redhat.com>
+
 	Backport for MV bug#59958
 	* elf/pldd.c (main): Rewrite to use struct
 	scratch_buffer instead of extend_alloca.

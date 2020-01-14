@@ -118,7 +118,14 @@ $(inst_vardbdir)/Makefile: db-Makefile $(+force)
 libnss_test1.so-no-z-defs = 1
 libnss_test2.so-no-z-defs = 1
 
-rtld-tests-LDFLAGS += -Wl,--dynamic-list=nss_test.ver
+# RHEL 7 glibc tree does not support rtld-tests-LDFLAGS.
+# Instead we directly alter the way the tests are built.
+# rtld-tests-LDFLAGS += -Wl,--dynamic-list=nss_test.ver
+LDFLAGS-tst-nss-test1 += -Wl,-E
+LDFLAGS-tst-nss-test2 += -Wl,-E
+LDFLAGS-tst-nss-test3 += -Wl,-E
+LDFLAGS-tst-nss-test4 += -Wl,-E
+LDFLAGS-tst-nss-test5 += -Wl,-E
 
 libof-nss_test1 = extramodules
 libof-nss_test2 = extramodules

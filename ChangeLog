@@ -1,3 +1,9 @@
+2014-01-06  Andrew Pinski  <apinski@cavium.com>
+
+	* sysdeps/aarch64/dl-trampoline.S (_dl_runtime_resolve): Fix up first
+	cfi_adjust_cfa_offset to be correct.
+	Also fix up the location of &PLTGOT[n] which is now 80+8*16.
+
 2014-01-01  Marcus Shawcroft  <marcus.shawcroft@linaro.org>
 
 	* sysdeps/aarch64/abort-instr.h: New file.

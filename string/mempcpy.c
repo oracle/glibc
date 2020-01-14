@@ -26,11 +26,12 @@
 #undef mempcpy
 #undef __mempcpy
 
+#ifndef MEMPCPY
+# define MEMPCPY __mempcpy
+#endif
+
 void *
-__mempcpy (dstpp, srcpp, len)
-     void *dstpp;
-     const void *srcpp;
-     size_t len;
+MEMPCPY (void *dstpp, const void *srcpp, size_t len)
 {
   unsigned long int dstp = (long int) dstpp;
   unsigned long int srcp = (long int) srcpp;

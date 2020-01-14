@@ -276,10 +276,7 @@ gen-as-const-headers = pthread-errnos.sym
 
 LDFLAGS-pthread.so = -Wl,--enable-new-dtags,-z,nodelete,-z,initfirst
 
-# The size is 1MB + 4KB.  The extra 4KB has been added to prevent allocatestack
-# from resizing the input size to avoid the 64K aliasing conflict on Intel
-# processors.
-DEFAULT_STACKSIZE=1052672
+DEFAULT_STACKSIZE=1048576
 CFLAGS-tst-default-attr.c = -DDEFAULT_STACKSIZE=$(DEFAULT_STACKSIZE)
 tst-default-attr-ENV = GLIBC_PTHREAD_STACKSIZE=$(DEFAULT_STACKSIZE)
 

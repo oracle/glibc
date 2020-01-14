@@ -1,5 +1,10 @@
 2015-04-08  Florian Weimer  <fweimer@redhat.com>
 
+	* nis/nss_compat/compat-initgroups.c (_nss_compat_initgroups_dyn):
+	Rewrite to use struct scratch_buffer instead of extend_alloca.
+
+2015-04-08  Florian Weimer  <fweimer@redhat.com>
+
 	* grp/initgroups.c: Include <scratch_buffer.h> instead of
 	<alloca.h>.
 	* grp/compat-initgroups.c (compat_call): Rewrite to use struct

@@ -1,5 +1,10 @@
 2016-04-01  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
+	* string/strcspn.c (strcspn): Use PTR_ALIGN_DOWN.
+	* string/strspn.c (strspn): Likewise.
+
+2016-04-01  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
 	* string/strpbrk.c (strpbrk): Rewrite function.
 	* string/bits/string2.h (strpbrk): Use __builtin_strpbrk.
 	(__strpbrk_c2): Likewise.

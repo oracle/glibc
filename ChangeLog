@@ -1,3 +1,7 @@
+2013-07-01  Andrew Pinski  <apinski@cavium.com>
+
+	* sysdeps/aarch64/crti.S: Include sysdep.h for the macros.
+
 2019-08-30  Patrick McGehearty <patrick.mcgehearty@oracle.com>
 
 	* sysdeps/mips/memcpy.S clean up to make comparable to

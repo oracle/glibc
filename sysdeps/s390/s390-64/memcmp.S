@@ -27,36 +27,36 @@
 
        .text
 #ifdef USE_MULTIARCH
-ENTRY(__memcmp_z900)
+ENTRY(__memcmp_default)
 #else
 ENTRY(memcmp)
 #endif
 	.machine "z900"
-        ltgr    %r4,%r4
-        je      .L_Z900_4
-        aghi    %r4,-1
-        srlg    %r1,%r4,8
-        ltgr    %r1,%r1
-        jne     .L_Z900_12
+	ltgr    %r4,%r4
+	je      .L_Z900_4
+	aghi    %r4,-1
+	srlg    %r1,%r4,8
+	ltgr    %r1,%r1
+	jne     .L_Z900_12
 .L_Z900_3:
-        larl    %r1,.L_Z900_15
-        ex      %r4,0(%r1)
+	larl    %r1,.L_Z900_15
+	ex      %r4,0(%r1)
 .L_Z900_4:
-        ipm     %r2
-        sllg    %r2,%r2,34
-        srag    %r2,%r2,62
-        br      %r14
+	ipm     %r2
+	sllg    %r2,%r2,34
+	srag    %r2,%r2,62
+	br      %r14
 .L_Z900_12:
-        clc     0(256,%r3),0(%r2)
-        jne     .L_Z900_4
-        la      %r3,256(%r3)
-        la      %r2,256(%r2)
-        brctg   %r1,.L_Z900_12
-        j       .L_Z900_3
+	clc     0(256,%r3),0(%r2)
+	jne     .L_Z900_4
+	la      %r3,256(%r3)
+	la      %r2,256(%r2)
+	brctg   %r1,.L_Z900_12
+	j       .L_Z900_3
 .L_Z900_15:
-        clc     0(1,%r3),0(%r2)
+	clc     0(1,%r3),0(%r2)
 #ifdef USE_MULTIARCH
-END(__memcmp_z900)
+END(__memcmp_default)
 #else
 END(memcmp)
 libc_hidden_builtin_def (memcmp)

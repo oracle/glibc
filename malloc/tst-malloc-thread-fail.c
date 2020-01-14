@@ -156,7 +156,7 @@ static void *
 allocate (void)
 {
   struct allocate_result r = allocate_1 ();
-#if __powerpc__ == 1 && __powerpc64__ == 0
+#if defined (__powerpc__) == 1 && !defined (__powerpc64__)
   /* Sourceware bug 6527 on 32-bit POWER.
      Ignore 16-byte alignment requirement when using malloc, realloc, or
      calloc, since these functions are known not to provide enough

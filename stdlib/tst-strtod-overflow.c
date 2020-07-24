@@ -48,6 +48,4 @@ do_test (void)
   return 0;
 }
 
-#define TEST_FUNCTION do_test ()
-#define TIMEOUT 5
-#include "../test-skeleton.c"
+#include <support/test-driver.c>

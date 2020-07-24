@@ -26,7 +26,7 @@ struct layout
   unsigned long locals[8];
   unsigned long ins[6];
   unsigned long next;
-  void *__unbounded return_address;
+  void *return_address;
 };
 
 int
@@ -38,14 +38,14 @@ __backtrace (void **array, int size)
 
   asm volatile ("flushw");
   asm volatile ("mov %%fp, %0" : "=r"(fp));
-  current = (struct layout *__unbounded) (fp + STACK_BIAS);
+  current = (struct layout *) (fp + STACK_BIAS);
 
   for (count = 0; count < size; count++)
     {
       array[count] = current->return_address;
       if (!current->next)
 	break;
-      current = (struct layout *__unbounded) (current->next + STACK_BIAS);
+      current = (struct layout *) (current->next + STACK_BIAS);
     }
 
   return count;

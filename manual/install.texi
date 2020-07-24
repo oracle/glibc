@@ -177,6 +177,13 @@ you understand and accept those risks.
 @item --enable-lock-elision=yes
 Enable lock elision for pthread mutexes by default.
 
+@item --disable-werror
+By default, @theglibc{} is built with @option{-Werror}.  If you wish
+to build without this option (for example, if building with a newer
+version of GCC than this version of @theglibc{} was tested with, so
+new warnings cause the build with @option{-Werror} to fail), you can
+configure with @option{--disable-werror}.
+
 @item --build=@var{build-system}
 @itemx --host=@var{host-system}
 These options are for cross-compiling.  If you specify both options and

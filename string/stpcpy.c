@@ -36,9 +36,7 @@ extern __typeof (__stpcpy) STPCPY;
 
 /* Copy SRC to DEST, returning the address of the terminating '\0' in DEST.  */
 char *
-__stpcpy (dest, src)
-     char *dest;
-     const char *src;
+__stpcpy (char *dest, const char *src)
 {
   char *d = dest;
   const char *s = src;

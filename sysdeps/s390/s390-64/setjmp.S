@@ -63,7 +63,7 @@ ENTRY(__sigsetjmp)
 	std    %f13,120(%r2)
 	std    %f14,128(%r2)
 	std    %f15,136(%r2)
-#ifdef IS_IN_rtld
+#if IS_IN (rtld)
 	/* In ld.so we never save the signal mask.  */
 	lghi   %r2,0
 	br     %r14

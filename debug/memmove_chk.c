@@ -27,11 +27,7 @@
 #endif
 
 void *
-MEMMOVE_CHK (dest, src, len, destlen)
-     void *dest;
-     const void *src;
-     size_t len;
-     size_t destlen;
+MEMMOVE_CHK (void *dest, const void *src, size_t len, size_t destlen)
 {
   if (__builtin_expect (destlen < len, 0))
     __chk_fail ();

@@ -59,6 +59,7 @@ struct clparam
 
 
 static void
+__attribute__ ((noinline))
 cleanup (void *arg)
 {
 #ifdef DONT_NEED_AIO_MISC_COND

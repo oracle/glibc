@@ -66,8 +66,8 @@ elision_init (int argc __attribute__ ((unused)),
 	      char **argv  __attribute__ ((unused)),
 	      char **environ)
 {
-  int elision_available = HAS_CPU_FEATURE (RTM);
 #ifdef ENABLE_LOCK_ELISION
+  int elision_available = HAS_CPU_FEATURE (RTM);
   if (!__libc_enable_secure && elision_available)
     {
       /* RHEL 7 specific change: Check if elision is enabled for the

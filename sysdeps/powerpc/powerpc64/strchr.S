@@ -17,32 +17,19 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <sysdep.h>
-#include <bp-sym.h>
-#include <bp-asm.h>
 
 /* See strlen.s for comments on how this works.  */
 
 /* char * [r3] strchr (const char *s [r3] , int c [r4] )  */
 
-ENTRY (BP_SYM (strchr))
+ENTRY (strchr)
 	CALL_MCOUNT 2
 
 #define rTMP1	r0
 #define rRTN	r3	/* outgoing result */
-/* Note:  The Bounded pointer support in this code is broken.  This code
-   was inherited from PPC32 and that support was never completed.
-   Currently PPC gcc does not support -fbounds-check or -fbounded-pointers.
-   These artifacts are left in the code as a reminder in case we need
-   bounded pointer support in the future.  */
-#if __BOUNDED_POINTERS__
-# define rSTR	r4
-# define rCHR	r5	/* byte we're looking for, spread over the whole word */
-# define rWORD	r8	/* the current word */
-#else
-# define rSTR	r8	/* current word pointer */
-# define rCHR	r4	/* byte we're looking for, spread over the whole word */
-# define rWORD	r5	/* the current word */
-#endif
+#define rSTR	r8	/* current word pointer */
+#define rCHR	r4	/* byte we're looking for, spread over the whole word */
+#define rWORD	r5	/* the current word */
 #define rCLZB	rCHR	/* leading zero byte count */
 #define rFEFE	r6	/* constant 0xfefefefefefefeff (-0x0101010101010101) */
 #define r7F7F	r7	/* constant 0x7f7f7f7f7f7f7f7f */
@@ -52,9 +39,6 @@ ENTRY (BP_SYM (strchr))
 #define rTMP3	r12
 #define rTMP4	rIGN
 #define rTMP5	rMASK
-
-	CHECK_BOUNDS_LOW (rSTR, rTMP1, rTMP2)
-	STORE_RETURN_BOUNDS (rTMP1, rTMP2)
 
 	dcbt	0,rRTN
 	insrdi	rCHR, rCHR, 8, 48
@@ -107,7 +91,6 @@ L(loopentry):
    zero byte, in which case we return a match.  */
 	and.	rTMP5, rTMP1, rTMP2
 	li	rRTN, 0
-	STORE_RETURN_VALUE (rSTR)
 	beqlr
 /* At this point:
    rTMP5 bytes are 0x80 for each match of c, 0 otherwise.
@@ -142,8 +125,6 @@ L(loopentry):
 #endif
 	srdi	rCLZB, rCLZB, 3
 	add	rRTN, rSTR, rCLZB
-	CHECK_BOUNDS_HIGH_RTN (rSTR, rTMP2, tdlge)
-	STORE_RETURN_VALUE (rSTR)
 	blr
 
 L(foundit):
@@ -163,10 +144,8 @@ L(foundit):
 	srdi	rCLZB, rCLZB, 3
 #endif
 	add	rRTN, rSTR, rCLZB
-	CHECK_BOUNDS_HIGH_RTN (rSTR, rTMP2, tdlge)
-	STORE_RETURN_VALUE (rSTR)
 	blr
-END (BP_SYM (strchr))
+END (strchr)
 
-weak_alias (BP_SYM (strchr), BP_SYM (index))
+weak_alias (strchr, index)
 libc_hidden_builtin_def (strchr)

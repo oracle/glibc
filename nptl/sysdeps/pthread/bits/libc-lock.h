@@ -26,7 +26,7 @@
 
 /* Mutex type.  */
 #if defined _LIBC || defined _IO_MTSAFE_IO
-# if (defined NOT_IN_libc && !defined IS_IN_libpthread) || !defined _LIBC
+# if (defined NOT_IN_libc && !IS_IN (libpthread)) || !defined _LIBC
 typedef struct { pthread_mutex_t mutex; } __libc_lock_recursive_t;
 # else
 typedef struct { int lock; int cnt; void *owner; } __libc_lock_recursive_t;
@@ -47,7 +47,7 @@ typedef struct __libc_lock_recursive_opaque__ __libc_lock_recursive_t;
 
 /* Define an initialized recursive lock variable NAME with storage
    class CLASS.  */
-#if defined _LIBC && (!defined NOT_IN_libc || defined IS_IN_libpthread)
+#if defined _LIBC && (!defined NOT_IN_libc || IS_IN (libpthread))
 # if LLL_LOCK_INITIALIZER == 0
 #  define __libc_lock_define_initialized_recursive(CLASS,NAME) \
   CLASS __libc_lock_recursive_t NAME;
@@ -65,7 +65,7 @@ typedef struct __libc_lock_recursive_opaque__ __libc_lock_recursive_t;
 #endif
 
 /* Initialize a recursive mutex.  */
-#if defined _LIBC && (!defined NOT_IN_libc || defined IS_IN_libpthread)
+#if defined _LIBC && (!defined NOT_IN_libc || IS_IN (libpthread))
 # define __libc_lock_init_recursive(NAME) \
   ((NAME) = (__libc_lock_recursive_t) _LIBC_LOCK_RECURSIVE_INITIALIZER, 0)
 #else
@@ -83,7 +83,7 @@ typedef struct __libc_lock_recursive_opaque__ __libc_lock_recursive_t;
 #endif
 
 /* Finalize recursive named lock.  */
-#if defined _LIBC && (!defined NOT_IN_libc || defined IS_IN_libpthread)
+#if defined _LIBC && (!defined NOT_IN_libc || IS_IN (libpthread))
 # define __libc_lock_fini_recursive(NAME) ((void) 0)
 #else
 # define __libc_lock_fini_recursive(NAME) \
@@ -91,7 +91,7 @@ typedef struct __libc_lock_recursive_opaque__ __libc_lock_recursive_t;
 #endif
 
 /* Lock the recursive named lock variable.  */
-#if defined _LIBC && (!defined NOT_IN_libc || defined IS_IN_libpthread)
+#if defined _LIBC && (!defined NOT_IN_libc || IS_IN (libpthread))
 # define __libc_lock_lock_recursive(NAME) \
   do {									      \
     void *self = THREAD_SELF;						      \
@@ -108,7 +108,7 @@ typedef struct __libc_lock_recursive_opaque__ __libc_lock_recursive_t;
 #endif
 
 /* Try to lock the recursive named lock variable.  */
-#if defined _LIBC && (!defined NOT_IN_libc || defined IS_IN_libpthread)
+#if defined _LIBC && (!defined NOT_IN_libc || IS_IN (libpthread))
 # define __libc_lock_trylock_recursive(NAME) \
   ({									      \
     int result = 0;							      \
@@ -133,7 +133,7 @@ typedef struct __libc_lock_recursive_opaque__ __libc_lock_recursive_t;
 #endif
 
 /* Unlock the recursive named lock variable.  */
-#if defined _LIBC && (!defined NOT_IN_libc || defined IS_IN_libpthread)
+#if defined _LIBC && (!defined NOT_IN_libc || IS_IN (libpthread))
 /* We do no error checking here.  */
 # define __libc_lock_unlock_recursive(NAME) \
   do {									      \

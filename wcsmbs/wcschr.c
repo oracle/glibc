@@ -23,9 +23,7 @@
 #endif
 
 wchar_t *
-wcschr (wcs, wc)
-     const wchar_t *wcs;
-     const wchar_t wc;
+wcschr (const wchar_t *wcs, const wchar_t wc)
 {
   do
     if (*wcs == wc)

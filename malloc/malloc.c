@@ -291,6 +291,7 @@ __malloc_assert (const char *assertion, const char *file, unsigned int line,
 }
 #endif
 
+#include <malloc/malloc-internal.h>
 
 /*
   INTERNAL_SIZE_T is the word-size used for internal bookkeeping

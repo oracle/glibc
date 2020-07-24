@@ -1,4 +1,5 @@
-/* Copyright (C) 1991, 1995, 1997, 1999, 2000 Free Software Foundation, Inc.
+/* Default memccpy implementation for S/390.
+   Copyright (C) 2015 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,35 +16,12 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <string.h>
+#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+# define MEMCCPY  __memccpy_c
+# undef weak_alias
+# define weak_alias(a, b)
 
-#undef __memccpy
-#undef memccpy
-
-#ifdef MEMCCPY
-# define __memccpy MEMCCPY
+# include <string.h>
+extern __typeof (__memccpy) __memccpy_c;
+# include <string/memccpy.c>
 #endif
-
-/* Copy no more than N bytes of SRC to DEST, stopping when C is found.
-   Return the position in DEST one byte past where C was copied, or
-   NULL if C was not found in the first N bytes of SRC.  */
-void *
-__memccpy (dest, src, c, n)
-      void *dest;
-      const void *src;
-      int c;
-      size_t n;
-{
-  register const char *s = src;
-  register char *d = dest;
-  register const char x = c;
-  register size_t i = n;
-
-  while (i-- > 0)
-    if ((*d++ = *s++) == x)
-      return d;
-
-  return NULL;
-}
-
-weak_alias (__memccpy, memccpy)

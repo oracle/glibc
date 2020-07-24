@@ -19,9 +19,14 @@
 #ifndef _NET_INTERNAL_H
 #define _NET_INTERNAL_H 1
 
+#include <arpa/inet.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <sys/time.h>
+
+int __inet6_scopeid_pton (const struct in6_addr *address,
+                          const char *scope, uint32_t *result);
+libc_hidden_proto (__inet6_scopeid_pton)
 
 /* Deadline handling for enforcing timeouts.
 

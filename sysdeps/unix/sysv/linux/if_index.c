@@ -1,4 +1,4 @@
-/* Copyright (C) 1997-2012 Free Software Foundation, Inc.
+/* Copyright (C) 1997-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -24,15 +24,14 @@
 #include <net/if.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
-#include <bits/libc-lock.h>
+#include <libc-lock.h>
 #include <not-cancel.h>
-#include <kernel-features.h>
 
 #include "netlinkaccess.h"
 
 
 unsigned int
-if_nametoindex (const char *ifname)
+__if_nametoindex (const char *ifname)
 {
 #ifndef SIOCGIFINDEX
   __set_errno (ENOSYS);
@@ -57,11 +56,13 @@ if_nametoindex (const char *ifname)
   return ifr.ifr_ifindex;
 #endif
 }
-libc_hidden_def (if_nametoindex)
+libc_hidden_def (__if_nametoindex)
+weak_alias (__if_nametoindex, if_nametoindex)
+libc_hidden_weak (if_nametoindex)
 
 
 void
-if_freenameindex (struct if_nameindex *ifn)
+__if_freenameindex (struct if_nameindex *ifn)
 {
   struct if_nameindex *ptr = ifn;
   while (ptr->if_name || ptr->if_index)
@@ -71,7 +72,9 @@ if_freenameindex (struct if_nameindex *ifn)
     }
   free (ifn);
 }
-libc_hidden_def (if_freenameindex)
+libc_hidden_def (__if_freenameindex)
+weak_alias (__if_freenameindex, if_freenameindex)
+libc_hidden_weak (if_freenameindex)
 
 
 static struct if_nameindex *
@@ -163,7 +166,7 @@ if_nameindex_netlink (void)
 		      if (idx[nifs].if_name == NULL)
 			{
 			  idx[nifs].if_index = 0;
-			  if_freenameindex (idx);
+			  __if_freenameindex (idx);
 			  idx = NULL;
 			  goto nomem;
 			}
@@ -190,7 +193,7 @@ if_nameindex_netlink (void)
 
 
 struct if_nameindex *
-if_nameindex (void)
+__if_nameindex (void)
 {
 #ifndef SIOCGIFINDEX
   __set_errno (ENOSYS);
@@ -200,11 +203,12 @@ if_nameindex (void)
   return result;
 #endif
 }
-libc_hidden_def (if_nameindex)
+weak_alias (__if_nameindex, if_nameindex)
+libc_hidden_weak (if_nameindex)
 
 
 char *
-if_indextoname (unsigned int ifindex, char *ifname)
+__if_indextoname (unsigned int ifindex, char *ifname)
 {
   /* We may be able to do the conversion directly, rather than searching a
      list.  This ioctl is not present in kernels before version 2.1.50.  */
@@ -233,4 +237,5 @@ if_indextoname (unsigned int ifindex, char *ifname)
   else
     return strncpy (ifname, ifr.ifr_name, IFNAMSIZ);
 }
-libc_hidden_def (if_indextoname)
+weak_alias (__if_indextoname, if_indextoname)
+libc_hidden_weak (if_indextoname)

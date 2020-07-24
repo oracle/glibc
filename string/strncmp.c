@@ -21,7 +21,7 @@
 #undef strncmp
 
 #ifndef STRNCMP
-#define STRNCMP strncmp
+# define STRNCMP strncmp
 #endif
 
 /* Compare no more than N characters of S1 and S2,

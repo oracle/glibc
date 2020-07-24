@@ -74,4 +74,5 @@ STUPID_STPNCPY (CHAR *dst, const CHAR *src, size_t n)
   return dst + nc;
 }
 
+#undef CHAR
 #include "bench-strncpy.c"

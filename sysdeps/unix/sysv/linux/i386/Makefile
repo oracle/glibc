@@ -3,6 +3,9 @@ default-abi := 32
 
 ifeq ($(subdir),misc)
 sysdep_routines += ioperm iopl vm86 call_pselect6 call_fallocate
+
+tests += tst-bz21269
+$(objpfx)tst-bz21269: $(shared-thread-library)
 endif
 
 ifeq ($(subdir),elf)

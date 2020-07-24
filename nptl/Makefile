@@ -199,6 +199,7 @@ CFLAGS-send.c = -fexceptions -fasynchronous-unwind-tables
 CFLAGS-pt-system.c = -fexceptions
 
 CFLAGS-tst-minstack-throw.cc = -std=gnu++11
+CFLAGS-tst-thread-exit-clobber.o = -std=gnu++11
 
 tests = tst-typesizes \
 	tst-attr1 tst-attr2 tst-attr3 tst-default-attr \
@@ -269,7 +270,8 @@ tests = tst-typesizes \
 	tst-getpid1 tst-getpid2 tst-getpid3 \
 	tst-initializers1 $(patsubst %,tst-initializers1-%,c89 gnu89 c99 gnu99) \
 	tst-mutex-errorcheck \
-	tst-minstack-cancel tst-minstack-exit tst-minstack-throw
+	tst-minstack-cancel tst-minstack-exit tst-minstack-throw \
+	tst-thread-exit-clobber
 xtests = tst-setuid1 tst-setuid1-static tst-mutexpp1 tst-mutexpp6 tst-mutexpp10
 test-srcs = tst-oddstacklimit
 
@@ -529,6 +531,7 @@ $(objpfx)tst-_res1: $(objpfx)tst-_res1mod1.so $(objpfx)tst-_res1mod2.so \
 LDLIBS-tst-cancel24 = $(no-as-needed) -lstdc++
 LDLIBS-tst-cancel24-static = $(LDLIBS-tst-cancel24)
 LDLIBS-tst-minstack-throw = -lstdc++
+LDLIBS-tst-thread-exit-clobber = -lstdc++
 
 extra-B-pthread.so = -B$(common-objpfx)nptl/
 $(objpfx)libpthread.so: $(addprefix $(objpfx),$(crti-objs) $(crtn-objs))

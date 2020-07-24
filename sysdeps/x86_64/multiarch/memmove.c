@@ -47,8 +47,8 @@ extern __typeof (__redirect_memmove) __memmove_ssse3_back attribute_hidden;
    ifunc symbol properly.  */
 extern __typeof (__redirect_memmove) __libc_memmove;
 libc_ifunc (__libc_memmove,
-	    HAS_SSSE3
-	    ? (HAS_FAST_COPY_BACKWARD
+	    HAS_CPU_FEATURE (SSSE3)
+	    ? (HAS_ARCH_FEATURE (Fast_Copy_Backward)
 	       ? __memmove_ssse3_back : __memmove_ssse3)
 	    : __memmove_sse2)
 

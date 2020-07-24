@@ -29,14 +29,12 @@
 	.text
 ENTRY(__new_memcpy)
 	.type	__new_memcpy, @gnu_indirect_function
-	cmpl	$0, KIND_OFFSET+__cpu_features(%rip)
-	jne	1f
-	call	__init_cpu_features
-1:	leaq	__memcpy_sse2(%rip), %rax
-	testl	$bit_SSSE3, __cpu_features+CPUID_OFFSET+index_SSSE3(%rip)
+	LOAD_RTLD_GLOBAL_RO_RDX
+	leaq	__memcpy_sse2(%rip), %rax
+	HAS_CPU_FEATURE (SSSE3)
 	jz	2f
 	leaq	__memcpy_ssse3(%rip), %rax
-	testl	$bit_Fast_Copy_Backward, __cpu_features+FEATURE_OFFSET+index_Fast_Copy_Backward(%rip)
+	HAS_ARCH_FEATURE (Fast_Copy_Backward)
 	jz	2f
 	leaq	__memcpy_ssse3_back(%rip), %rax
 2:	ret

@@ -83,16 +83,12 @@
 	.text
 ENTRY(STRCMP)
 	.type	STRCMP, @gnu_indirect_function
-	/* Manually inlined call to __get_cpu_features.  */
-	cmpl	$0, __cpu_features+KIND_OFFSET(%rip)
-	jne	1f
-	call	__init_cpu_features
-1:
+	LOAD_RTLD_GLOBAL_RO_RDX
 	leaq	STRCMP_SSE42(%rip), %rax
-	testl	$bit_SSE4_2, __cpu_features+CPUID_OFFSET+index_SSE4_2(%rip)
+	HAS_CPU_FEATURE (SSE4_2)
 	jnz	2f
 	leaq	STRCMP_SSSE3(%rip), %rax
-	testl	$bit_SSSE3, __cpu_features+CPUID_OFFSET+index_SSSE3(%rip)
+	HAS_CPU_FEATURE (SSSE3)
 	jnz	2f
 	leaq	STRCMP_SSE2(%rip), %rax
 2:	ret
@@ -101,21 +97,17 @@ END(STRCMP)
 # ifdef USE_AS_STRCASECMP_L
 ENTRY(__strcasecmp)
 	.type	__strcasecmp, @gnu_indirect_function
-	/* Manually inlined call to __get_cpu_features.  */
-	cmpl	$0, __cpu_features+KIND_OFFSET(%rip)
-	jne	1f
-	call	__init_cpu_features
-1:
+	LOAD_RTLD_GLOBAL_RO_RDX
 #  ifdef HAVE_AVX_SUPPORT
 	leaq	__strcasecmp_avx(%rip), %rax
-	testl	$bit_AVX_Usable, __cpu_features+FEATURE_OFFSET+index_AVX_Usable(%rip)
+	HAS_ARCH_FEATURE (AVX_Usable)
 	jnz	2f
 #  endif
 	leaq	__strcasecmp_sse42(%rip), %rax
-	testl	$bit_SSE4_2, __cpu_features+CPUID_OFFSET+index_SSE4_2(%rip)
+	HAS_CPU_FEATURE (SSE4_2)
 	jnz	2f
 	leaq	__strcasecmp_ssse3(%rip), %rax
-	testl	$bit_SSSE3, __cpu_features+CPUID_OFFSET+index_SSSE3(%rip)
+	HAS_CPU_FEATURE (SSSE3)
 	jnz	2f
 	leaq	__strcasecmp_sse2(%rip), %rax
 2:	ret
@@ -125,21 +117,17 @@ weak_alias (__strcasecmp, strcasecmp)
 # ifdef USE_AS_STRNCASECMP_L
 ENTRY(__strncasecmp)
 	.type	__strncasecmp, @gnu_indirect_function
-	/* Manually inlined call to __get_cpu_features.  */
-	cmpl	$0, __cpu_features+KIND_OFFSET(%rip)
-	jne	1f
-	call	__init_cpu_features
-1:
+	LOAD_RTLD_GLOBAL_RO_RDX
 #  ifdef HAVE_AVX_SUPPORT
 	leaq	__strncasecmp_avx(%rip), %rax
-	testl	$bit_AVX_Usable, __cpu_features+FEATURE_OFFSET+index_AVX_Usable(%rip)
+	HAS_ARCH_FEATURE (AVX_Usable)
 	jnz	2f
 #  endif
 	leaq	__strncasecmp_sse42(%rip), %rax
-	testl	$bit_SSE4_2, __cpu_features+CPUID_OFFSET+index_SSE4_2(%rip)
+	HAS_CPU_FEATURE (SSE4_2)
 	jnz	2f
 	leaq	__strncasecmp_ssse3(%rip), %rax
-	testl	$bit_SSSE3, __cpu_features+CPUID_OFFSET+index_SSSE3(%rip)
+	HAS_CPU_FEATURE (SSSE3)
 	jnz	2f
 	leaq	__strncasecmp_sse2(%rip), %rax
 2:	ret

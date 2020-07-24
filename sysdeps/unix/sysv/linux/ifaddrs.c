@@ -97,6 +97,12 @@ __netlink_sendreq (struct netlink_handle *h, int type)
   {
     struct nlmsghdr nlh;
     struct rtgenmsg g;
+#define RTEXT_FILTER_SKIP_STATS        (1 << 3)
+#if defined RTEXT_FILTER_SKIP_STATS
+    __u16 align_rta __attribute__ ((__aligned__(4)));
+    struct rtattr ext_req;
+    __u32 ext_filter_mask;
+#endif
     char pad[0];
   } req;
   struct sockaddr_nl nladdr;
@@ -106,7 +112,16 @@ __netlink_sendreq (struct netlink_handle *h, int type)
 
   req.nlh.nlmsg_len = sizeof (req);
   req.nlh.nlmsg_type = type;
+#if defined RTEXT_FILTER_SKIP_STATS
+  req.ext_req.rta_type = IFLA_EXT_MASK;
+  req.ext_req.rta_len = RTA_LENGTH(sizeof(__u32));
+  req.ext_filter_mask = RTEXT_FILTER_SKIP_STATS;
+#endif
   req.nlh.nlmsg_flags = NLM_F_ROOT | NLM_F_MATCH | NLM_F_REQUEST;
+#define NLM_F_SKIP_STATS       0x20
+#if defined NLM_F_SKIP_STATS
+  req.nlh.nlmsg_flags |= NLM_F_SKIP_STATS;
+#endif
   req.nlh.nlmsg_pid = 0;
   req.nlh.nlmsg_seq = h->seq;
   req.g.rtgen_family = AF_UNSPEC;

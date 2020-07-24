@@ -61,7 +61,14 @@ elision_init (int argc __attribute__ ((unused)),
 {
 #ifdef ENABLE_LOCK_ELISION
   int elision_available = (GLRO (dl_hwcap2) & PPC_FEATURE2_HAS_HTM) ? 1 : 0;
-  __pthread_force_elision = __libc_enable_secure ? 0 : elision_available;
+  if (!__libc_enable_secure && elision_available)
+    {
+      __pthread_force_elision = GLRO(dl_elision_enabled);
+    }
+  else
+    {
+      __pthread_force_elision = 0;
+    }
 #endif
 }
 

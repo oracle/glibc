@@ -118,8 +118,6 @@ _dl_init (struct link_map *main_map, int argc, char **argv, char **env)
   while (i-- > 0)
     call_init (main_map->l_initfini[i], argc, argv, env);
 
-#ifndef HAVE_INLINED_SYSCALLS
   /* Finished starting up.  */
   _dl_starting_up = 0;
-#endif
 }

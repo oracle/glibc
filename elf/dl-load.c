@@ -258,14 +258,12 @@ is_dst (const char *start, const char *name, const char *str,
       /* Skip over closing curly brace and adjust for the --name.  */
       len += 2;
     }
-  else if (name[len] != '\0' && name[len] != '/'
-	   && (!is_path || name[len] != ':'))
+  else if (name[len] != '\0' && name[len] != '/')
     return 0;
 
   if (__builtin_expect (secure, 0)
-      && ((name[len] != '\0' && name[len] != '/'
-	   && (!is_path || name[len] != ':'))
-	  || (name != start + 1 && (!is_path || name[-2] != ':'))))
+      && ((name[len] != '\0' && name[len] != '/')
+	  || (name != start + 1)))
     return 0;
 
   return len;

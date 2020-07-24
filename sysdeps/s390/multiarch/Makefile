@@ -52,3 +52,7 @@ $(move-if-change) $(@:stmp=T) $(@:stmp=h)
 touch $@
 endef
 endif
+
+ifeq ($(subdir),iconv)
+sysdep_routines += gconv_simple
+endif

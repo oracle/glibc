@@ -123,8 +123,8 @@ struct __res_state {
 		u_int32_t	mask;
 	} sort_list[MAXRESOLVSORT];
 	/* 4 byte hole here on 64-bit architectures.  */
-	res_send_qhook qhook;		/* query hook */
-	res_send_rhook rhook;		/* response hook */
+	res_send_qhook __glibc_unused_qhook;
+	res_send_rhook __glibc_unused_rhook;
 	int	res_h_errno;		/* last one set for this context */
 	int	_vcsock;		/* PRIVATE: for res_send VC i/o */
 	u_int	_flags;			/* PRIVATE: see below */
@@ -139,10 +139,10 @@ struct __res_state {
 			u_int16_t		nsinit;
 			struct sockaddr_in6	*nsaddrs[MAXNS];
 #ifdef _LIBC
-			unsigned long long int	initstamp
+			unsigned long long int __glibc_extension_index
 			  __attribute__((packed));
 #else
-			unsigned int		_initstamp[2];
+			unsigned int		__glibc_reserved[2];
 #endif
 		} _ext;
 	} _u;
@@ -221,6 +221,7 @@ struct res_sym {
 #define RES_USE_DNSSEC	0x00800000	/* use DNSSEC using OK bit in OPT */
 #define RES_NOTLDQUERY	0x01000000	/* Do not look up unqualified name
 					   as a TLD.  */
+#define RES_NORELOAD    0x02000000 /* No automatic configuration reload.  */
 
 #define RES_DEFAULT	(RES_RECURSE|RES_DEFNAMES|RES_DNSRCH|RES_NOIP6DOTINT)
 
@@ -250,7 +251,6 @@ extern struct __res_state *__res_state(void) __attribute__ ((__const__));
 __END_DECLS
 #define _res (*__res_state())
 
-#ifndef __BIND_NOSTATIC
 #define fp_nquery		__fp_nquery
 #define fp_query		__fp_query
 #define hostalias		__hostalias
@@ -265,22 +265,25 @@ __END_DECLS
 #define res_send		__res_send
 
 __BEGIN_DECLS
-void		fp_nquery (const u_char *, int, FILE *) __THROW;
-void		fp_query (const u_char *, FILE *) __THROW;
+void		fp_nquery (const unsigned char *, int, FILE *) __THROW;
+void		fp_query (const unsigned char *, FILE *) __THROW;
 const char *	hostalias (const char *) __THROW;
-void		p_query (const u_char *) __THROW;
+void		p_query (const unsigned char *) __THROW;
 void		res_close (void) __THROW;
 int		res_init (void) __THROW;
 int		res_isourserver (const struct sockaddr_in *) __THROW;
-int		res_mkquery (int, const char *, int, int, const u_char *,
-			     int, const u_char *, u_char *, int) __THROW;
-int		res_query (const char *, int, int, u_char *, int) __THROW;
+int		res_mkquery (int, const char *, int, int,
+			     const unsigned char *, int, const unsigned char *,
+			     unsigned char *, int) __THROW;
+int		res_query (const char *, int, int, unsigned char *, int)
+     __THROW;
 int		res_querydomain (const char *, const char *, int, int,
-				 u_char *, int) __THROW;
-int		res_search (const char *, int, int, u_char *, int) __THROW;
-int		res_send (const u_char *, int, u_char *, int) __THROW;
+				 unsigned char *, int) __THROW;
+int		res_search (const char *, int, int, unsigned char *, int)
+     __THROW;
+int		res_send (const unsigned char *, int, unsigned char *, int)
+     __THROW;
 __END_DECLS
-#endif
 
 #define b64_ntop		__b64_ntop
 #define b64_pton		__b64_pton
@@ -298,7 +301,6 @@ __END_DECLS
 #define p_fqnname		__p_fqnname
 #define p_option		__p_option
 #define p_secstodate		__p_secstodate
-#define p_section		__p_section
 #define p_time			__p_time
 #define p_type			__p_type
 #define p_rcode			__p_rcode
@@ -312,12 +314,10 @@ __END_DECLS
 #define res_nclose		__res_nclose
 #define res_ninit		__res_ninit
 #define res_nmkquery		__res_nmkquery
-#define res_npquery		__res_npquery
 #define res_nquery		__res_nquery
 #define res_nquerydomain	__res_nquerydomain
 #define res_nsearch		__res_nsearch
 #define res_nsend		__res_nsend
-#define res_nisourserver	__res_nisourserver
 #define res_ownok		__res_ownok
 #define res_queriesmatch	__res_queriesmatch
 #define res_randomid		__res_randomid
@@ -332,57 +332,62 @@ int		res_dnok (const char *) __THROW;
 int		sym_ston (const struct res_sym *, const char *, int *) __THROW;
 const char *	sym_ntos (const struct res_sym *, int, int *) __THROW;
 const char *	sym_ntop (const struct res_sym *, int, int *) __THROW;
-int		b64_ntop (u_char const *, size_t, char *, size_t) __THROW;
-int		b64_pton (char const *, u_char *, size_t) __THROW;
-int		loc_aton (const char *__ascii, u_char *__binary) __THROW;
-const char *	loc_ntoa (const u_char *__binary, char *__ascii) __THROW;
-int		dn_skipname (const u_char *, const u_char *) __THROW;
-void		putlong (u_int32_t, u_char *) __THROW;
-void		putshort (u_int16_t, u_char *) __THROW;
+int		b64_ntop (const unsigned char *, size_t, char *, size_t)
+     __THROW;
+int		b64_pton (char const *, unsigned char *, size_t) __THROW;
+int		loc_aton (const char *__ascii, unsigned char *__binary) __THROW;
+const char *	loc_ntoa (const unsigned char *__binary, char *__ascii) __THROW;
+int		dn_skipname (const unsigned char *, const unsigned char *)
+     __THROW;
+void		putlong (uint32_t, unsigned char *) __THROW;
+void		putshort (uint16_t, unsigned char *) __THROW;
 const char *	p_class (int) __THROW;
-const char *	p_time (u_int32_t) __THROW;
+const char *	p_time (uint32_t) __THROW;
 const char *	p_type (int) __THROW;
 const char *	p_rcode (int) __THROW;
-const u_char *	p_cdnname (const u_char *, const u_char *, int, FILE *)
-     __THROW;
-const u_char *	p_cdname (const u_char *, const u_char *, FILE *) __THROW;
-const u_char *	p_fqnname (const u_char *__cp, const u_char *__msg,
-			   int, char *, int) __THROW;
-const u_char *	p_fqname (const u_char *, const u_char *, FILE *) __THROW;
-const char *	p_option (u_long __option) __THROW;
-char *		p_secstodate (u_long) __THROW;
+const unsigned char * p_cdnname (const unsigned char *,
+				 const unsigned char *, int, FILE *) __THROW;
+const unsigned char * p_cdname (const unsigned char *, const unsigned char *,
+				FILE *) __THROW;
+const unsigned char * p_fqnname (const unsigned char *__cp,
+				 const unsigned char *__msg,
+				 int, char *, int) __THROW;
+const unsigned char * p_fqname (const unsigned char *,
+				const unsigned char *, FILE *) __THROW;
+const char *	p_option (unsigned long __option) __THROW;
+char *		p_secstodate (unsigned long) __THROW;
 int		dn_count_labels (const char *) __THROW;
-int		dn_comp (const char *, u_char *, int, u_char **, u_char **)
-     __THROW;
-int		dn_expand (const u_char *, const u_char *, const u_char *,
-			   char *, int) __THROW;
-u_int		res_randomid (void) __THROW;
+int		dn_comp (const char *, unsigned char *, int, unsigned char **,
+			 unsigned char **) __THROW;
+int		dn_expand (const unsigned char *, const unsigned char *,
+			   const unsigned char *, char *, int) __THROW;
+unsigned int	res_randomid (void) __THROW;
 int		res_nameinquery (const char *, int, int,
-				 const u_char *, const u_char *) __THROW;
-int		res_queriesmatch (const u_char *, const u_char *,
-				  const u_char *, const u_char *) __THROW;
-const char *	p_section (int __section, int __opcode) __THROW;
+				 const unsigned char *,
+				 const unsigned char *) __THROW;
+int		res_queriesmatch (const unsigned char *,
+				  const unsigned char *,
+				  const unsigned char *,
+				  const unsigned char *) __THROW;
 /* Things involving a resolver context. */
 int		res_ninit (res_state) __THROW;
-int		res_nisourserver (const res_state,
-				  const struct sockaddr_in *) __THROW;
 void		fp_resstat (const res_state, FILE *) __THROW;
-void		res_npquery (const res_state, const u_char *, int, FILE *)
-     __THROW;
 const char *	res_hostalias (const res_state, const char *, char *, size_t)
      __THROW;
-int		res_nquery (res_state, const char *, int, int, u_char *, int)
-     __THROW;
-int		res_nsearch (res_state, const char *, int, int, u_char *, int)
-     __THROW;
+int		res_nquery (res_state, const char *, int, int,
+			    unsigned char *, int) __THROW;
+int		res_nsearch (res_state, const char *, int, int,
+			     unsigned char *, int) __THROW;
 int		res_nquerydomain (res_state, const char *, const char *, int,
-				  int, u_char *, int) __THROW;
+				  int, unsigned char *, int) __THROW;
 int		res_nmkquery (res_state, int, const char *, int, int,
-			      const u_char *, int, const u_char *, u_char *,
-			      int) __THROW;
-int		res_nsend (res_state, const u_char *, int, u_char *, int)
+			      const unsigned char *, int,
+			      const unsigned char *, unsigned char *, int)
      __THROW;
+int		res_nsend (res_state, const unsigned char *, int,
+			   unsigned char *, int) __THROW;
 void		res_nclose (res_state) __THROW;
+
 __END_DECLS
 #endif
 

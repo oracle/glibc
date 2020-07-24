@@ -106,7 +106,7 @@ do_test (void)
       result++;
     }
 
-  
+
   return result;
 }
 

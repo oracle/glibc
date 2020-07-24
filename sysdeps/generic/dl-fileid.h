@@ -29,7 +29,8 @@ struct r_file_id
    On error, returns false, with errno set.  */
 static inline bool
 _dl_get_file_id (int fd __attribute__ ((unused)),
-		 struct r_file_id *id __attribute__ ((unused)))
+		 struct r_file_id *id __attribute__ ((unused)),
+		 struct stat64_t *st __attribute__((unused)))
 {
   return true;
 }

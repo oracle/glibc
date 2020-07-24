@@ -139,7 +139,7 @@ _dl_unmap (struct link_map *map)
   __munmap ((void *) (map)->l_map_start,
 	    (map)->l_map_end - (map)->l_map_start);
 
-#if SHARED
+#ifdef SHARED
   /* _dl_unmap is only called for dlopen()ed libraries, for which
      calling free() is safe, or before we've completed the initial
      relocation, in which case calling free() is probably pointless,

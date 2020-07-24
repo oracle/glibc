@@ -261,7 +261,7 @@ _dl_unmap (struct link_map *map)
   __munmap ((void *) (map)->l_map_start,
 	    (map)->l_map_end - (map)->l_map_start);
 
-#if SHARED
+#ifdef SHARED
   if (map->l_mach.tlsdesc_table)
     htab_delete (map->l_mach.tlsdesc_table);
 #endif

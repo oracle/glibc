@@ -25,10 +25,7 @@
 /* Consider moving to syscalls.list.  */
 
 int
-__execve (file, argv, envp)
-     const char *file;
-     char *const argv[];
-     char *const envp[];
+__execve (const char *file, char *const argv[], char *const envp[])
 {
   return INLINE_SYSCALL (execve, 3, file, argv, envp);
 }

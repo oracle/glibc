@@ -31,11 +31,8 @@
 #include <stdio_ext.h>
 
 void
-_IO_str_init_static_internal (sf, ptr, size, pstart)
-     _IO_strfile *sf;
-     char *ptr;
-     _IO_size_t size;
-     char *pstart;
+_IO_str_init_static_internal (_IO_strfile *sf, char *ptr, _IO_size_t size,
+			      char *pstart)
 {
   _IO_FILE *fp = &sf->_sbf._f;
   char *end;
@@ -81,9 +78,7 @@ _IO_str_init_readonly (_IO_strfile *sf, const char *ptr, int size)
 }
 
 int
-_IO_str_overflow (fp, c)
-     _IO_FILE *fp;
-     int c;
+_IO_str_overflow (_IO_FILE *fp, int c)
 {
   int flush_only = c == EOF;
   _IO_size_t pos;
@@ -144,8 +139,7 @@ _IO_str_overflow (fp, c)
 libc_hidden_def (_IO_str_overflow)
 
 int
-_IO_str_underflow (fp)
-     _IO_FILE *fp;
+_IO_str_underflow (_IO_FILE *fp)
 {
   if (fp->_IO_write_ptr > fp->_IO_read_end)
     fp->_IO_read_end = fp->_IO_write_ptr;
@@ -165,8 +159,7 @@ libc_hidden_def (_IO_str_underflow)
 /* The size of the valid part of the buffer.  */
 
 _IO_ssize_t
-_IO_str_count (fp)
-     _IO_FILE *fp;
+_IO_str_count (_IO_FILE *fp)
 {
   return ((fp->_IO_write_ptr > fp->_IO_read_end
 	   ? fp->_IO_write_ptr : fp->_IO_read_end)
@@ -239,11 +232,7 @@ enlarge_userbuf (_IO_FILE *fp, _IO_off64_t offset, int reading)
 
 
 _IO_off64_t
-_IO_str_seekoff (fp, offset, dir, mode)
-     _IO_FILE *fp;
-     _IO_off64_t offset;
-     int dir;
-     int mode;
+_IO_str_seekoff (_IO_FILE *fp, _IO_off64_t offset, int dir, int mode)
 {
   _IO_off64_t new_pos;
 
@@ -316,9 +305,7 @@ _IO_str_seekoff (fp, offset, dir, mode)
 libc_hidden_def (_IO_str_seekoff)
 
 int
-_IO_str_pbackfail (fp, c)
-     _IO_FILE *fp;
-     int c;
+_IO_str_pbackfail (_IO_FILE *fp, int c)
 {
   if ((fp->_flags & _IO_NO_WRITES) && c != EOF)
     return EOF;
@@ -327,9 +314,7 @@ _IO_str_pbackfail (fp, c)
 libc_hidden_def (_IO_str_pbackfail)
 
 void
-_IO_str_finish (fp, dummy)
-     _IO_FILE *fp;
-     int dummy;
+_IO_str_finish (_IO_FILE *fp, int dummy)
 {
   if (fp->_IO_buf_base && !(fp->_flags & _IO_USER_BUF))
     (((_IO_strfile *) fp)->_s._free_buffer) (fp->_IO_buf_base);

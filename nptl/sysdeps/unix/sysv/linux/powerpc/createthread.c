@@ -16,9 +16,16 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+/* RHEL 7-specific changes: The functions PREPARE_CREATE and TLS_VALUE
+   are used by createthread.c to override thread setup.  In upstream
+   they appear in TLS_DEFINE_INIT_TP.  */
+# define PREPARE_CREATE \
+  void *tp = (void *) (pd) + TLS_TCB_OFFSET + TLS_PRE_TCB_SIZE;            \
+  (((tcbhead_t *) ((char *) tp - TLS_TCB_OFFSET))[-1].tm_capable) =        \
+  THREAD_GET_TM_CAPABLE ();
+
 /* Value passed to 'clone' for initialization of the thread register.  */
-#define TLS_VALUE ((void *) (pd) \
-		   + TLS_TCB_OFFSET + TLS_PRE_TCB_SIZE)
+# define TLS_VALUE tp
 
 /* Get the real implementation.	 */
 #include <nptl/sysdeps/pthread/createthread.c>

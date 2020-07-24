@@ -131,6 +131,7 @@
 # define O_DIRECT	__O_DIRECT	/* Direct disk access.	*/
 # define O_NOATIME	__O_NOATIME	/* Do not set atime.  */
 # define O_PATH		__O_PATH	/* Resolve pathname but do not open file.  */
+# define O_TMPFILE	__O_TMPFILE	/* Atomically create nameless file.  */
 #endif
 
 /* For now, Linux has no separate synchronicitiy options for read

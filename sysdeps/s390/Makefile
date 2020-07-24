@@ -29,3 +29,7 @@ $(inst_gconvdir)/%.so: $(objpfx)%.so $(+force)
 
 sysdeps-gconv-modules = ../sysdeps/s390/gconv-modules
 endif
+
+ifeq ($(subdir),string)
+sysdep_routines += memset memset-z900
+endif

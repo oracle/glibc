@@ -33,7 +33,7 @@ static int _IO_mem_sync (_IO_FILE* fp) __THROW;
 static void _IO_mem_finish (_IO_FILE* fp, int) __THROW;
 
 
-static const struct _IO_jump_t _IO_mem_jumps =
+static const struct _IO_jump_t _IO_mem_jumps libio_vtable =
 {
   JUMP_INIT_DUMMY,
   JUMP_INIT (finish, _IO_mem_finish),
@@ -85,7 +85,7 @@ open_memstream (bufloc, sizeloc)
   buf = calloc (1, _IO_BUFSIZ);
   if (buf == NULL)
     return NULL;
-  _IO_init (&new_f->fp._sf._sbf._f, 0);
+  _IO_init_internal (&new_f->fp._sf._sbf._f, 0);
   _IO_JUMPS ((struct _IO_FILE_plus *) &new_f->fp._sf._sbf) = &_IO_mem_jumps;
   _IO_str_init_static_internal (&new_f->fp._sf, buf, _IO_BUFSIZ, buf);
   new_f->fp._sf._sbf._f._flags &= ~_IO_USER_BUF;

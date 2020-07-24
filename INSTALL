@@ -141,7 +141,7 @@ will be used, and CFLAGS sets optimization options for the compiler.
      only if you understand and accept those risks.
 
 `--enable-lock-elision=yes'
-     Enable lock elision for pthread mutexes and rwlocks by default.
+     Enable lock elision for pthread mutexes by default.
 
 `--build=BUILD-SYSTEM'
 `--host=HOST-SYSTEM'

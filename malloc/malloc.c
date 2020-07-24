@@ -236,6 +236,8 @@
 /* For va_arg, va_start, va_end.  */
 #include <stdarg.h>
 
+/* For ALIGN_UP.  */
+#include <libc-internal.h>
 
 /*
   Debugging:

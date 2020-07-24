@@ -322,6 +322,7 @@ fnmatch (const char *pattern, const char *string, int flags)
 # if HANDLE_MULTIBYTE
   if (__builtin_expect (MB_CUR_MAX, 1) != 1)
     {
+      const char *orig_pattern = pattern;
       mbstate_t ps;
       size_t n;
       const char *p;
@@ -345,10 +346,8 @@ fnmatch (const char *pattern, const char *string, int flags)
 						 alloca_used);
 	  n = mbsrtowcs (wpattern, &p, n + 1, &ps);
 	  if (__glibc_unlikely (n == (size_t) -1))
-	    /* Something wrong.
-	       XXX Do we have to set `errno' to something which mbsrtows hasn't
-	       already done?  */
-	    return -1;
+	    /* Something wrong: Fall back to single byte matching. */
+	    goto try_singlebyte;
 	  if (p)
 	    {
 	      memset (&ps, '\0', sizeof (ps));
@@ -360,10 +359,8 @@ fnmatch (const char *pattern, const char *string, int flags)
 	prepare_wpattern:
 	  n = mbsrtowcs (NULL, &pattern, 0, &ps);
 	  if (__glibc_unlikely (n == (size_t) -1))
-	    /* Something wrong.
-	       XXX Do we have to set `errno' to something which mbsrtows hasn't
-	       already done?  */
-	    return -1;
+	    /*Something wrong: Fall back to single byte matching. */
+	    goto try_singlebyte;
 	  if (__glibc_unlikely (n >= (size_t) -1 / sizeof (wchar_t)))
 	    {
 	      __set_errno (ENOMEM);
@@ -390,14 +387,8 @@ fnmatch (const char *pattern, const char *string, int flags)
 						alloca_used);
 	  n = mbsrtowcs (wstring, &p, n + 1, &ps);
 	  if (__glibc_unlikely (n == (size_t) -1))
-	    {
-	      /* Something wrong.
-		 XXX Do we have to set `errno' to something which
-		 mbsrtows hasn't already done?  */
-	    free_return:
-	      free (wpattern_malloc);
-	      return -1;
-	    }
+	    /* Something wrong: Fall back to single byte matching. */
+	    goto free_and_try_singlebyte;
 	  if (p)
 	    {
 	      memset (&ps, '\0', sizeof (ps));
@@ -409,10 +400,8 @@ fnmatch (const char *pattern, const char *string, int flags)
 	prepare_wstring:
 	  n = mbsrtowcs (NULL, &string, 0, &ps);
 	  if (__glibc_unlikely (n == (size_t) -1))
-	    /* Something wrong.
-	       XXX Do we have to set `errno' to something which mbsrtows hasn't
-	       already done?  */
-	    goto free_return;
+	    /* Something wrong: Fall back to singlebyte matching. */
+	    goto free_and_try_singlebyte;
 	  if (__glibc_unlikely (n >= (size_t) -1 / sizeof (wchar_t)))
 	    {
 	      free (wpattern_malloc);
@@ -439,6 +428,10 @@ fnmatch (const char *pattern, const char *string, int flags)
       free (wpattern_malloc);
 
       return res;
+      free_and_try_singlebyte:
+	free(wpattern_malloc);
+      try_singlebyte:
+	pattern = orig_pattern;
     }
 # endif  /* mbstate_t and mbsrtowcs or _LIBC.  */
 

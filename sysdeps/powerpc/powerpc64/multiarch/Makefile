@@ -5,6 +5,8 @@ sysdep_routines += memcpy-power7 memcpy-a2 memcpy-power6 memcpy-cell \
                   memset-ppc64 bzero-power4 bzero-power6 bzero-power7 \
                   mempcpy-power7 mempcpy-ppc64 memchr-power7 memchr-ppc64 \
                   memrchr-power7 memrchr-ppc64 rawmemchr-power7 \
+                  stpcpy-power8 stpcpy-power7 stpcpy-ppc64 \
+                  strcpy-power8 strcpy-power7 strcpy-ppc64 \
                   rawmemchr-ppc64 strlen-power7 strlen-ppc64 strnlen-power7 \
                   strnlen-ppc64 strcasecmp-power7 strcasecmp_l-power7 \
                   strncase-power7 strncase_l-power7 strncmp-power7 \

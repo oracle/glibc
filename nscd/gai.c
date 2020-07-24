@@ -32,6 +32,12 @@
 /* nscd uses 1MB or 2MB thread stacks.  */
 #define __libc_use_alloca(size) (size <= __MAX_ALLOCA_CUTOFF)
 
+/* We do not want to export __inet_aton_exact.  Get the prototype and
+   change its visibility to hidden.  */
+#include <arpa/inet.h>
+__typeof__ (__inet_aton_exact) __inet_aton_exact
+  __attribute__ ((visibility ("hidden")));
+
 /* We are nscd, so we don't want to be talking to ourselves.  */
 #undef  USE_NSCD
 

@@ -193,6 +193,7 @@ tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
 	 tst-tls3 tst-tls6 tst-tls7 tst-tls8 tst-dlmopen2 \
 	 tst-ptrguard1 tst-stackguard1 tst-libc_dlvsym
+tests-container += tst-pldd
 ifeq ($(build-hardcoded-path-in-tests),yes)
 tests += tst-dlopen-aout
 tst-dlopen-aout-no-pie = yes

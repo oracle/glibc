@@ -23,6 +23,7 @@
 
 #include <tls.h>
 #include <dl-tlsdesc.h>
+#include <dl-irel.h>
 
 /* Return nonzero iff ELF header is compatible with the running host.  */
 static inline int __attribute__ ((unused))
@@ -332,6 +333,12 @@ elf_machine_rela (struct link_map *map, const ElfW(Rela) *reloc,
 	    }
 	  break;
 
+	case R_AARCH64_IRELATIVE:
+	  value = map->l_addr + reloc->r_addend;
+	  value = elf_ifunc_invoke (value);
+	  *reloc_addr = value;
+	  break;
+
 	default:
 	  _dl_reloc_bad_type (map, r_type, 0);
 	  break;
@@ -374,6 +381,13 @@ elf_machine_lazy_rel (struct link_map *map,
       td->arg = (void*)reloc;
       td->entry = (void*)(D_PTR (map, l_info[ADDRIDX (DT_TLSDESC_PLT)])
 			  + map->l_addr);
+    }
+  else if (__glibc_unlikely (r_type == R_AARCH64_IRELATIVE))
+    {
+      ElfW(Addr) value = map->l_addr + reloc->r_addend;
+      if (__glibc_likely (!skip_ifunc))
+	value = elf_ifunc_invoke (value);
+      *reloc_addr = value;
     }
   else
     _dl_reloc_bad_type (map, r_type, 1);

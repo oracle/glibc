@@ -142,6 +142,7 @@ endif
 
 ifneq "$(strip $(binaries-shared-tests))" ""
 $(addprefix $(objpfx),$(binaries-shared-tests)): %: %.o \
+  $(link-extra-libs-tests) \
   $(sort $(filter $(common-objpfx)lib%,$(link-libc))) \
   $(addprefix $(csu-objpfx),start.o) $(+preinit) $(+postinit)
 	$(+link-tests)
@@ -163,6 +164,7 @@ endif
 
 ifneq "$(strip $(binaries-static-tests))" ""
 $(addprefix $(objpfx),$(binaries-static-tests)): %: %.o \
+  $(link-extra-libs-tests) \
   $(sort $(filter $(common-objpfx)lib%,$(link-libc-static-tests))) \
   $(addprefix $(csu-objpfx),start.o) $(+preinit) $(+postinit)
 	$(+link-static-tests)

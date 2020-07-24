@@ -1,5 +1,5 @@
-/* Multiple versions of isinf.
-   Copyright (C) 2013-2014 Free Software Foundation, Inc.
+/* Round double to long int.  POWER8 PowerPC64 version.
+   Copyright (C) 2014 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,21 +16,30 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <math.h>
+#include <sysdep.h>
 #include <math_ldbl_opt.h>
-#include <shlib-compat.h>
-#include "init-arch.h"
 
-extern __typeof (__isinff) __isinff_ppc64 attribute_hidden;
-/* The double-precision version also works for single-precision.  */
-extern __typeof (__isinff) __isinf_power7 attribute_hidden;
-extern __typeof (__isinff) __isinf_power8 attribute_hidden;
+#define MFVSRD_R3_V1  .long 0x7c230066     /* mfvsrd  r3,vs1  */
 
-libc_ifunc (__isinff,
-	    (hwcap2 & PPC_FEATURE2_ARCH_2_07)
-	    ? __isinf_power8 :
-	      (hwcap & PPC_FEATURE_ARCH_2_06)
-	      ? __isinf_power7
-            : __isinff_ppc64);
+/* long long int[r3] __llrint (double x[fp1])  */
+ENTRY (__llrint)
+	CALL_MCOUNT 0
+	fctid	fp1,fp1
+	MFVSRD_R3_V1
+	blr
+END (__llrint)
 
-weak_alias (__isinff, isinff)
+strong_alias (__llrint, __lrint)
+weak_alias (__llrint, llrint)
+weak_alias (__lrint, lrint)
+
+#ifdef NO_LONG_DOUBLE
+strong_alias (__llrint, __llrintl)
+weak_alias (__llrint, llrintl)
+strong_alias (__lrint, __lrintl)
+weak_alias (__lrint, lrintl)
+#endif
+#if LONG_DOUBLE_COMPAT(libm, GLIBC_2_1)
+compat_symbol (libm, __llrint, llrintl, GLIBC_2_1)
+compat_symbol (libm, __lrint, lrintl, GLIBC_2_1)
+#endif

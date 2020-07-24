@@ -25,8 +25,8 @@
 /* Find the last occurrence of WC in WCS.  */
 wchar_t *
 WCSRCHR (wcs, wc)
-     register const wchar_t *wcs;
-     register const wchar_t wc;
+     const wchar_t *wcs;
+     const wchar_t wc;
 {
   const wchar_t *retval = NULL;
 

@@ -147,11 +147,8 @@ libc_hidden_def (hdestroy_r)
    equality of the stored and the parameter value. This helps to prevent
    unnecessary expensive calls of strcmp.  */
 int
-hsearch_r (item, action, retval, htab)
-     ENTRY item;
-     ACTION action;
-     ENTRY **retval;
-     struct hsearch_data *htab;
+hsearch_r (ENTRY item, ACTION action, ENTRY **retval,
+	   struct hsearch_data *htab)
 {
   unsigned int hval;
   unsigned int count;

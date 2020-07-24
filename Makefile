@@ -396,7 +396,7 @@ ifeq ($(run-built-tests),yes)
 	  done
 endif
 	$(MAKE) install DESTDIR=$(objpfx)testroot.pristine \
-	  subdirs='$(all-subdirs)'
+	  subdirs='$(sorted-subdirs)'
 	touch $(objpfx)testroot.pristine/install.stamp
 
 tests-special-notdir = $(patsubst $(objpfx)%, %, $(tests-special))

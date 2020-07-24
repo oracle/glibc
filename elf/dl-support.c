@@ -123,6 +123,10 @@ size_t _dl_phnum;
 uint64_t _dl_hwcap __attribute__ ((nocommon));
 uint64_t _dl_hwcap2 __attribute__ ((nocommon));
 
+/* RHEL 7-specific change: Is elision enabled for the process?
+   Static library definition.  */
+bool _dl_elision_enabled;
+
 /* This is not initialized to HWCAP_IMPORTANT, matching the definition
    of _dl_important_hwcaps, below, where no hwcap strings are ever
    used.  This mask is still used to mediate the lookups in the cache
@@ -288,6 +292,9 @@ _dl_non_dynamic_init (void)
   if (_dl_profile_output == NULL || _dl_profile_output[0] == '\0')
     _dl_profile_output
       = &"/var/tmp\0/var/profile"[__libc_enable_secure ? 9 : 0];
+
+  /* RHEL 7 specific change: Process tunables at startup.  */
+  _dl_process_tunable_env_entries ();
 
   if (__libc_enable_secure)
     {

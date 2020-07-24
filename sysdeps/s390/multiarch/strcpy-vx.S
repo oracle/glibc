@@ -16,7 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+#if defined HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc)
 
 # include "sysdep.h"
 # include "asm-syntax.h"
@@ -103,7 +103,7 @@ END(__strcpy_vx)
 # define strcpy __strcpy_c
 # undef libc_hidden_builtin_def
 # define libc_hidden_builtin_def(name) strong_alias(__strcpy_c, __GI_strcpy)
-#endif /* HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc */
+#endif /* HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc) */
 
 /* Include mvst-strcpy-implementation in s390-32/s390-64 subdirectory.  */
 #include <strcpy.S>

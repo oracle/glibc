@@ -65,7 +65,7 @@ ENTRY(memmove)
 
 		subs	ip, r0, r1
 		cmphi	r2, ip
-#ifdef NOT_IN_libc
+#if !IS_IN (libc)
 		bls	memcpy
 #else
 		bls	HIDDEN_JUMPTARGET(memcpy)

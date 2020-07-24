@@ -16,7 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef NOT_IN_libc
+#if IS_IN (libc)
 # include <ifunc-resolve.h>
 
 s390_libc_ifunc (memset)

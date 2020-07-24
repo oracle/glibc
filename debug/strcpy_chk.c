@@ -23,10 +23,7 @@
 
 /* Copy SRC to DEST with checking of destination buffer overflow.  */
 char *
-__strcpy_chk (dest, src, destlen)
-     char *dest;
-     const char *src;
-     size_t destlen;
+__strcpy_chk (char *dest, const char *src, size_t destlen)
 {
   char c;
   char *s = (char *) src;

@@ -1486,7 +1486,7 @@ cannot change to old UID: %s; disabling paranoia mode"),
 cannot change to old GID: %s; disabling paranoia mode"),
 		   strerror (errno));
 
-	  setuid (server_uid);
+	  ignore_value (setuid (server_uid));
 	  paranoia = 0;
 	  return;
 	}
@@ -1501,8 +1501,8 @@ cannot change to old working directory: %s; disabling paranoia mode"),
 
       if (server_user != NULL)
 	{
-	  setuid (server_uid);
-	  setgid (server_gid);
+	  ignore_value (setuid (server_uid));
+	  ignore_value (setgid (server_gid));
 	}
       paranoia = 0;
       return;
@@ -1546,8 +1546,8 @@ cannot change to old working directory: %s; disabling paranoia mode"),
 
   if (server_user != NULL)
     {
-      setuid (server_uid);
-      setgid (server_gid);
+      ignore_value (setuid (server_uid));
+      ignore_value (setgid (server_gid));
     }
   if (chdir ("/") != 0)
     dbg_log (_("cannot change current working directory to \"/\": %s"),

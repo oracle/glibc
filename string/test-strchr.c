@@ -26,8 +26,12 @@
 #  define TEST_NAME "strchr"
 # endif
 #else
-# define TEST_NAME "wcschr"
-#endif
+# ifdef USE_FOR_STRCHRNUL
+#  define TEST_NAME "wcschrnul"
+# else
+#  define TEST_NAME "wcschr"
+# endif /* !USE_FOR_STRCHRNUL */
+#endif /* WIDE */
 #include "test-string.h"
 
 #ifndef WIDE
@@ -44,15 +48,23 @@
 # define MIDDLE_CHAR 127
 # define SMALL_CHAR 23
 # define UCHAR unsigned char
+# define L(s) s
 #else
 # include <wchar.h>
-# define STRCHR wcschr
+# ifdef USE_FOR_STRCHRNUL
+#  define STRCHR wcschrnul
+#  define stupid_STRCHR stupid_WCSCHRNUL
+#  define simple_STRCHR simple_WCSCHRNUL
+# else
+#  define STRCHR wcschr
+# endif /* !USE_FOR_STRCHRNUL */
 # define STRLEN wcslen
 # define CHAR wchar_t
 # define BIG_CHAR WCHAR_MAX
 # define MIDDLE_CHAR 1121
 # define SMALL_CHAR 851
 # define UCHAR wchar_t
+# define L(s) L ## s
 #endif
 
 #ifdef USE_FOR_STRCHRNUL
@@ -219,9 +231,9 @@ do_random_tests (void)
 static void
 check1 (void)
 {
-  char s[] __attribute__((aligned(16))) = "\xff";
-  char c = '\xfe';
-  char *exp_result = stupid_STRCHR (s, c);
+  CHAR s[] __attribute__((aligned(16))) = L ("\xff");
+  CHAR c = L ('\xfe');
+  CHAR *exp_result = stupid_STRCHR (s, c);
 
   FOR_EACH_IMPL (impl, 0)
     check_result (impl, s, c, exp_result);

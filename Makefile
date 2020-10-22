@@ -279,7 +279,7 @@ ifneq ($(CXX),no)
 vpath c++-types.data $(+sysdep_dirs)
 
 $(objpfx)c++-types-check.out: c++-types.data scripts/check-c++-types.sh
-	scripts/check-c++-types.sh $< $(CXX) $(filter-out -std=gnu99 -Wstrict-prototypes,$(CFLAGS)) $(CPPFLAGS) > $@
+	scripts/check-c++-types.sh $< $(CXX) $(filter-out -std=gnu99 $(+gccwarn-c),$(CFLAGS)) $(CPPFLAGS) > $@
 endif
 
 $(objpfx)check-local-headers.out: scripts/check-local-headers.sh

@@ -65,9 +65,8 @@ static char ECVT_BUFFER[MAXDIG];
 libc_freeres_ptr (static char *FCVT_BUFPTR);
 
 char *
-__APPEND (FUNC_PREFIX, fcvt) (value, ndigit, decpt, sign)
-     FLOAT_TYPE value;
-     int ndigit, *decpt, *sign;
+__APPEND (FUNC_PREFIX, fcvt) (FLOAT_TYPE value, int ndigit, int *decpt,
+			      int *sign)
 {
   if (FCVT_BUFPTR == NULL)
     {
@@ -88,9 +87,8 @@ __APPEND (FUNC_PREFIX, fcvt) (value, ndigit, decpt, sign)
 
 
 char *
-__APPEND (FUNC_PREFIX, ecvt) (value, ndigit, decpt, sign)
-     FLOAT_TYPE value;
-     int ndigit, *decpt, *sign;
+__APPEND (FUNC_PREFIX, ecvt) (FLOAT_TYPE value, int ndigit, int *decpt,
+			      int *sign)
 {
   (void) __APPEND (FUNC_PREFIX, ecvt_r) (value, ndigit, decpt, sign,
 					 ECVT_BUFFER, MAXDIG);
@@ -99,10 +97,7 @@ __APPEND (FUNC_PREFIX, ecvt) (value, ndigit, decpt, sign)
 }
 
 char *
-__APPEND (FUNC_PREFIX, gcvt) (value, ndigit, buf)
-     FLOAT_TYPE value;
-     int ndigit;
-     char *buf;
+__APPEND (FUNC_PREFIX, gcvt) (FLOAT_TYPE value, int ndigit, char *buf)
 {
   sprintf (buf, "%.*" FLOAT_FMT_FLAG "g", MIN (ndigit, NDIGIT_MAX), value);
   return buf;

@@ -27,12 +27,7 @@
 /* Make a link to FROM named TO but relative paths in TO and FROM are
    interpreted relative to FROMFD and TOFD respectively.  */
 int
-linkat (fromfd, from, tofd, to, flags)
-     int fromfd;
-     const char *from;
-     int tofd;
-     const char *to;
-     int flags;
+linkat (int fromfd, const char *from, int tofd, const char *to, int flags)
 {
   int result;
 

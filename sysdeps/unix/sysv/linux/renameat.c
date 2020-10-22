@@ -104,11 +104,7 @@ __atfct_seterrno_2 (int errval, int fd1, const char *buf1, int fd2,
 
 /* Rename the file OLD relative to OLDFD to NEW relative to NEWFD.  */
 int
-renameat (oldfd, old, newfd, new)
-     int oldfd;
-     const char *old;
-     int newfd;
-     const char *new;
+renameat (int oldfd, const char *old, int newfd, const char *new)
 {
   int result;
 

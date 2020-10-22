@@ -21,11 +21,13 @@
 #include <sysdep.h>
 #include <lowlevellock.h>
 #include <sys/time.h>
+#include <stap-probe.h>
 
 
 void
 __lll_lock_wait_private (int *futex)
 {
+  LIBC_PROBE (lll_lock_wait_private, 1, futex);
   if (*futex == 2)
     lll_futex_wait (futex, 2, LLL_PRIVATE);
 
@@ -39,6 +41,7 @@ __lll_lock_wait_private (int *futex)
 void
 __lll_lock_wait (int *futex, int private)
 {
+  LIBC_PROBE (lll_lock_wait, 2, futex, FUTEX_WAIT | private);
   if (*futex == 2)
     lll_futex_wait (futex, 2, private);
 

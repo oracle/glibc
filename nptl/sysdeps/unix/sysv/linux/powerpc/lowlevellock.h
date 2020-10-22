@@ -19,6 +19,8 @@
 #ifndef _LOWLEVELLOCK_H
 #define _LOWLEVELLOCK_H	1
 
+#include <stap-probe.h>
+
 #include <time.h>
 #include <sys/param.h>
 #include <bits/pthreadtypes.h>
@@ -106,6 +108,7 @@
     INTERNAL_SYSCALL_DECL (__err);					      \
     long int __ret;							      \
 									      \
+    LIBC_PROBE (lll_futex_wake, 3, futexp, nr, private);		      \
     __ret = INTERNAL_SYSCALL (futex, __err, 4, (futexp),		      \
 			      __lll_private_flag (FUTEX_WAKE, private),	      \
 			      (nr), 0);					      \

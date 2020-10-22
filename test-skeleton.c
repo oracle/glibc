@@ -368,8 +368,9 @@ main (int argc, char *argv[])
 
   /* Set timeout.  */
 #ifndef TIMEOUT
-  /* Default timeout is two seconds.  */
-# define TIMEOUT 2
+  /* Default timeout is twenty seconds.  Tests should normally complete faster
+     than this, but if they don't, that's abnormal (a bug) anyways.  */
+# define TIMEOUT 20
 #endif
   signal (SIGALRM, signal_handler);
   alarm (TIMEOUT * timeoutfactor);

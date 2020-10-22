@@ -116,11 +116,8 @@ init_cpu_features (struct cpu_features *cpu_features)
 	    case 0x2c:
 	    case 0x2e:
 	    case 0x2f:
-	      /* Rep string instructions, copy backward, unaligned loads
+	      /* Rep string instructions, unaligned load, unaligned copy,
 		 and pminub are fast on Intel Core i3, i5 and i7.  */
-#if index_Fast_Rep_String != index_Fast_Copy_Backward
-# error index_Fast_Rep_String != index_Fast_Copy_Backward
-#endif
 #if index_Fast_Rep_String != index_Fast_Unaligned_Load
 # error index_Fast_Rep_String != index_Fast_Unaligned_Load
 #endif
@@ -129,7 +126,6 @@ init_cpu_features (struct cpu_features *cpu_features)
 #endif
 	      cpu_features->feature[index_Fast_Rep_String]
 		|= (bit_Fast_Rep_String
-		    | bit_Fast_Copy_Backward
 		    | bit_Fast_Unaligned_Load
 		    | bit_Prefer_PMINUB_for_stringop);
 	      break;

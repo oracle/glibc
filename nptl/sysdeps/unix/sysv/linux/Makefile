@@ -24,7 +24,7 @@ libpthread-sysdep_routines += pt-fork pthread_mutex_cond_lock
 
 gen-as-const-headers += lowlevelcond.sym lowlevelrwlock.sym \
 			lowlevelbarrier.sym unwindbuf.sym \
-			lowlevelrobustlock.sym pthread-pi-defines.sym
+			pthread-pi-defines.sym
 endif
 
 ifeq ($(subdir),posix)

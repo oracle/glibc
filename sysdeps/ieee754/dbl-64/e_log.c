@@ -78,9 +78,9 @@ __ieee754_log(double x) {
   n=0;
   if (__builtin_expect(ux < 0x00100000, 0)) {
     if (__builtin_expect(((ux & 0x7fffffff) | dx) == 0, 0))
-      return MHALF/0; /* return -INF */
+      return MHALF/0.0; /* return -INF */
     if (__builtin_expect(ux < 0, 0))
-      return (x-x)/0;                         /* return NaN  */
+      return (x-x)/0.0;                         /* return NaN  */
     n -= 54;    x *= two54.d;                              /* scale x     */
     num.d = x;
   }

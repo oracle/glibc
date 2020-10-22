@@ -8,6 +8,5 @@
 #define __x86_64_raw_shared_cache_size_half __x86_raw_shared_cache_size_half
 
 #define DISABLE_PREFETCHW
-#define DISABLE_PREFERRED_MEMORY_INSTRUCTION
 
 #include <sysdeps/x86_64/cacheinfo.c>

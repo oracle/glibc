@@ -44,8 +44,7 @@ static char zapchar;
 static FILE *tf;
 
 struct ttyent *
-getttynam(tty)
-	const char *tty;
+getttynam (const char *tty)
 {
 	struct ttyent *t;
 

@@ -30,16 +30,6 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <stddef.h>
-
-/* This mirrors the C11 max_align_t type provided by GCC, but it is
-   also available in C99 mode.  The aligned attributes are required
-   because some ABIs have reduced alignment requirements for struct
-   and union members.  */
-typedef struct {
-  long long ll __attribute__ ((__aligned__ (__alignof__ (long long))));
-  long double ld __attribute__ ((__aligned__ (__alignof__ (long double))));
-} libc_max_align_t;
 
 /* Wrapper for calloc with an optimization barrier.  */
 static void *
@@ -93,7 +83,7 @@ allocate_1 (void)
     {
     case with_malloc:
       return (struct allocate_result)
-        {malloc (allocation_size), __alignof__ (libc_max_align_t)};
+        {malloc (allocation_size), _Alignof (max_align_t)};
     case with_realloc:
       {
         void *p = realloc (NULL, 16);
@@ -106,7 +96,7 @@ allocate_1 (void)
             if (q == NULL)
               free (p);
           }
-        return (struct allocate_result) {q, __alignof__ (libc_max_align_t)};
+        return (struct allocate_result) {q, _Alignof (max_align_t)};
       }
     case with_aligned_alloc:
       {
@@ -155,7 +145,7 @@ allocate_1 (void)
                 printf ("error: non-zero byte at offset %zu\n", i);
                 abort ();
               }
-        return (struct allocate_result) {p, __alignof__ (libc_max_align_t)};
+        return (struct allocate_result) {p, _Alignof (max_align_t)};
       }
     }
   abort ();

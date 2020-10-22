@@ -30,6 +30,9 @@
 #include <unistd.h>
 #include <wchar.h>
 
+/* For check_mul_overflow_size_t.  */
+#include <malloc/malloc-internal.h>
+
 /* Small allocations should use malloc directly instead of the mmap
    optimization because mappings carry a lot of overhead.  */
 static const size_t maximum_small_size = 4 * 1024 * 1024;
@@ -118,8 +121,8 @@ minimum_stride_size (size_t page_size, size_t element_size)
      common multiple, it appears only once.  Therefore, shift one
      factor.  */
   size_t multiple;
-  if (__builtin_mul_overflow (page_size >> common_zeros, element_size,
-                              &multiple))
+  if (check_mul_overflow_size_t (page_size >> common_zeros, element_size,
+                                 &multiple))
     return 0;
   return multiple;
 }
@@ -255,7 +258,7 @@ support_blob_repeat_allocate (const void *element, size_t element_size,
                               size_t count)
 {
   size_t total_size;
-  if (__builtin_mul_overflow (element_size, count, &total_size))
+  if (check_mul_overflow_size_t (element_size, count, &total_size))
     {
       errno = EOVERFLOW;
       return (struct support_blob_repeat) { 0 };

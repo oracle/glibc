@@ -462,9 +462,9 @@ _res_hconf_reorder_addrs (struct hostent *hp)
 	  errno = save;
 
 	  num_ifs = new_num_ifs;
-
-	  __libc_lock_unlock (lock);
 	}
+
+      __libc_lock_unlock (lock);
 
       __close (sd);
     }

@@ -30,6 +30,8 @@ ifeq ($(subdir),stdio-common)
 
 errlist-c = $(firstword $(wildcard $(addsuffix /errlist.c,$(sysdirs) .)))
 
+libof-errlist-compat = extramodules
+
 ifeq ($(versioning),yes)
 $(objpfx)errlist-compat.c: $(errlist-c) $(..)sysdeps/gnu/errlist-compat.awk \
 			   $(common-objpfx)Versions.v.i $(before-compile)

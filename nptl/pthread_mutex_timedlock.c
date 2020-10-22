@@ -87,7 +87,8 @@ pthread_mutex_timedlock (mutex, abstime)
       if (__builtin_expect (mutex->__data.__owner == id, 0))
 	return EDEADLK;
 
-      /* FALLTHROUGH */
+      /* Don't do lock elision on an error checking mutex.  */
+      goto simple;
 
     case PTHREAD_MUTEX_TIMED_NP:
       FORCE_ELISION (mutex, goto elision);

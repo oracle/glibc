@@ -70,7 +70,9 @@ CFLAGS-kaio_librt-cancellation.c = -fasynchronous-unwind-tables
 LDFLAGS-rtkaio.so = -Wl,-soname=lib$(libprefix)rt.so$(librt.so-version) \
 		    -Wl,--enable-new-dtags,-z,nodelete
 CPPFLAGS-librtkaio += -UIN_MODULE -DIN_MODULE=MODULE_librt \
-		      -UIS_IN_librt -DIS_IN_librt=1 -I$(..)rt
+		      -UMODULE_NAME -DMODULE_NAME=librt \
+		      -UIS_IN_librt -DIS_IN_librt=1 \
+		      -I$(..)rt
 
 rpath-dirs := $(patsubst rt,rtkaio,$(rpath-dirs))
 

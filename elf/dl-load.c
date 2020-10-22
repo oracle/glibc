@@ -349,13 +349,7 @@ _dl_dst_substitute (struct link_map *l, const char *name, char *result,
 	      /* We cannot use this path element, the value of the
 		 replacement is unknown.  */
 	      wp = last_elem;
-	      name += len;
-	      while (*name != '\0' && (!is_path || *name != ':'))
-		++name;
-	      /* Also skip following colon if this is the first rpath
-		 element, but keep an empty element at the end.  */
-	      if (wp == result && is_path && *name == ':' && name[1] != '\0')
-		++name;
+	      break;
 	    }
 	  else
 	    /* No DST we recognize.  */
@@ -364,19 +358,6 @@ _dl_dst_substitute (struct link_map *l, const char *name, char *result,
       else
 	{
 	  *wp++ = *name++;
-	  if (is_path && *name == ':')
-	    {
-	      /* In SUID/SGID programs, after $ORIGIN expansion the
-		 normalized path must be rooted in one of the trusted
-		 directories.  */
-	      if (__builtin_expect (check_for_trusted, false)
-		  && !is_trusted_path_normalize (last_elem, wp - last_elem))
-		wp = last_elem;
-	      else
-		last_elem = wp;
-
-	      check_for_trusted = false;
-	    }
 	}
     }
   while (*name != '\0');

@@ -28,9 +28,7 @@
 #include <syslog.h>
 #include <unistd.h>
 #include <sys/prctl.h>
-#include <selinux/av_permissions.h>
 #include <selinux/avc.h>
-#include <selinux/flask.h>
 #include <selinux/selinux.h>
 #ifdef HAVE_LIBAUDIT
 # include <libaudit.h>

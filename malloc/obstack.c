@@ -56,10 +56,10 @@
 #ifndef ELIDE_CODE
 
 
-# if HAVE_INTTYPES_H
+# if _LIBC || HAVE_INTTYPES_H
 #  include <inttypes.h>
 # endif
-# if HAVE_STDINT_H || defined _LIBC
+# if _LIBC || HAVE_STDINT_H
 #  include <stdint.h>
 # endif
 

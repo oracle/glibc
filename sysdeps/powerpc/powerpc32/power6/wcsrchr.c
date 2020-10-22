@@ -21,9 +21,7 @@
 
 /* Find the last occurrence of WC in WCS.  */
 wchar_t *
-wcsrchr (wcs, wc)
-     const wchar_t *wcs;
-     const wchar_t wc;
+wcsrchr (const wchar_t *wcs, const wchar_t wc)
 {
   const wchar_t *wcs2 = wcs + 1;
   const wchar_t *retval = NULL;

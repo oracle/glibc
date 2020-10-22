@@ -1,3 +1,21 @@
+/* Resolver state initialization and resolv.conf parsing.
+   Copyright (C) 1995-2017 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
+
 /*
  * Copyright (c) 1985, 1989, 1993
  *    The Regents of the University of California.  All rights reserved.
@@ -64,19 +82,16 @@
  * SOFTWARE.
  */
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static const char sccsid[] = "@(#)res_init.c	8.1 (Berkeley) 6/7/93";
-static const char rcsid[] = "$BINDId: res_init.c,v 8.16 2000/05/09 07:10:12 vixie Exp $";
-#endif /* LIBC_SCCS and not lint */
-
 #include <ctype.h>
 #include <netdb.h>
 #include <resolv/resolv-internal.h>
+#include <res_hconf.h>
 #include <stdio.h>
 #include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdint.h>
 #include <arpa/inet.h>
 #include <arpa/nameser.h>
 #include <net/if.h>
@@ -85,570 +100,608 @@ static const char rcsid[] = "$BINDId: res_init.c,v 8.16 2000/05/09 07:10:12 vixi
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <inet/net-internal.h>
+#include <errno.h>
+#include <resolv_conf.h>
 
-#include <not-cancel.h>
+static uint32_t net_mask (struct in_addr);
 
-/* Options.  Should all be left alone. */
-#define RESOLVSORT
-#define RFC1535
-/* #undef DEBUG */
-
-static void res_setoptions (res_state, const char *, const char *)
-     internal_function;
-
-#ifdef RESOLVSORT
-static const char sort_mask_chars[] = "/&";
-#define ISSORTMASK(ch) (strchr(sort_mask_chars, ch) != NULL)
-static u_int32_t net_mask (struct in_addr) __THROW;
-#endif
-
-#if !defined(isascii)	/* XXX - could be a function */
-# define isascii(c) (!(c & 0200))
-#endif
-
-#ifdef _LIBC
-unsigned long long int __res_initstamp attribute_hidden;
-#endif
-
-/*
- * Resolver state default settings.
- */
-
-/*
- * Set up default settings.  If the configuration file exist, the values
- * there will have precedence.  Otherwise, the server address is set to
- * INADDR_ANY and the default domain name comes from the gethostname().
- *
- * An interrim version of this code (BIND 4.9, pre-4.4BSD) used 127.0.0.1
- * rather than INADDR_ANY ("0.0.0.0") as the default name server address
- * since it was noted that INADDR_ANY actually meant ``the first interface
- * you "ifconfig"'d at boot time'' and if this was a SLIP or PPP interface,
- * it had to be "up" in order for you to reach your own name server.  It
- * was later decided that since the recommended practice is to always
- * install local static routes through 127.0.0.1 for all your network
- * interfaces, that we could solve this problem without a code change.
- *
- * The configuration file should always be used, since it is the only way
- * to specify a default domain.  If you are running a server on your local
- * machine, you should say "nameserver 0.0.0.0" or "nameserver 127.0.0.1"
- * in the configuration file.
- *
- * Return 0 if completes successfully, -1 on error
- */
 int
-res_ninit(res_state statp) {
-	extern int __res_vinit(res_state, int);
-
-	return (__res_vinit(statp, 0));
+res_ninit (res_state statp)
+{
+  return __res_vinit (statp, 0);
 }
-#ifdef _LIBC
 libc_hidden_def (__res_ninit)
-#endif
 
-/* This function has to be reachable by res_data.c but not publically. */
-int
-__res_vinit(res_state statp, int preinit) {
-	register FILE *fp;
-	register char *cp, **pp;
-	register int n;
-	char buf[BUFSIZ];
-	int nserv = 0;    /* number of nameserver records read from file */
-#ifdef _LIBC
-	int nservall = 0; /* number of NS records read, nserv IPv4 only */
-#endif
-	int haveenv = 0;
-	int havesearch = 0;
-#ifdef RESOLVSORT
-	int nsort = 0;
-	char *net;
-#endif
-#ifndef RFC1535
-	int dots;
-#endif
-#ifdef _LIBC
-	statp->_u._ext.initstamp = __res_initstamp;
-#endif
+/* Return true if CH separates the netmask in the "sortlist"
+   directive.  */
+static inline bool
+is_sort_mask (char ch)
+{
+  return ch == '/' || ch == '&';
+}
 
-	if (!preinit) {
-		statp->retrans = RES_TIMEOUT;
-		statp->retry = RES_DFLRETRY;
-		statp->options = RES_DEFAULT;
-		statp->id = res_randomid();
-	}
+/* Array of name server addresses.  */
+#define DYNARRAY_STRUCT nameserver_list
+#define DYNARRAY_ELEMENT const struct sockaddr *
+#define DYNARRAY_ELEMENT_FREE(e) free ((struct sockaddr *) *(e))
+#define DYNARRAY_INITIAL_SIZE 3
+#define DYNARRAY_PREFIX nameserver_list_
+#include <malloc/dynarray-skeleton.c>
 
-	statp->nscount = 0;
-	statp->ndots = 1;
-	statp->pfcode = 0;
-	statp->_vcsock = -1;
-	statp->_flags = 0;
-	statp->qhook = NULL;
-	statp->rhook = NULL;
-	statp->_u._ext.nsinit = 0;
-	statp->_u._ext.nscount = 0;
-#ifdef _LIBC
-	statp->_u._ext.nscount6 = 0;
-	for (n = 0; n < MAXNS; n++) {
-		statp->_u._ext.nsaddrs[n] = NULL;
-		statp->_u._ext.nsmap[n] = MAXNS;
-	}
-#endif
+/* Array of strings for the search array.  The backing store is
+   managed separately.  */
+#define DYNARRAY_STRUCT search_list
+#define DYNARRAY_ELEMENT const char *
+#define DYNARRAY_INITIAL_SIZE 6
+#define DYNARRAY_PREFIX search_list_
+#include <malloc/dynarray-skeleton.c>
 
-	/* Allow user to override the local domain definition */
-	if ((cp = getenv("LOCALDOMAIN")) != NULL) {
-		(void)strncpy(statp->defdname, cp, sizeof(statp->defdname) - 1);
-		statp->defdname[sizeof(statp->defdname) - 1] = '\0';
-		haveenv++;
+/* Array of name server addresses.  */
+#define DYNARRAY_STRUCT sort_list
+#define DYNARRAY_ELEMENT struct resolv_sortlist_entry
+#define DYNARRAY_INITIAL_SIZE 0
+#define DYNARRAY_PREFIX sort_list_
+#include <malloc/dynarray-skeleton.c>
 
-		/*
-		 * Set search list to be blank-separated strings
-		 * from rest of env value.  Permits users of LOCALDOMAIN
-		 * to still have a search list, and anyone to set the
-		 * one that they want to use as an individual (even more
-		 * important now that the rfc1535 stuff restricts searches)
-		 */
-		cp = statp->defdname;
-		pp = statp->dnsrch;
-		*pp++ = cp;
-		for (n = 0; *cp && pp < statp->dnsrch + MAXDNSRCH; cp++) {
-			if (*cp == '\n')	/* silly backwards compat */
-				break;
-			else if (*cp == ' ' || *cp == '\t') {
-				*cp = 0;
-				n = 1;
-			} else if (n) {
-				*pp++ = cp;
-				n = 0;
-				havesearch = 1;
-			}
-		}
-		/* null terminate last domain if there are excess */
-		while (*cp != '\0' && *cp != ' ' && *cp != '\t' && *cp != '\n')
-			cp++;
-		*cp = '\0';
-		*pp++ = 0;
-	}
+/* resolv.conf parser state and results.  */
+struct resolv_conf_parser
+{
+  char *buffer;            /* Temporary buffer for reading lines.  */
 
-#define	MATCH(line, name) \
-	(!strncmp(line, name, sizeof(name) - 1) && \
-	(line[sizeof(name) - 1] == ' ' || \
-	 line[sizeof(name) - 1] == '\t'))
+  struct nameserver_list nameserver_list; /* Nameserver addresses.  */
 
-	if ((fp = fopen(_PATH_RESCONF, "rce")) != NULL) {
-	    /* No threads use this stream.  */
-	    __fsetlocking (fp, FSETLOCKING_BYCALLER);
-	    /* read the config file */
-	    while (fgets_unlocked(buf, sizeof(buf), fp) != NULL) {
-		/* skip comments */
-		if (*buf == ';' || *buf == '#')
-			continue;
-		/* read default domain name */
-		if (MATCH(buf, "domain")) {
-		    if (haveenv)	/* skip if have from environ */
-			    continue;
-		    cp = buf + sizeof("domain") - 1;
-		    while (*cp == ' ' || *cp == '\t')
-			    cp++;
-		    if ((*cp == '\0') || (*cp == '\n'))
-			    continue;
-		    strncpy(statp->defdname, cp, sizeof(statp->defdname) - 1);
-		    statp->defdname[sizeof(statp->defdname) - 1] = '\0';
-		    if ((cp = strpbrk(statp->defdname, " \t\n")) != NULL)
-			    *cp = '\0';
-		    havesearch = 0;
-		    continue;
-		}
-		/* set search list */
-		if (MATCH(buf, "search")) {
-		    if (haveenv)	/* skip if have from environ */
-			    continue;
-		    cp = buf + sizeof("search") - 1;
-		    while (*cp == ' ' || *cp == '\t')
-			    cp++;
-		    if ((*cp == '\0') || (*cp == '\n'))
-			    continue;
-		    strncpy(statp->defdname, cp, sizeof(statp->defdname) - 1);
-		    statp->defdname[sizeof(statp->defdname) - 1] = '\0';
-		    if ((cp = strchr(statp->defdname, '\n')) != NULL)
-			    *cp = '\0';
-		    /*
-		     * Set search list to be blank-separated strings
-		     * on rest of line.
-		     */
-		    cp = statp->defdname;
-		    pp = statp->dnsrch;
-		    *pp++ = cp;
-		    for (n = 0; *cp && pp < statp->dnsrch + MAXDNSRCH; cp++) {
-			    if (*cp == ' ' || *cp == '\t') {
-				    *cp = 0;
-				    n = 1;
-			    } else if (n) {
-				    *pp++ = cp;
-				    n = 0;
-			    }
-		    }
-		    /* null terminate last domain if there are excess */
-		    while (*cp != '\0' && *cp != ' ' && *cp != '\t')
-			    cp++;
-		    *cp = '\0';
-		    *pp++ = 0;
-		    havesearch = 1;
-		    continue;
-		}
-		/* read nameservers to query */
-#ifdef _LIBC
-		if (MATCH(buf, "nameserver") && nservall < MAXNS) {
-#else
-		if (MATCH(buf, "nameserver") && nserv < MAXNS) {
-#endif
-		    struct in_addr a;
+  char *search_list_store; /* Backing storage for search list entries.  */
+  struct search_list search_list; /* Points into search_list_store.  */
 
-		    cp = buf + sizeof("nameserver") - 1;
-		    while (*cp == ' ' || *cp == '\t')
-			cp++;
-		    if ((*cp != '\0') && (*cp != '\n')
-			&& __inet_aton(cp, &a)) {
-			statp->nsaddr_list[nserv].sin_addr = a;
-			statp->nsaddr_list[nserv].sin_family = AF_INET;
-			statp->nsaddr_list[nserv].sin_port =
-				htons(NAMESERVER_PORT);
-			nserv++;
-#ifdef _LIBC
-			nservall++;
-		    } else {
-			struct in6_addr a6;
-			char *el;
+  struct sort_list sort_list;   /* Address preference sorting list.  */
 
-			if ((el = strpbrk(cp, " \t\n")) != NULL)
-			    *el = '\0';
-			if ((el = strchr(cp, SCOPE_DELIMITER)) != NULL)
-			    *el = '\0';
-			if ((*cp != '\0') &&
-			    (inet_pton(AF_INET6, cp, &a6) > 0)) {
-			    struct sockaddr_in6 *sa6;
+  /* Configuration template.  The non-array elements are filled in
+     directly.  The array elements are updated prior to the call to
+     __resolv_conf_attach.  */
+  struct resolv_conf template;
+};
 
-			    sa6 = malloc(sizeof(*sa6));
-			    if (sa6 != NULL) {
-				sa6->sin6_family = AF_INET6;
-				sa6->sin6_port = htons(NAMESERVER_PORT);
-				sa6->sin6_flowinfo = 0;
-				sa6->sin6_addr = a6;
-
-				if (__builtin_expect (el == NULL, 1))
-				    sa6->sin6_scope_id = 0;
-				else {
-				    int try_numericscope = 1;
-				    if (IN6_IS_ADDR_LINKLOCAL (&a6)
-					|| IN6_IS_ADDR_MC_LINKLOCAL (&a6)) {
-					sa6->sin6_scope_id
-					  = if_nametoindex (el + 1);
-					if (sa6->sin6_scope_id != 0)
-					    try_numericscope = 0;
-				    }
-
-				    if (try_numericscope) {
-					char *end;
-					sa6->sin6_scope_id
-					  = (uint32_t) strtoul (el + 1, &end,
-								10);
-					if (*end != '\0')
-					    sa6->sin6_scope_id = 0;
-				    }
-				}
-
-				statp->_u._ext.nsaddrs[nservall] = sa6;
-				statp->_u._ext.nssocks[nservall] = -1;
-				statp->_u._ext.nsmap[nservall] = MAXNS + 1;
-				nservall++;
-			    }
-			}
-#endif
-		    }
-		    continue;
-		}
-#ifdef RESOLVSORT
-		if (MATCH(buf, "sortlist")) {
-		    struct in_addr a;
-
-		    cp = buf + sizeof("sortlist") - 1;
-		    while (nsort < MAXRESOLVSORT) {
-			while (*cp == ' ' || *cp == '\t')
-			    cp++;
-			if (*cp == '\0' || *cp == '\n' || *cp == ';')
-			    break;
-			net = cp;
-			while (*cp && !ISSORTMASK(*cp) && *cp != ';' &&
-			       isascii(*cp) && !isspace(*cp))
-				cp++;
-			n = *cp;
-			*cp = 0;
-			if (__inet_aton(net, &a)) {
-			    statp->sort_list[nsort].addr = a;
-			    if (ISSORTMASK(n)) {
-				*cp++ = n;
-				net = cp;
-				while (*cp && *cp != ';' &&
-					isascii(*cp) && !isspace(*cp))
-				    cp++;
-				n = *cp;
-				*cp = 0;
-				if (__inet_aton(net, &a)) {
-				    statp->sort_list[nsort].mask = a.s_addr;
-				} else {
-				    statp->sort_list[nsort].mask =
-					net_mask(statp->sort_list[nsort].addr);
-				}
-			    } else {
-				statp->sort_list[nsort].mask =
-				    net_mask(statp->sort_list[nsort].addr);
-			    }
-			    nsort++;
-			}
-			*cp = n;
-		    }
-		    continue;
-		}
-#endif
-		if (MATCH(buf, "options")) {
-		    res_setoptions(statp, buf + sizeof("options") - 1, "conf");
-		    continue;
-		}
-	    }
-	    statp->nscount = nservall;
-#ifdef _LIBC
-	    if (nservall - nserv > 0) {
-		statp->_u._ext.nscount6 = nservall - nserv;
-		/* We try IPv6 servers again.  */
-		statp->ipv6_unavail = false;
-	    }
-#endif
-#ifdef RESOLVSORT
-	    statp->nsort = nsort;
-#endif
-	    (void) fclose(fp);
-	}
-	if (__builtin_expect(statp->nscount == 0, 0)) {
-	    statp->nsaddr.sin_addr = inet_makeaddr(IN_LOOPBACKNET, 1);
-	    statp->nsaddr.sin_family = AF_INET;
-	    statp->nsaddr.sin_port = htons(NAMESERVER_PORT);
-	    statp->nscount = 1;
-	}
-	if (statp->defdname[0] == 0 &&
-	    __gethostname(buf, sizeof(statp->defdname) - 1) == 0 &&
-	    (cp = strchr(buf, '.')) != NULL)
-		strcpy(statp->defdname, cp + 1);
-
-	/* find components of local domain that might be searched */
-	if (havesearch == 0) {
-		pp = statp->dnsrch;
-		*pp++ = statp->defdname;
-		*pp = NULL;
-
-#ifndef RFC1535
-		dots = 0;
-		for (cp = statp->defdname; *cp; cp++)
-			dots += (*cp == '.');
-
-		cp = statp->defdname;
-		while (pp < statp->dnsrch + MAXDFLSRCH) {
-			if (dots < LOCALDOMAINPARTS)
-				break;
-			cp = __rawmemchr(cp, '.') + 1;    /* we know there is one */
-			*pp++ = cp;
-			dots--;
-		}
-		*pp = NULL;
-#ifdef DEBUG
-		if (statp->options & RES_DEBUG) {
-			printf(";; res_init()... default dnsrch list:\n");
-			for (pp = statp->dnsrch; *pp; pp++)
-				printf(";;\t%s\n", *pp);
-			printf(";;\t..END..\n");
-		}
-#endif
-#endif /* !RFC1535 */
-	}
-
-	if ((cp = getenv("RES_OPTIONS")) != NULL)
-		res_setoptions(statp, cp, "env");
-	statp->options |= RES_INIT;
-	return (0);
+/* Return true if *PREINIT contains actual preinitialization.  */
+static bool
+has_preinit_values (const struct __res_state *preinit)
+{
+  return (preinit->retrans != 0 && preinit->retrans != RES_TIMEOUT)
+    || (preinit->retry != 0 && preinit->retry != RES_DFLRETRY)
+    || (preinit->options != 0
+        && (preinit->options & ~RES_INIT) != RES_DEFAULT);
 }
 
 static void
-internal_function
-res_setoptions(res_state statp, const char *options, const char *source) {
-	const char *cp = options;
-	int i;
+resolv_conf_parser_init (struct resolv_conf_parser *parser,
+                         const struct __res_state *preinit)
+{
+  parser->buffer = NULL;
+  parser->search_list_store = NULL;
+  nameserver_list_init (&parser->nameserver_list);
+  search_list_init (&parser->search_list);
+  sort_list_init (&parser->sort_list);
 
-#ifdef DEBUG
-	if (statp->options & RES_DEBUG)
-		printf(";; res_setoptions(\"%s\", \"%s\")...\n",
-		       options, source);
-#endif
-	while (*cp) {
-		/* skip leading and inner runs of spaces */
-		while (*cp == ' ' || *cp == '\t')
-			cp++;
-		/* search for and process individual options */
-		if (!strncmp(cp, "ndots:", sizeof("ndots:") - 1)) {
-			i = atoi(cp + sizeof("ndots:") - 1);
-			if (i <= RES_MAXNDOTS)
-				statp->ndots = i;
-			else
-				statp->ndots = RES_MAXNDOTS;
-#ifdef DEBUG
-			if (statp->options & RES_DEBUG)
-				printf(";;\tndots=%d\n", statp->ndots);
-#endif
-		} else if (!strncmp(cp, "timeout:", sizeof("timeout:") - 1)) {
-			i = atoi(cp + sizeof("timeout:") - 1);
-			if (i <= RES_MAXRETRANS)
-				statp->retrans = i;
-			else
-				statp->retrans = RES_MAXRETRANS;
-		} else if (!strncmp(cp, "attempts:", sizeof("attempts:") - 1)){
-			i = atoi(cp + sizeof("attempts:") - 1);
-			if (i <= RES_MAXRETRY)
-				statp->retry = i;
-			else
-				statp->retry = RES_MAXRETRY;
-		} else if (!strncmp(cp, "debug", sizeof("debug") - 1)) {
-#ifdef DEBUG
-			if (!(statp->options & RES_DEBUG)) {
-				printf(";; res_setoptions(\"%s\", \"%s\")..\n",
-				       options, source);
-				statp->options |= RES_DEBUG;
-			}
-			printf(";;\tdebug\n");
-#endif
-		} else {
-		  static const struct
-		  {
-		    char str[22];
-		    uint8_t len;
-		    uint8_t clear;
-		    unsigned long int flag;
-		  } options[] = {
+  if (preinit != NULL)
+    {
+      parser->template.retrans = preinit->retrans;
+      parser->template.retry = preinit->retry;
+      parser->template.options = preinit->options | RES_INIT;
+    }
+  else
+    {
+      parser->template.retrans = RES_TIMEOUT;
+      parser->template.retry = RES_DFLRETRY;
+      parser->template.options = RES_DEFAULT | RES_INIT;
+    }
+  parser->template.ndots = 1;
+}
+
+static void
+resolv_conf_parser_free (struct resolv_conf_parser *parser)
+{
+  free (parser->buffer);
+  free (parser->search_list_store);
+  nameserver_list_free (&parser->nameserver_list);
+  search_list_free (&parser->search_list);
+  sort_list_free (&parser->sort_list);
+}
+
+/* Allocate a struct sockaddr_in object on the heap, with the
+   specified address and port.  */
+static struct sockaddr *
+allocate_address_v4 (struct in_addr a, uint16_t port)
+{
+  struct sockaddr_in *sa4 = malloc (sizeof (*sa4));
+  if (sa4 == NULL)
+    return NULL;
+  sa4->sin_family = AF_INET;
+  sa4->sin_addr = a;
+  sa4->sin_port = htons (port);
+  return (struct sockaddr *) sa4;
+}
+
+/* Try to obtain the domain name from the host name and store it in
+   *RESULT.  Return false on memory allocation failure.  If the domain
+   name cannot be determined for any other reason, write NULL to
+   *RESULT and return true.  */
+static bool
+domain_from_hostname (char **result)
+{
+  char buf[256];
+  /* gethostbyname may not terminate the buffer.  */
+  buf[sizeof (buf) - 1] = '\0';
+  if (__gethostname (buf, sizeof (buf) - 1) == 0)
+    {
+      char *dot = strchr (buf, '.');
+      if (dot != NULL)
+        {
+          *result = __strdup (dot + 1);
+          if (*result == NULL)
+            return false;
+          return true;
+        }
+    }
+  *result = NULL;
+  return true;
+}
+
+static void res_setoptions (struct resolv_conf_parser *, const char *options);
+
+/* Internal helper function for __res_vinit, to aid with resource
+   deallocation and error handling.  Return true on success, false on
+   failure.  */
+static bool
+res_vinit_1 (FILE *fp, struct resolv_conf_parser *parser)
+{
+  char *cp;
+  size_t buffer_size = 0;
+  bool haveenv = false;
+
+  /* Allow user to override the local domain definition.  */
+  if ((cp = getenv ("LOCALDOMAIN")) != NULL)
+    {
+      /* The code below splits the string in place.  */
+      cp = __strdup (cp);
+      if (cp == NULL)
+        return false;
+      free (parser->search_list_store);
+      parser->search_list_store = cp;
+      haveenv = true;
+
+      /* The string will be truncated as needed below.  */
+      search_list_add (&parser->search_list, cp);
+
+      /* Set search list to be blank-separated strings from rest of
+         env value.  Permits users of LOCALDOMAIN to still have a
+         search list, and anyone to set the one that they want to use
+         as an individual (even more important now that the rfc1535
+         stuff restricts searches).  */
+      for (bool in_name = true; *cp != '\0'; cp++)
+        {
+          if (*cp == '\n')
+            {
+              *cp = '\0';
+              break;
+            }
+          else if (*cp == ' ' || *cp == '\t')
+            {
+              *cp = '\0';
+              in_name = false;
+            }
+          else if (!in_name)
+            {
+              search_list_add (&parser->search_list, cp);
+              in_name = true;
+            }
+        }
+    }
+
+#define MATCH(line, name)                       \
+  (!strncmp ((line), name, sizeof (name) - 1)     \
+   && ((line)[sizeof (name) - 1] == ' '           \
+       || (line)[sizeof (name) - 1] == '\t'))
+
+  if (fp != NULL)
+    {
+      /* No threads use this stream.  */
+      __fsetlocking (fp, FSETLOCKING_BYCALLER);
+      /* Read the config file.  */
+      while (true)
+        {
+          {
+            ssize_t ret = __getline (&parser->buffer, &buffer_size, fp);
+            if (ret <= 0)
+              {
+                if (_IO_ferror_unlocked (fp))
+                  return false;
+                else
+                  break;
+              }
+          }
+
+          /* Skip comments.  */
+          if (*parser->buffer == ';' || *parser->buffer == '#')
+            continue;
+          /* Read default domain name.  */
+          if (MATCH (parser->buffer, "domain"))
+            {
+              if (haveenv)
+                /* LOCALDOMAIN overrides the configuration file.  */
+                continue;
+              cp = parser->buffer + sizeof ("domain") - 1;
+              while (*cp == ' ' || *cp == '\t')
+                cp++;
+              if ((*cp == '\0') || (*cp == '\n'))
+                continue;
+
+              cp = __strdup (cp);
+              if (cp == NULL)
+                return false;
+              free (parser->search_list_store);
+              parser->search_list_store = cp;
+              search_list_clear (&parser->search_list);
+              search_list_add (&parser->search_list, cp);
+              /* Replace trailing whitespace.  */
+              if ((cp = strpbrk (cp, " \t\n")) != NULL)
+                *cp = '\0';
+              continue;
+            }
+          /* Set search list.  */
+          if (MATCH (parser->buffer, "search"))
+            {
+              if (haveenv)
+                /* LOCALDOMAIN overrides the configuration file.  */
+                continue;
+              cp = parser->buffer + sizeof ("search") - 1;
+              while (*cp == ' ' || *cp == '\t')
+                cp++;
+              if ((*cp == '\0') || (*cp == '\n'))
+                continue;
+
+              {
+                char *p = strchr (cp, '\n');
+                if (p != NULL)
+                  *p = '\0';
+              }
+              cp = __strdup (cp);
+              if (cp == NULL)
+                return false;
+              free (parser->search_list_store);
+              parser->search_list_store = cp;
+
+              /* The string is truncated below.  */
+              search_list_clear (&parser->search_list);
+              search_list_add (&parser->search_list, cp);
+
+              /* Set search list to be blank-separated strings on rest
+                 of line.  */
+              for (bool in_name = true; *cp != '\0'; cp++)
+                {
+                  if (*cp == ' ' || *cp == '\t')
+                    {
+                      *cp = '\0';
+                      in_name = false;
+                    }
+                  else if (!in_name)
+                    {
+                      search_list_add (&parser->search_list, cp);
+                      in_name = true;
+                    }
+                }
+              continue;
+            }
+          /* Read nameservers to query.  */
+          if (MATCH (parser->buffer, "nameserver"))
+            {
+              struct in_addr a;
+
+              cp = parser->buffer + sizeof ("nameserver") - 1;
+              while (*cp == ' ' || *cp == '\t')
+                cp++;
+              struct sockaddr *sa;
+              if ((*cp != '\0') && (*cp != '\n') && __inet_aton (cp, &a))
+                {
+                  sa = allocate_address_v4 (a, NAMESERVER_PORT);
+                  if (sa == NULL)
+                    return false;
+                }
+              else
+                {
+                  struct in6_addr a6;
+                  char *el;
+
+                  if ((el = strpbrk (cp, " \t\n")) != NULL)
+                    *el = '\0';
+                  if ((el = strchr (cp, SCOPE_DELIMITER)) != NULL)
+                    *el = '\0';
+                  if ((*cp != '\0') && (__inet_pton (AF_INET6, cp, &a6) > 0))
+                    {
+                      struct sockaddr_in6 *sa6;
+
+                      sa6 = malloc (sizeof (*sa6));
+                      if (sa6 == NULL)
+                        return false;
+
+                      sa6->sin6_family = AF_INET6;
+                      sa6->sin6_port = htons (NAMESERVER_PORT);
+                      sa6->sin6_flowinfo = 0;
+                      sa6->sin6_addr = a6;
+
+                      sa6->sin6_scope_id = 0;
+                      if (__glibc_likely (el != NULL))
+                        /* Ignore errors, for backwards
+                           compatibility.  */
+                        __inet6_scopeid_pton
+                          (&a6, el + 1, &sa6->sin6_scope_id);
+                      sa = (struct sockaddr *) sa6;
+                    }
+                  else
+                    /* IPv6 address parse failure.  */
+                    sa = NULL;
+                }
+              if (sa != NULL)
+                {
+                  const struct sockaddr **p = nameserver_list_emplace
+                    (&parser->nameserver_list);
+                  if (p != NULL)
+                    *p = sa;
+                  else
+                    {
+                      free (sa);
+                      return false;
+                    }
+                }
+              continue;
+            }
+          if (MATCH (parser->buffer, "sortlist"))
+            {
+              struct in_addr a;
+
+              cp = parser->buffer + sizeof ("sortlist") - 1;
+              while (true)
+                {
+                  while (*cp == ' ' || *cp == '\t')
+                    cp++;
+                  if (*cp == '\0' || *cp == '\n' || *cp == ';')
+                    break;
+                  char *net = cp;
+                  while (*cp && !is_sort_mask (*cp) && *cp != ';'
+                         && isascii (*cp) && !isspace (*cp))
+                    cp++;
+                  char separator = *cp;
+                  *cp = 0;
+                  struct resolv_sortlist_entry e;
+                  if (__inet_aton (net, &a))
+                    {
+                      e.addr = a;
+                      if (is_sort_mask (separator))
+                        {
+                          *cp++ = separator;
+                          net = cp;
+                          while (*cp && *cp != ';'
+                                 && isascii (*cp) && !isspace (*cp))
+                            cp++;
+                          separator = *cp;
+                          *cp = 0;
+                          if (__inet_aton (net, &a))
+                            e.mask = a.s_addr;
+                          else
+                            e.mask = net_mask (e.addr);
+                        }
+                      else
+                        e.mask = net_mask (e.addr);
+                      sort_list_add (&parser->sort_list, e);
+                    }
+                  *cp = separator;
+                }
+              continue;
+            }
+          if (MATCH (parser->buffer, "options"))
+            {
+              res_setoptions (parser, parser->buffer + sizeof ("options") - 1);
+              continue;
+            }
+        }
+      fclose (fp);
+    }
+  if (__glibc_unlikely (nameserver_list_size (&parser->nameserver_list) == 0))
+    {
+      const struct sockaddr **p
+        = nameserver_list_emplace (&parser->nameserver_list);
+      if (p == NULL)
+        return false;
+      *p = allocate_address_v4 (__inet_makeaddr (IN_LOOPBACKNET, 1),
+                                NAMESERVER_PORT);
+      if (*p == NULL)
+        return false;
+    }
+
+  if (search_list_size (&parser->search_list) == 0)
+    {
+      char *domain;
+      if (!domain_from_hostname (&domain))
+        return false;
+      if (domain != NULL)
+        {
+          free (parser->search_list_store);
+          parser->search_list_store = domain;
+          search_list_add (&parser->search_list, domain);
+        }
+    }
+
+  if ((cp = getenv ("RES_OPTIONS")) != NULL)
+    res_setoptions (parser, cp);
+
+  if (nameserver_list_has_failed (&parser->nameserver_list)
+      || search_list_has_failed (&parser->search_list)
+      || sort_list_has_failed (&parser->sort_list))
+    {
+      __set_errno (ENOMEM);
+      return false;
+    }
+
+  return true;
+}
+
+struct resolv_conf *
+__resolv_conf_load (struct __res_state *preinit)
+{
+  /* Ensure that /etc/hosts.conf has been loaded (once).  */
+  _res_hconf_init ();
+
+  FILE *fp = fopen (_PATH_RESCONF, "rce");
+  if (fp == NULL)
+    switch (errno)
+      {
+      case EACCES:
+      case EISDIR:
+      case ELOOP:
+      case ENOENT:
+      case ENOTDIR:
+      case EPERM:
+        /* Ignore these errors.  They are persistent errors caused
+           by file system contents.  */
+        break;
+      default:
+        /* Other errors refer to resource allocation problems and
+           need to be handled by the application.  */
+        return NULL;
+      }
+
+  struct resolv_conf_parser parser;
+  resolv_conf_parser_init (&parser, preinit);
+
+  struct resolv_conf *conf = NULL;
+  if (res_vinit_1 (fp, &parser))
+    {
+      parser.template.nameserver_list
+        = nameserver_list_begin (&parser.nameserver_list);
+      parser.template.nameserver_list_size
+        = nameserver_list_size (&parser.nameserver_list);
+      parser.template.search_list = search_list_begin (&parser.search_list);
+      parser.template.search_list_size
+        = search_list_size (&parser.search_list);
+      parser.template.sort_list = sort_list_begin (&parser.sort_list);
+      parser.template.sort_list_size = sort_list_size (&parser.sort_list);
+      conf = __resolv_conf_allocate (&parser.template);
+    }
+  resolv_conf_parser_free (&parser);
+
+  return conf;
+}
+
+/* Set up default settings.  If the /etc/resolv.conf configuration
+   file exist, the values there will have precedence.  Otherwise, the
+   server address is set to INADDR_LOOPBACK and the default domain
+   name comes from gethostname.  The RES_OPTIONS and LOCALDOMAIN
+   environment variables can be used to override some settings.
+   Return 0 if completes successfully, -1 on error.  */
+int
+__res_vinit (res_state statp, int preinit)
+{
+  struct resolv_conf *conf;
+  if (preinit && has_preinit_values (statp))
+    /* For the preinit case, we cannot use the cached configuration
+       because some settings could be different.  */
+    conf = __resolv_conf_load (statp);
+  else
+    conf = __resolv_conf_get_current ();
+  if (conf == NULL)
+    return -1;
+
+  bool ok = __resolv_conf_attach (statp, conf);
+  __resolv_conf_put (conf);
+  if (ok)
+    {
+      if (preinit)
+        statp->id = res_randomid ();
+      return 0;
+    }
+  else
+    return -1;
+}
+
+static void
+res_setoptions (struct resolv_conf_parser *parser, const char *options)
+{
+  const char *cp = options;
+
+  while (*cp)
+    {
+      /* Skip leading and inner runs of spaces.  */
+      while (*cp == ' ' || *cp == '\t')
+        cp++;
+      /* Search for and process individual options.  */
+      if (!strncmp (cp, "ndots:", sizeof ("ndots:") - 1))
+        {
+          int i = atoi (cp + sizeof ("ndots:") - 1);
+          if (i <= RES_MAXNDOTS)
+            parser->template.ndots = i;
+          else
+            parser->template.ndots = RES_MAXNDOTS;
+        }
+      else if (!strncmp (cp, "timeout:", sizeof ("timeout:") - 1))
+        {
+          int i = atoi (cp + sizeof ("timeout:") - 1);
+          if (i <= RES_MAXRETRANS)
+            parser->template.retrans = i;
+          else
+            parser->template.retrans = RES_MAXRETRANS;
+        }
+      else if (!strncmp (cp, "attempts:", sizeof ("attempts:") - 1))
+        {
+          int i = atoi (cp + sizeof ("attempts:") - 1);
+          if (i <= RES_MAXRETRY)
+            parser->template.retry = i;
+          else
+            parser->template.retry = RES_MAXRETRY;
+        }
+      else
+        {
+          static const struct
+          {
+            char str[22];
+            uint8_t len;
+            uint8_t clear;
+            unsigned long int flag;
+          } options[] = {
 #define STRnLEN(str) str, sizeof (str) - 1
-		    { STRnLEN ("inet6"), 0, DEPRECATED_RES_USE_INET6 },
-		    { STRnLEN ("ip6-bytestring"), 0, RES_USEBSTRING },
-		    { STRnLEN ("no-ip6-dotint"), 0, RES_NOIP6DOTINT },
-		    { STRnLEN ("ip6-dotint"), 1, ~RES_NOIP6DOTINT },
-		    { STRnLEN ("rotate"), 0, RES_ROTATE },
-		    { STRnLEN ("no-check-names"), 0, RES_NOCHECKNAME },
-		    { STRnLEN ("edns0"), 0, RES_USE_EDNS0 },
-		    { STRnLEN ("single-request-reopen"), 0, RES_SNGLKUPREOP },
-		    { STRnLEN ("single-request"), 0, RES_SNGLKUP },
-		    { STRnLEN ("no_tld_query"), 0, RES_NOTLDQUERY },
-		    { STRnLEN ("no-tld-query"), 0, RES_NOTLDQUERY },
-		    { STRnLEN ("use-vc"), 0, RES_USEVC }
-		  };
+            { STRnLEN ("inet6"), 0, DEPRECATED_RES_USE_INET6 },
+            { STRnLEN ("rotate"), 0, RES_ROTATE },
+            { STRnLEN ("edns0"), 0, RES_USE_EDNS0 },
+            { STRnLEN ("single-request-reopen"), 0, RES_SNGLKUPREOP },
+            { STRnLEN ("single-request"), 0, RES_SNGLKUP },
+            { STRnLEN ("no_tld_query"), 0, RES_NOTLDQUERY },
+            { STRnLEN ("no-tld-query"), 0, RES_NOTLDQUERY },
+            { STRnLEN ("no-reload"), 0, RES_NORELOAD },
+            { STRnLEN ("use-vc"), 0, RES_USEVC }
+          };
 #define noptions (sizeof (options) / sizeof (options[0]))
-		  int i;
-		  for (i = 0; i < noptions; ++i)
-		    if (strncmp (cp, options[i].str, options[i].len) == 0)
-		      {
-			if (options[i].clear)
-			  statp->options &= options[i].flag;
-			else
-			  statp->options |= options[i].flag;
-			break;
-		      }
-		  if (i == noptions) {
-		    /* XXX - print a warning here? */
-		  }
-		}
-		/* skip to next run of spaces */
-		while (*cp && *cp != ' ' && *cp != '\t')
-			cp++;
-	}
+          for (int i = 0; i < noptions; ++i)
+            if (strncmp (cp, options[i].str, options[i].len) == 0)
+              {
+                if (options[i].clear)
+                  parser->template.options &= options[i].flag;
+                else
+                  parser->template.options |= options[i].flag;
+                break;
+              }
+        }
+      /* Skip to next run of spaces.  */
+      while (*cp && *cp != ' ' && *cp != '\t')
+        cp++;
+    }
 }
 
-#ifdef RESOLVSORT
-/* XXX - should really support CIDR which means explicit masks always. */
-static u_int32_t
-net_mask(in)		/* XXX - should really use system's version of this */
-	struct in_addr in;
+static uint32_t
+net_mask (struct in_addr in)
 {
-	register u_int32_t i = ntohl(in.s_addr);
+  uint32_t i = ntohl (in.s_addr);
 
-	if (IN_CLASSA(i))
-		return (htonl(IN_CLASSA_NET));
-	else if (IN_CLASSB(i))
-		return (htonl(IN_CLASSB_NET));
-	return (htonl(IN_CLASSC_NET));
+  if (IN_CLASSA (i))
+    return htonl (IN_CLASSA_NET);
+  else if (IN_CLASSB (i))
+    return htonl (IN_CLASSB_NET);
+  return htonl (IN_CLASSC_NET);
 }
-#endif
-
-u_int
-res_randomid(void) {
-	return 0xffff & __getpid();
-}
-#ifdef _LIBC
-libc_hidden_def (__res_randomid)
-#endif
-
-
-/*
- * This routine is for closing the socket if a virtual circuit is used and
- * the program wants to close it.  This provides support for endhostent()
- * which expects to close the socket.
- *
- * This routine is not expected to be user visible.
- */
-void
-__res_iclose(res_state statp, bool free_addr) {
-	int ns;
-
-	if (statp->_vcsock >= 0) {
-		close_not_cancel_no_status(statp->_vcsock);
-		statp->_vcsock = -1;
-		statp->_flags &= ~(RES_F_VC | RES_F_CONN);
-	}
-#ifdef _LIBC
-	for (ns = 0; ns < MAXNS; ns++)
-#else
-	for (ns = 0; ns < statp->_u._ext.nscount; ns++)
-#endif
-		if (statp->_u._ext.nsaddrs[ns]) {
-			if (statp->_u._ext.nssocks[ns] != -1) {
-				close_not_cancel_no_status(statp->_u._ext.nssocks[ns]);
-				statp->_u._ext.nssocks[ns] = -1;
-			}
-			if (free_addr) {
-				free (statp->_u._ext.nsaddrs[ns]);
-				statp->_u._ext.nsaddrs[ns] = NULL;
-			}
-		}
-	statp->_u._ext.nsinit = 0;
-}
-libc_hidden_def (__res_iclose)
-
-void
-res_nclose(res_state statp)
-{
-  __res_iclose (statp, true);
-}
-#ifdef _LIBC
-libc_hidden_def (__res_nclose)
-#endif
-
-#ifdef _LIBC
-# ifdef _LIBC_REENTRANT
-/* This is called when a thread is exiting to free resources held in _res.  */
-static void __attribute__ ((section ("__libc_thread_freeres_fn")))
-res_thread_freeres (void)
-{
-  if (_res.nscount == 0)
-    /* Never called res_ninit.  */
-    return;
-
-  __res_iclose (&_res, true);		/* Close any VC sockets.  */
-
-  /* Make sure we do a full re-initialization the next time.  */
-  _res.options = 0;
-}
-text_set_element (__libc_thread_subfreeres, res_thread_freeres);
-text_set_element (__libc_subfreeres, res_thread_freeres);
-# endif
-#endif

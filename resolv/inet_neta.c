@@ -15,10 +15,6 @@
  * SOFTWARE.
  */
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static const char rcsid[] = "$BINDId: inet_neta.c,v 1.6 1999/01/08 19:23:45 vixie Exp $";
-#endif
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -46,10 +42,7 @@ static const char rcsid[] = "$BINDId: inet_neta.c,v 1.6 1999/01/08 19:23:45 vixi
  *	Paul Vixie (ISC), July 1996
  */
 char *
-inet_neta(src, dst, size)
-	u_int32_t src;
-	char *dst;
-	size_t size;
+inet_neta (u_int32_t src, char *dst, size_t size)
 {
 	char *odst = dst;
 	char *tp;

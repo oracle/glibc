@@ -1,5 +1,4 @@
-# Copyright (C) 1994-2001,2003,2004,2007,2008,2011,2012
-#	Free Software Foundation, Inc.
+# Copyright (C) 1994-2017 Free Software Foundation, Inc.
 # This file is part of the GNU C Library.
 
 # The GNU C Library is free software; you can redistribute it and/or
@@ -21,33 +20,73 @@
 #
 subdir	:= resolv
 
+include ../Makeconfig
+
 headers	:= resolv.h \
 	   netdb.h bits/netdb.h \
 	   arpa/nameser.h arpa/nameser_compat.h \
 	   sys/bitypes.h
 
 routines := herror inet_addr inet_ntop inet_pton nsap_addr res_init \
-	    res_hconf res_libc res-state
+	    res_hconf res_libc res-state res_randomid res-close \
+	    resolv_context resolv_conf
 
-tests = tst-aton tst-leaks tst-inet_ntop tst-inet_pton
+tests = tst-aton tst-leaks tst-inet_ntop
 xtests = tst-leaks2
 
-generate := mtrace-tst-leaks tst-leaks.mtrace tst-leaks2.mtrace
-
-include ../Makeconfig
+generate := mtrace-tst-leaks.out tst-leaks.mtrace tst-leaks2.mtrace
 
 extra-libs := libresolv libnss_dns
 ifeq ($(have-thread-library),yes)
 extra-libs += libanl
 routines += gai_sigqueue
-tests += tst-res_hconf_reorder
+
+tests += \
+  tst-bug18665 \
+  tst-bug18665-tcp \
+  tst-ns_name \
+  tst-ns_name_compress \
+  tst-res_hconf_reorder \
+  tst-res_use_inet6 \
+  tst-resolv-basic \
+  tst-resolv-edns \
+  tst-resolv-network \
+  tst-resolv-res_init-multi \
+  tst-resolv-search \
+
+# These tests need libdl.
+ifeq (yes,$(build-shared))
+tests += \
+  tst-resolv-canonname \
+
+# uses DEPRECATED_RES_USE_INET6 from <resolv-internal.h>.
+tests += \
+  tst-resolv-res_init \
+  tst-resolv-res_init-thread \
+
+# Needs resolv_context.
+tests += \
+  tst-resolv-res_ninit \
+  tst-resolv-threads \
+
+endif
+
+# This test accesses __inet_ntop_range, an internal libc function.
+tests += tst-inet_pton
+
+# This test sends millions of packets and is rather slow.
+xtests += tst-resolv-qtypes
+
+# This test has dropped packet tests and runs for a long time.
+xtests += tst-resolv-rotate
 endif
 extra-libs-others = $(extra-libs)
-libresolv-routines := gethnamaddr res_comp res_debug	\
+libresolv-routines := res_comp res_debug \
 		      res_data res_mkquery res_query res_send		\
 		      inet_net_ntop inet_net_pton inet_neta base64	\
 		      ns_parse ns_name ns_netint ns_ttl ns_print	\
-		      ns_samedomain ns_date
+		      ns_samedomain ns_date \
+		      compat-hooks compat-gethnamaddr
 
 libanl-routines := gai_cancel gai_error gai_misc gai_notify gai_suspend \
 		   getaddrinfo_a
@@ -66,28 +105,22 @@ ifeq (yesyes,$(build-shared)$(have-thread-library))
 tests: $(objpfx)ga_test
 endif
 
-generated := mtrace-tst-leaks tst-leaks.mtrace \
-	     mtrace-tst-leaks2 tst-leaks2.mtrace
+ifeq (,$(filter sunrpc,$(subdirs)))
+# The netdb.h we install does '#include <rpc/netdb.h>', so one must exist.
+# If sunrpc/ is built in this configuration, it installs a real <rpc/netdb.h>.
+# If that's not going to happen, install our dummy file.
+headers += rpc/netdb.h
+endif
+
+generated += mtrace-tst-leaks.out tst-leaks.mtrace \
+	     mtrace-tst-leaks2.out tst-leaks2.mtrace \
+	     mtrace-tst-resolv-res_ninit.out tst-resolv-res_ninit.mtrace \
 
 include ../Rules
 
-CPPFLAGS += -Dgethostbyname=res_gethostbyname \
-	    -Dgethostbyname2=res_gethostbyname2 \
-	    -Dgethostbyaddr=res_gethostbyaddr \
-	    -Dgetnetbyname=res_getnetbyname \
-	    -Dgetnetbyaddr=res_getnetbyaddr
-
-ifeq (yes,$(have-ssp))
-CFLAGS-libresolv += -fstack-protector
-endif
-ifeq (yes,$(have-ssp-strong))
 CFLAGS-libresolv += -fstack-protector-strong
-endif
-
+CFLAGS-libnss_dns += -fstack-protector-strong
 CFLAGS-res_hconf.c = -fexceptions
-
-# The BIND code elicits some harmless warnings.
-+cflags += -Wno-strict-prototypes -Wno-write-strings
 
 # The DNS NSS modules needs the resolver.
 $(objpfx)libnss_dns.so: $(objpfx)libresolv.so
@@ -104,17 +137,45 @@ $(objpfx)tst-leaks: $(objpfx)libresolv.so
 tst-leaks-ENV = MALLOC_TRACE=$(objpfx)tst-leaks.mtrace
 $(objpfx)mtrace-tst-leaks: $(objpfx)tst-leaks.out
 	$(common-objpfx)malloc/mtrace $(objpfx)tst-leaks.mtrace > $@
-ifeq ($(run-built-tests),yes)
-ifneq (no,$(PERL))
-tests: $(objpfx)mtrace-tst-leaks
-endif
-endif
 
 tst-leaks2-ENV = MALLOC_TRACE=$(objpfx)tst-leaks2.mtrace
 $(objpfx)mtrace-tst-leaks2: $(objpfx)tst-leaks2.out
 	$(common-objpfx)malloc/mtrace $(objpfx)tst-leaks2.mtrace > $@
-ifeq ($(run-built-tests),yes)
+
+tst-resolv-res_ninit-ENV = MALLOC_TRACE=$(objpfx)tst-resolv-res_ninit.mtrace
+$(objpfx)mtrace-tst-resolv-res_ninit: $(objpfx)tst-resolv-res_ninit.out
+	$(common-objpfx)malloc/mtrace \
+	  $(objpfx)tst-resolv-res_ninit.mtrace > $@
+
 ifneq (no,$(PERL))
+tests: $(objpfx)mtrace-tst-leaks $(objpfx)mtrace-tst-resolv-res_ninit
 xtests: $(objpfx)mtrace-tst-leaks2
 endif
-endif
+
+
+$(objpfx)tst-bug18665-tcp: $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-bug18665: $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-res_use_inet6: $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-resolv-basic: $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-resolv-edns: $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-resolv-network: $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-resolv-res_init: $(libdl) $(objpfx)libresolv.so
+$(objpfx)tst-resolv-res_init-multi: $(objpfx)libresolv.so \
+  $(shared-thread-library)
+$(objpfx)tst-resolv-res_init-thread: $(libdl) $(objpfx)libresolv.so \
+  $(shared-thread-library)
+$(objpfx)tst-resolv-qtypes: $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-resolv-rotate: $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-resolv-search: $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-resolv-threads: \
+  $(libdl) $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-resolv-canonname: \
+  $(libdl) $(objpfx)libresolv.so $(shared-thread-library)
+
+$(objpfx)tst-ns_name: $(objpfx)libresolv.so
+$(objpfx)tst-ns_name.out: tst-ns_name.data
+$(objpfx)tst-ns_name_compress: $(objpfx)libresolv.so
+
+
+# This test case uses the deprecated RES_USE_INET6 resolver option.
+CFLAGS-tst-res_use_inet6.c += -Wno-error

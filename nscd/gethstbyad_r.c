@@ -1,4 +1,4 @@
-/* Copyright (C) 1996-2012 Free Software Foundation, Inc.
+/* Copyright (C) 1996-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1996.
 
@@ -28,7 +28,6 @@
 #define EXTRA_VARIABLES , ttlp
 #define NEED_H_ERRNO	1
 #define NEED__RES	1
-#define NEED__RES_HCONF 1
 
 /* We are nscd, so we don't want to be talking to ourselves.  */
 #undef	USE_NSCD

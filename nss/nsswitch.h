@@ -1,4 +1,4 @@
-/* Copyright (C) 1996-2012 Free Software Foundation, Inc.
+/* Copyright (C) 1996-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -197,7 +197,17 @@ extern int __nss_getent_r (const char *getent_func_name,
 extern void *__nss_getent (getent_r_function func,
 			   void **resbuf, char **buffer, size_t buflen,
 			   size_t *buffer_size, int *h_errnop);
+struct resolv_context;
 struct hostent;
+extern int __nss_hostname_digits_dots_context (struct resolv_context *,
+					       const char *name,
+					       struct hostent *resbuf,
+					       char **buffer,
+					       size_t *buffer_size,
+					       size_t buflen,
+					       struct hostent **result,
+					       enum nss_status *status, int af,
+					       int *h_errnop) attribute_hidden;
 extern int __nss_hostname_digits_dots (const char *name,
 				       struct hostent *resbuf, char **buffer,
 				       size_t *buffer_size, size_t buflen,

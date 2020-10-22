@@ -39,7 +39,7 @@ makedb-modules = xmalloc hash-string
 extra-objs		+= $(makedb-modules:=.o)
 
 tests			= test-netdb tst-nss-test1 bug17079 tst-nss-getpwent \
-			 test-digits-dots
+			 test-digits-dots tst-nss-files-hosts-erange
 xtests			= bug-erange
 
 include ../Makeconfig
@@ -115,3 +115,5 @@ $(objpfx)/libnss_test1.so$(libnss_test1.so-version): $(objpfx)/libnss_test1.so
 	$(make-link)
 endif
 $(objpfx)tst-nss-test1.out: $(objpfx)/libnss_test1.so$(libnss_test1.so-version)
+
+$(objpfx)tst-nss-files-hosts-erange: $(libdl)

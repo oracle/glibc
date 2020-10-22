@@ -109,7 +109,8 @@ malloc_check_get_size(mchunkptr p)
        size -= c) {
     if(c<=0 || size<(c+2*SIZE_SZ)) {
       malloc_printerr(check_action, "malloc_check_get_size: memory corruption",
-		      chunk2mem(p));
+		      chunk2mem(p),
+		      chunk_is_mmapped (p) ? NULL : arena_for_chunk (p));
       return 0;
     }
   }
@@ -221,7 +222,8 @@ top_check(void)
     return 0;
 
   mutex_unlock(&main_arena);
-  malloc_printerr (check_action, "malloc: top chunk is corrupt", t);
+  malloc_printerr (check_action, "malloc: top chunk is corrupt", t,
+		   &main_arena);
   mutex_lock(&main_arena);
 
   /* Try to set up a new top chunk. */
@@ -276,7 +278,8 @@ free_check(void* mem, const void *caller)
   if(!p) {
     (void)mutex_unlock(&main_arena.mutex);
 
-    malloc_printerr(check_action, "free(): invalid pointer", mem);
+    malloc_printerr(check_action, "free(): invalid pointer", mem,
+		    &main_arena);
     return;
   }
   if (chunk_is_mmapped(p)) {
@@ -308,7 +311,8 @@ realloc_check(void* oldmem, size_t bytes, const void *caller)
   const mchunkptr oldp = mem2chunk_check(oldmem, &magic_p);
   (void)mutex_unlock(&main_arena.mutex);
   if(!oldp) {
-    malloc_printerr(check_action, "realloc(): invalid pointer", oldmem);
+    malloc_printerr(check_action, "realloc(): invalid pointer", oldmem,
+		    &main_arena);
     return malloc_check(bytes, NULL);
   }
   const INTERNAL_SIZE_T oldsize = chunksize(oldp);

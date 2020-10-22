@@ -39,8 +39,7 @@ include ../Rules
 
 $(objpfx)gencat: $(gencat-modules:%=$(objpfx)%.o)
 
-catgets-CPPFLAGS := -DNLSPATH='"$(msgcatdir)/%L/%N:$(msgcatdir)/%L/LC_MESSAGES/%N:$(msgcatdir)/%l/%N:$(msgcatdir)/%l/LC_MESSAGES/%N:"' \
-	    -DHAVE_CONFIG_H
+catgets-CPPFLAGS := -DNLSPATH='"$(msgcatdir)/%L/%N:$(msgcatdir)/%L/LC_MESSAGES/%N:$(msgcatdir)/%l/%N:$(msgcatdir)/%l/LC_MESSAGES/%N:"'
 
 generated = de.msg test1.cat test1.h test2.cat test2.h sample.SJIS.cat \
 	    test-gencat.h

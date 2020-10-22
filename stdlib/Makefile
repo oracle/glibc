@@ -71,7 +71,8 @@ tests		:= tst-strtol tst-strtod testmb testrand testsort testdiv   \
 		   tst-qsort2 tst-makecontext2 tst-strtod6 tst-unsetenv1    \
 		   tst-makecontext3 bug-getcontext bug-fmtmsg1		    \
 		   tst-secure-getenv tst-strtod-overflow tst-strtod-round   \
-		   tst-tininess tst-strtod-underflow tst-strfmon_l
+		   tst-tininess tst-strtod-underflow tst-strfmon_l	    \
+		   tst-makecontext-align
 tests-static	:= tst-secure-getenv
 
 include ../Makeconfig

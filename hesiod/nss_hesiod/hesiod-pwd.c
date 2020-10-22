@@ -1,4 +1,4 @@
-/* Copyright (C) 1997, 2000, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1997-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Mark Kettenis <kettenis@phys.uva.nl>, 1997.
 
@@ -23,8 +23,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "nss_hesiod.h"
 
 /* Get the declaration of the parser function.  */
 #define ENTNAME pwent
@@ -56,8 +54,7 @@ lookup (const char *name, const char *type, struct passwd *pwd,
   size_t len;
   int olderr = errno;
 
-  context = _nss_hesiod_init ();
-  if (context == NULL)
+  if (hesiod_init (&context) < 0)
     return NSS_STATUS_UNAVAIL;
 
   list = hesiod_resolve (context, name, type);

@@ -437,6 +437,25 @@ map-file = $(firstword $($(@F:.so=-map)) \
 load-map-file = $(map-file:%=-Wl,--version-script=%)
 endif
 
+# Compiler arguments to use to link a shared object with libc and
+# ld.so.  This is intended to be as similar as possible to a default
+# link with an installed libc.
+link-libc-args = -Wl,--start-group \
+                 $(libc-for-link) \
+                 $(common-objpfx)libc_nonshared.a \
+                 $(as-needed) $(elf-objpfx)ld.so $(no-as-needed) \
+                 -Wl,--end-group
+
+# The corresponding shared libc to use.  This may be modified for a
+# particular target.
+libc-for-link = $(common-objpfx)libc.so
+
+# The corresponding dependencies.  As these are used in dependencies,
+# not just commands, they cannot use target-specific variables so need
+# to name both possible libc.so objects.
+link-libc-deps = $(common-objpfx)libc.so $(common-objpfx)linkobj/libc.so \
+                 $(common-objpfx)libc_nonshared.a $(elf-objpfx)ld.so
+
 # Pattern rule to build a shared object from an archive of PIC objects.
 # This must come after the installation rules so Make doesn't try to
 # build shared libraries in place from the installed *_pic.a files.
@@ -518,12 +537,13 @@ endef
 # not for shared objects
 define build-module
 $(build-module-helper) -o $@ $(shlib-lds-flags) \
-	  $(csu-objpfx)abi-note.o $(build-module-objlist)
+	  $(csu-objpfx)abi-note.o $(build-module-objlist) $(link-libc-args)
 endef
 define build-module-asneeded
 $(build-module-helper) -o $@ $(shlib-lds-flags) \
 	  $(csu-objpfx)abi-note.o \
-	  -Wl,--as-needed $(build-module-objlist) -Wl,--no-as-needed
+	  -Wl,--as-needed $(build-module-objlist) -Wl,--no-as-needed \
+	  $(link-libc-args)
 endef
 
 build-module-helper-objlist = \

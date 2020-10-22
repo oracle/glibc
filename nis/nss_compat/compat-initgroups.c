@@ -182,7 +182,7 @@ internal_setgrent (ent_t *ent)
 }
 
 
-static enum nss_status
+static enum nss_status __attribute_warn_unused_result__
 internal_endgrent (ent_t *ent)
 {
   if (ent->stream != NULL)
@@ -204,6 +204,15 @@ internal_endgrent (ent_t *ent)
     nss_endgrent ();
 
   return NSS_STATUS_SUCCESS;
+}
+
+/* Like internal_endgrent, but preserve errno in all cases.  */
+static void
+internal_endgrent_noerror (ent_t *ent)
+{
+  int saved_errno = errno;
+  enum nss_status unused __attribute__ ((unused)) = internal_endgrent (ent);
+  __set_errno (saved_errno);
 }
 
 /* Add new group record.  */
@@ -569,7 +578,7 @@ _nss_compat_initgroups_dyn (const char *user, gid_t group, long int *start,
   if (use_malloc)
     free (tmpbuf);
 
-  internal_endgrent (&intern);
+  internal_endgrent_noerror (&intern);
 
   return status;
 }

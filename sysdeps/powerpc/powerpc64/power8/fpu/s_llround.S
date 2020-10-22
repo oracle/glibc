@@ -1,4 +1,4 @@
-/* isnan().  PowerPC64/POWER8 version.
+/* llround function.  POWER8 PowerPC64 version.
    Copyright (C) 2014 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -20,34 +20,28 @@
 #include <math_ldbl_opt.h>
 
 #define MFVSRD_R3_V1  .long 0x7c230066     /* mfvsrd  r3,vs1  */
-        
-/* int [r3] __isnan([f1] x)  */
 
-EALIGN (__isnan, 4, 0)
+/* long long [r3] llround (float x [fp1])  */
+
+ENTRY (__llround)
 	CALL_MCOUNT 0
+	frin	fp1,fp1	/* Round to nearest +-0.5.  */
+	fctidz	fp1,fp1	/* Convert To Integer DW round toward 0.  */
 	MFVSRD_R3_V1
-	lis     r9,0x7ff0
-	clrldi  r3,r3,1       /* r3 = r3 & 0x8000000000000000  */
-	rldicr  r9,r9,32,31   /* r9 = (r9 << 32) & 0xffffffff  */
-	subf    r3,r3,r9
-	rldicl  r3,r3,1,63
 	blr
-END (__isnan)
+END (__llround)
 
-/* It turns out that the 'double' version will also always work for
-   single-precision.  */
-strong_alias (__isnan, __isnanf)
-hidden_def (__isnanf)
-weak_alias (__isnanf, isnanf)
+strong_alias (__llround, __lround)
+weak_alias (__llround, llround)
+weak_alias (__lround, lround)
 
 #ifdef NO_LONG_DOUBLE
-strong_alias (__isnan, __isnanl)
-weak_alias (__isnan, isnanl)
+weak_alias (__llround, llroundl)
+strong_alias (__llround, __llroundl)
+weak_alias (__lround, lroundl)
+strong_alias (__lround, __lroundl)
 #endif
-
-#ifndef IS_IN_libm
-# if LONG_DOUBLE_COMPAT(libc, GLIBC_2_0)
-compat_symbol (libc, __isnan, __isnanl, GLIBC_2_0);
-compat_symbol (libc, isnan, isnanl, GLIBC_2_0);
-# endif
+#if LONG_DOUBLE_COMPAT(libm, GLIBC_2_1)
+compat_symbol (libm, __llround, llroundl, GLIBC_2_1)
+compat_symbol (libm, __lround, lroundl, GLIBC_2_1)
 #endif

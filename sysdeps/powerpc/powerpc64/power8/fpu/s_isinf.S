@@ -1,4 +1,4 @@
-/* isnan().  PowerPC64/POWER8 version.
+/* isinf().  PowerPC64/POWER8 version.
    Copyright (C) 2014 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -20,34 +20,42 @@
 #include <math_ldbl_opt.h>
 
 #define MFVSRD_R3_V1  .long 0x7c230066     /* mfvsrd  r3,vs1  */
-        
-/* int [r3] __isnan([f1] x)  */
 
-EALIGN (__isnan, 4, 0)
+/* int [r3] __isinf([fp1] x)  */
+
+EALIGN (__isinf, 4, 0)
 	CALL_MCOUNT 0
 	MFVSRD_R3_V1
-	lis     r9,0x7ff0
-	clrldi  r3,r3,1       /* r3 = r3 & 0x8000000000000000  */
-	rldicr  r9,r9,32,31   /* r9 = (r9 << 32) & 0xffffffff  */
-	subf    r3,r3,r9
-	rldicl  r3,r3,1,63
+	lis     r9,0x7ff0     /* r9 = 0x7ff0  */
+	rldicl  r10,r3,0,1    /* r10 = r3 & (0x8000000000000000)  */
+	sldi    r9,r9,32      /* r9 = r9 << 52  */
+	cmpd    cr7,r10,r9    /* fp1 & 0x7ff0000000000000 ?  */
+	beq     cr7,L(inf)
+	li      r3,0          /* Not inf  */
 	blr
-END (__isnan)
+L(inf):
+	sradi   r3,r3,63      /* r3 = r3 >> 63  */
+	ori     r3,r3,1       /* r3 = r3 | 0x1  */
+	blr
+END (__isinf)
+
+hidden_def (__isinf)
+weak_alias (__isinf, isinf)
 
 /* It turns out that the 'double' version will also always work for
    single-precision.  */
-strong_alias (__isnan, __isnanf)
-hidden_def (__isnanf)
-weak_alias (__isnanf, isnanf)
+strong_alias (__isinf, __isinff)
+hidden_def (__isinff)
+weak_alias (__isinff, isinff)
 
 #ifdef NO_LONG_DOUBLE
-strong_alias (__isnan, __isnanl)
-weak_alias (__isnan, isnanl)
+strong_alias (__isinf, __isinfl)
+weak_alias (__isinf, isinfl)
 #endif
 
 #ifndef IS_IN_libm
 # if LONG_DOUBLE_COMPAT(libc, GLIBC_2_0)
-compat_symbol (libc, __isnan, __isnanl, GLIBC_2_0);
-compat_symbol (libc, isnan, isnanl, GLIBC_2_0);
+compat_symbol (libc, __isinf, __isinfl, GLIBC_2_0);
+compat_symbol (libc, isinf, isinfl, GLIBC_2_0);
 # endif
 #endif

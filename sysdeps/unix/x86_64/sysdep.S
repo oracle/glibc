@@ -22,7 +22,7 @@
 #include <bp-sym.h>
 #include <tls.h>
 
-#ifdef IS_IN_rtld
+#if IS_IN (rtld)
 # include <dl-sysdep.h>		/* Defines RTLD_PRIVATE_ERRNO.  */
 #endif
 

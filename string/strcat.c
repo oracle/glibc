@@ -16,7 +16,6 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <string.h>
-#include <memcopy.h>
 
 #undef strcat
 

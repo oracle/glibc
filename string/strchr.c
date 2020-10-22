@@ -22,7 +22,6 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <string.h>
-#include <memcopy.h>
 #include <stdlib.h>
 
 #undef strchr

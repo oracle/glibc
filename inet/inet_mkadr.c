@@ -27,10 +27,6 @@
  * SUCH DAMAGE.
  */
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static char sccsid[] = "@(#)inet_makeaddr.c	8.1 (Berkeley) 6/4/93";
-#endif /* LIBC_SCCS and not lint */
-
 #include <sys/param.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -40,8 +36,7 @@ static char sccsid[] = "@(#)inet_makeaddr.c	8.1 (Berkeley) 6/4/93";
  * building addresses stored in the ifnet structure.
  */
 struct in_addr
-inet_makeaddr(net, host)
-	in_addr_t net, host;
+__inet_makeaddr (in_addr_t net, in_addr_t host)
 {
 	struct in_addr in;
 
@@ -56,4 +51,5 @@ inet_makeaddr(net, host)
 	in.s_addr = htonl(in.s_addr);
 	return in;
 }
-libc_hidden_def (inet_makeaddr)
+libc_hidden_def (__inet_makeaddr)
+weak_alias (__inet_makeaddr, inet_makeaddr)

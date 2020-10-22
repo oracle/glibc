@@ -45,7 +45,7 @@ routines := htonl htons		\
 	    in6_addr getnameinfo if_index ifaddrs inet6_option \
 	    getipv4sourcefilter setipv4sourcefilter \
 	    getsourcefilter setsourcefilter inet6_opt inet6_rth \
-	    deadline
+	    inet6_scopeid_pton deadline
 
 aux := check_pf check_native ifreq
 
@@ -56,6 +56,10 @@ tests := htontest test_ifindex tst-ntoa tst-ether_aton tst-network \
 # tst-deadline must be linked statically so that we can access
 # internal functions.
 tests-static += tst-deadline
+
+# tst-inet6_scopeid_pton also needs internal functions but does not
+# need to be linked statically.
+tests += tst-inet6_scopeid_pton
 
 include ../Rules
 

@@ -29,7 +29,7 @@ headers	:= resolv.h \
 routines := herror inet_addr inet_ntop inet_pton nsap_addr res_init \
 	    res_hconf res_libc res-state
 
-tests = tst-aton tst-leaks tst-inet_ntop
+tests = tst-aton tst-leaks tst-inet_ntop tst-inet_pton
 xtests = tst-leaks2
 
 generate := mtrace-tst-leaks tst-leaks.mtrace tst-leaks2.mtrace

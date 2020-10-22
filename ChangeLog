@@ -1,4 +1,12 @@
 2018-09-18  Patrick McGehearty  <patrick.mcgehearty@oracle.com>
+2019-01-29  Patrick McGehearty <patrick.mcgehearty@oracle.com>
+
+	* sysdeps/arm/dl-machine.h (ELF_MACHINE_NO_REL) Define.
+
+2019-01-29  Patrick McGehearty <patrick.mcgehearty@oracle.com>
+
+	* sysdeps/arm/bits/string.h (_STRING_ARCH_unaligned): Define.
+
 	     Gerd Rausch <gerd.rausch@oracle.com>
 
 	[Orabug 28481550] Resolve funlockfile/flockfile issue.

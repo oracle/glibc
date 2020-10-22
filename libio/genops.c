@@ -595,13 +595,19 @@ _IO_default_doallocate (fp)
 libc_hidden_def (_IO_default_doallocate)
 
 void
-_IO_init (fp, flags)
+_IO_init_internal (fp, flags)
      _IO_FILE *fp;
      int flags;
 {
   _IO_no_init (fp, flags, -1, NULL, NULL);
 }
-libc_hidden_def (_IO_init)
+
+void
+_IO_init (_IO_FILE *fp, int flags)
+{
+  IO_set_accept_foreign_vtables (&_IO_vtable_check);
+  _IO_init_internal (fp, flags);
+}
 
 void
 _IO_old_init (fp, flags)

@@ -113,7 +113,7 @@ extern int errno;
 
 void
 attribute_compat_text_section
-_IO_old_file_init (fp)
+_IO_old_file_init_internal (fp)
      struct _IO_FILE_plus *fp;
 {
   /* POSIX.1 allows another file handle to be used to change the position
@@ -136,6 +136,14 @@ _IO_old_file_init (fp)
        the _mode element as well.  */
     ((struct _IO_FILE_complete *) fp)->_mode = -1;
 #endif
+}
+
+void
+attribute_compat_text_section
+_IO_old_file_init (struct _IO_FILE_plus *fp)
+{
+  IO_set_accept_foreign_vtables (&_IO_vtable_check);
+  _IO_old_file_init_internal (fp);
 }
 
 int
@@ -776,7 +784,7 @@ _IO_old_file_xsputn (f, data, n)
 }
 
 
-const struct _IO_jump_t _IO_old_file_jumps =
+const struct _IO_jump_t _IO_old_file_jumps libio_vtable =
 {
   JUMP_INIT_DUMMY,
   JUMP_INIT(finish, _IO_old_file_finish),

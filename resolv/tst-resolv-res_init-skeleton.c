@@ -106,7 +106,8 @@ print_resp (FILE *fp, res_state resp)
     /* Also mask out other default flags which cannot be set through
        the options directive.  */
     int options
-      = resp->options & ~(RES_INIT | RES_RECURSE | RES_DEFNAMES | RES_DNSRCH);
+      = resp->options & ~(RES_INIT | RES_RECURSE | RES_DEFNAMES | RES_DNSRCH
+                          | RES_NOIP6DOTINT);
     if (options != 0
         || resp->ndots != 1
         || resp->retrans != RES_TIMEOUT

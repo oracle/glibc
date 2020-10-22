@@ -34,7 +34,7 @@ routines := herror inet_addr inet_ntop inet_pton nsap_addr res_init \
 tests = tst-aton tst-leaks tst-inet_ntop
 xtests = tst-leaks2
 
-tests-internal += tst-inet_aton_exact
+tests += tst-inet_aton_exact
 
 
 generate := mtrace-tst-leaks.out tst-leaks.mtrace tst-leaks2.mtrace

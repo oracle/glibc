@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ifaddrs.h>
 #include <netdb.h>
 #include <nss.h>
-#include <resolv.h>
+#include <resolv/resolv-internal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdio_ext.h>
@@ -222,7 +222,7 @@ gaih_inet_serv (const char *servicename, const struct gaih_typeproto *tp,
       if (herrno == NETDB_INTERNAL)					      \
 	{								      \
 	  __set_h_errno (herrno);					      \
-	  _res.options |= old_res_options & RES_USE_INET6;		      \
+	  _res.options |= old_res_options & DEPRECATED_RES_USE_INET6;	      \
 	  result = -EAI_SYSTEM;						      \
 	  goto free_and_return;						      \
 	}								      \
@@ -839,7 +839,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
 	     addresses to IPv6 addresses.  Currently this is decided
 	     by setting the RES_USE_INET6 bit in _res.options.  */
 	  old_res_options = _res.options;
-	  _res.options &= ~RES_USE_INET6;
+	  _res.options &= ~DEPRECATED_RES_USE_INET6;
 
 	  size_t tmpbuflen = 1024 + sizeof(struct gaih_addrtuple);
 	  malloc_tmpbuf = !__libc_use_alloca (alloca_used + tmpbuflen);
@@ -900,7 +900,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
 						2 * tmpbuflen);
 			  if (newp == NULL)
 			    {
-			      _res.options |= old_res_options & RES_USE_INET6;
+			      _res.options |= old_res_options & DEPRECATED_RES_USE_INET6;
 			      result = -EAI_MEMORY;
 			      goto free_and_return;
 			    }
@@ -1021,7 +1021,8 @@ gaih_inet (const char *name, const struct gaih_service *service,
 				      if (canonbuf == NULL)
 					{
 					  _res.options
-					    |= old_res_options & RES_USE_INET6;
+					    |= old_res_options
+					       & DEPRECATED_RES_USE_INET6;
 					  result = -EAI_MEMORY;
 					  goto free_and_return;
 					}
@@ -1082,7 +1083,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
 		nip = nip->next;
 	    }
 
-	  _res.options |= old_res_options & RES_USE_INET6;
+	  _res.options |= old_res_options & DEPRECATED_RES_USE_INET6;
 
 	  if (h_errno == NETDB_INTERNAL)
 	    {

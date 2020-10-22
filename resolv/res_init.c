@@ -71,7 +71,7 @@ static const char rcsid[] = "$BINDId: res_init.c,v 8.16 2000/05/09 07:10:12 vixi
 
 #include <ctype.h>
 #include <netdb.h>
-#include <resolv.h>
+#include <resolv/resolv-internal.h>
 #include <stdio.h>
 #include <stdio_ext.h>
 #include <stdlib.h>
@@ -530,7 +530,7 @@ res_setoptions(res_state statp, const char *options, const char *source) {
 		    unsigned long int flag;
 		  } options[] = {
 #define STRnLEN(str) str, sizeof (str) - 1
-		    { STRnLEN ("inet6"), 0, RES_USE_INET6 },
+		    { STRnLEN ("inet6"), 0, DEPRECATED_RES_USE_INET6 },
 		    { STRnLEN ("ip6-bytestring"), 0, RES_USEBSTRING },
 		    { STRnLEN ("no-ip6-dotint"), 0, RES_NOIP6DOTINT },
 		    { STRnLEN ("ip6-dotint"), 1, ~RES_NOIP6DOTINT },

@@ -105,10 +105,8 @@ do_aio_misc_wait(int *cntr, const struct timespec *timeout)
 #endif
 
 int
-aio_suspend (list, nent, timeout)
-     const struct aiocb *const list[];
-     int nent;
-     const struct timespec *timeout;
+aio_suspend (const struct aiocb *const list[], int nent,
+	     const struct timespec *timeout)
 {
   if (__builtin_expect (nent < 0, 0))
     {

@@ -20,7 +20,8 @@ rtld_hidden_proto (__chk_fail)
    is also available in C99 mode.  The aligned attributes are required
    because some ABIs have reduced alignment requirements for struct and
    union members.  */
-#if __STDC_VERSION__ < 201112L && __cplusplus < 201103L
+#if (!defined (__STDC_VERSION__) || __STDC_VERSION__ < 201112L) \
+  && (!defined (__cplusplus) || __cplusplus < 201103L)
 typedef struct {
   long long ll __attribute__ ((__aligned__ (__alignof__ (long long))));
   long double ld __attribute__ ((__aligned__ (__alignof__ (long double))));

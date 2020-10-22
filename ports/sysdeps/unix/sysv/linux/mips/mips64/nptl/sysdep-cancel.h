@@ -27,7 +27,7 @@
    happen before any instructions.  So we use cfi_same_value instead of
    cfi_restore.  */
 
-#if !defined NOT_IN_libc || defined IS_IN_libpthread || IS_IN (librt)
+#if !defined NOT_IN_libc || IS_IN (libpthread) || IS_IN (librt)
 
 #ifdef __PIC__
 # undef PSEUDO
@@ -146,7 +146,7 @@
 # define SAVESTK 	PTR_SUBU sp, STKSPACE; cfi_adjust_cfa_offset(STKSPACE)
 # define RESTORESTK 	PTR_ADDU sp, STKSPACE; cfi_adjust_cfa_offset(-STKSPACE)
 
-# ifdef IS_IN_libpthread
+# if IS_IN (libpthread)
 #  define CENABLE	PTR_LA t9, __pthread_enable_asynccancel; jalr t9
 #  define CDISABLE	PTR_LA t9, __pthread_disable_asynccancel; jalr t9
 # elif IS_IN (librt)

@@ -5049,7 +5049,7 @@ __malloc_info (int options, FILE *fp)
       } sizes[NFASTBINS + NBINS - 1];
 #define nsizes (sizeof (sizes) / sizeof (sizes[0]))
 
-      mutex_lock (&ar_ptr->mutex);
+      __libc_lock_lock (ar_ptr->mutex);
 
       for (size_t i = 0; i < NFASTBINS; ++i)
 	{
@@ -5108,7 +5108,7 @@ __malloc_info (int options, FILE *fp)
 	  avail += sizes[NFASTBINS - 1 + i].total;
 	}
 
-      mutex_unlock (&ar_ptr->mutex);
+      __libc_lock_unlock (ar_ptr->mutex);
 
       total_nfastblocks += nfastblocks;
       total_fastavail += fastavail;

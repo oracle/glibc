@@ -1,5 +1,5 @@
 # List of all known Linux system calls.
-# Copyright (C) 2017 Free Software Foundation, Inc.
+# Copyright (C) 2017-2018 Free Software Foundation, Inc.
 # This file is part of the GNU C Library.
 #
 # The GNU C Library is free software; you can redistribute it and/or
@@ -22,8 +22,8 @@
 # names are only used if the installed kernel headers also provide
 # them.
 
-# The list of system calls is current as of Linux 4.13.
-kernel 4.13
+# The list of system calls is current as of Linux 4.16.
+kernel 4.16
 
 FAST_atomic_update
 FAST_cmpxchg
@@ -444,6 +444,7 @@ s390_guarded_storage
 s390_pci_mmio_read
 s390_pci_mmio_write
 s390_runtime_instr
+s390_sthyi
 sched_get_affinity
 sched_get_priority_max
 sched_get_priority_min

@@ -68,20 +68,13 @@ _IO_str_init_static_internal (sf, ptr, size, pstart)
 }
 
 void
-_IO_str_init_static (sf, ptr, size, pstart)
-     _IO_strfile *sf;
-     char *ptr;
-     int size;
-     char *pstart;
+_IO_str_init_static (_IO_strfile *sf, char *ptr, int size, char *pstart)
 {
   return _IO_str_init_static_internal (sf, ptr, size < 0 ? -1 : size, pstart);
 }
 
 void
-_IO_str_init_readonly (sf, ptr, size)
-     _IO_strfile *sf;
-     const char *ptr;
-     int size;
+_IO_str_init_readonly (_IO_strfile *sf, const char *ptr, int size)
 {
   _IO_str_init_static_internal (sf, (char *) ptr, size < 0 ? -1 : size, NULL);
   sf->_sbf._f._IO_file_flags |= _IO_NO_WRITES;

@@ -25,7 +25,8 @@
   .align ALIGNARG(alignt);					\
   EALIGN_W_##words;						\
   BODY_LABEL(__strncmp_ppc):					\
-  cfi_startproc;
+  cfi_startproc;						\
+  LOCALENTRY(__strncmp_ppc)
 
 #undef END
 #define END(name)						\

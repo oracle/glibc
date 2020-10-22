@@ -24,7 +24,8 @@
   ENTRY_2(__strnlen_power7)					\
   .align ALIGNARG(2);						\
   BODY_LABEL(__strnlen_power7):					\
-  cfi_startproc;
+  cfi_startproc;						\
+  LOCALENTRY(__strnlen_power7)
 
 #undef END
 #define END(name)						\

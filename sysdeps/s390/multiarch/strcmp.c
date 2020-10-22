@@ -1,4 +1,5 @@
-/* Copyright (C) 1991, 1996, 1997, 2003 Free Software Foundation, Inc.
+/* Multiple versions of strcmp.
+   Copyright (C) 2015 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,36 +16,11 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <string.h>
-#include <memcopy.h>
+#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+# include <string.h>
+# include <ifunc-resolve.h>
 
-#undef strcmp
 
-#ifndef STRCMP
-# define STRCMP strcmp
+# undef strcmp
+s390_vx_libc_ifunc2 (__strcmp, strcmp)
 #endif
-
-/* Compare S1 and S2, returning less than, equal to or
-   greater than zero if S1 is lexicographically less than,
-   equal to or greater than S2.  */
-int
-STRCMP (p1, p2)
-     const char *p1;
-     const char *p2;
-{
-  register const unsigned char *s1 = (const unsigned char *) p1;
-  register const unsigned char *s2 = (const unsigned char *) p2;
-  unsigned char c1, c2;
-
-  do
-    {
-      c1 = (unsigned char) *s1++;
-      c2 = (unsigned char) *s2++;
-      if (c1 == '\0')
-	return c1 - c2;
-    }
-  while (c1 == c2);
-
-  return c1 - c2;
-}
-libc_hidden_builtin_def (strcmp)

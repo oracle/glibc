@@ -19,7 +19,7 @@ gen-as-const-headers += locale-defines.sym
 endif
 
 ifeq ($(subdir),elf)
-sysdep-dl-routines += tlsdesc dl-tlsdesc
+sysdep-dl-routines += tlsdesc dl-tlsdesc tls_get_addr
 
 tests += ifuncmain8
 modules-names += ifuncmod8
@@ -69,5 +69,5 @@ endif
 endif
 
 ifeq ($(subdir),csu)
-gen-as-const-headers += tlsdesc.sym
+gen-as-const-headers += tlsdesc.sym rtld-offsets.sym
 endif

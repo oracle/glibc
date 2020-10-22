@@ -21,10 +21,7 @@
 
 /* Seek to OFFSET on FD, starting from WHENCE.  */
 off_t
-__lseek (fd, offset, whence)
-     int fd;
-     off_t offset;
-     int whence;
+__lseek (int fd, off_t offset, int whence)
 {
   if (fd < 0)
     {

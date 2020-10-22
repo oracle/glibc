@@ -40,10 +40,7 @@ static _IO_off64_t _IO_cookie_seekoff (_IO_FILE *fp, _IO_off64_t offset,
 static int _IO_cookie_close (_IO_FILE* fp);
 
 static _IO_ssize_t
-_IO_cookie_read (fp, buf, size)
-     _IO_FILE *fp;
-     void *buf;
-     _IO_ssize_t size;
+_IO_cookie_read (_IO_FILE *fp, void *buf, _IO_ssize_t size)
 {
   struct _IO_cookie_file *cfile = (struct _IO_cookie_file *) fp;
   cookie_read_function_t *read_cb = cfile->__io_functions.read;
@@ -56,10 +53,7 @@ _IO_cookie_read (fp, buf, size)
 }
 
 static _IO_ssize_t
-_IO_cookie_write (fp, buf, size)
-     _IO_FILE *fp;
-     const void *buf;
-     _IO_ssize_t size;
+_IO_cookie_write (_IO_FILE *fp, const void *buf, _IO_ssize_t size)
 {
   struct _IO_cookie_file *cfile = (struct _IO_cookie_file *) fp;
   cookie_write_function_t *write_cb = cfile->__io_functions.write;
@@ -79,10 +73,7 @@ _IO_cookie_write (fp, buf, size)
 }
 
 static _IO_off64_t
-_IO_cookie_seek (fp, offset, dir)
-     _IO_FILE *fp;
-     _IO_off64_t offset;
-     int dir;
+_IO_cookie_seek (_IO_FILE *fp, _IO_off64_t offset, int dir)
 {
   struct _IO_cookie_file *cfile = (struct _IO_cookie_file *) fp;
   cookie_seek_function_t *seek_cb = cfile->__io_functions.seek;
@@ -96,8 +87,7 @@ _IO_cookie_seek (fp, offset, dir)
 }
 
 static int
-_IO_cookie_close (fp)
-     _IO_FILE *fp;
+_IO_cookie_close (_IO_FILE *fp)
 {
   struct _IO_cookie_file *cfile = (struct _IO_cookie_file *) fp;
   cookie_close_function_t *close_cb = cfile->__io_functions.close;
@@ -111,11 +101,7 @@ _IO_cookie_close (fp)
 
 
 static _IO_off64_t
-_IO_cookie_seekoff (fp, offset, dir, mode)
-     _IO_FILE *fp;
-     _IO_off64_t offset;
-     int dir;
-     int mode;
+_IO_cookie_seekoff (_IO_FILE *fp, _IO_off64_t offset, int dir, int mode)
 {
   /* We must force the fileops code to always use seek to determine
      the position.  */
@@ -238,10 +224,7 @@ _IO_FILE * _IO_old_fopencookie (void *cookie, const char *mode,
 
 static _IO_off64_t
 attribute_compat_text_section
-_IO_old_cookie_seek (fp, offset, dir)
-     _IO_FILE *fp;
-     _IO_off64_t offset;
-     int dir;
+_IO_old_cookie_seek (_IO_FILE *fp, _IO_off64_t offset, int dir)
 {
   struct _IO_cookie_file *cfile = (struct _IO_cookie_file *) fp;
   int (*seek_cb) (_IO_FILE *, _IO_off_t, int)

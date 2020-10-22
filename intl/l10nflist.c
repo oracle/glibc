@@ -69,9 +69,7 @@ static char *stpcpy PARAMS ((char *dest, const char *src));
 static size_t argz_count__ PARAMS ((const char *argz, size_t len));
 
 static size_t
-argz_count__ (argz, len)
-     const char *argz;
-     size_t len;
+argz_count__ (const char *argz, size_t len)
 {
   size_t count = 0;
   while (len > 0)
@@ -93,10 +91,7 @@ argz_count__ (argz, len)
 static void argz_stringify__ PARAMS ((char *argz, size_t len, int sep));
 
 static void
-argz_stringify__ (argz, len, sep)
-     char *argz;
-     size_t len;
-     int sep;
+argz_stringify__ (char *argz, size_t len, int sep)
 {
   while (len > 0)
     {
@@ -116,10 +111,7 @@ static char *argz_next__ PARAMS ((char *argz, size_t argz_len,
 				  const char *entry));
 
 static char *
-argz_next__ (argz, argz_len, entry)
-     char *argz;
-     size_t argz_len;
-     const char *entry;
+argz_next__ (char *argz, size_t argz_len, const char *entry)
 {
   if (entry)
     {
@@ -144,8 +136,7 @@ argz_next__ (argz, argz_len, entry)
 static int pop PARAMS ((int x));
 
 static inline int
-pop (x)
-     int x;
+pop (int x)
 {
   /* We assume that no more than 16 bits are used.  */
   x = ((x & ~0x5555) >> 1) + (x & 0x5555);
@@ -159,20 +150,12 @@ pop (x)
 
 
 struct loaded_l10nfile *
-_nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
-		    territory, codeset, normalized_codeset, modifier,
-		    filename, do_allocate)
-     struct loaded_l10nfile **l10nfile_list;
-     const char *dirlist;
-     size_t dirlist_len;
-     int mask;
-     const char *language;
-     const char *territory;
-     const char *codeset;
-     const char *normalized_codeset;
-     const char *modifier;
-     const char *filename;
-     int do_allocate;
+_nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list,
+		    const char *dirlist, size_t dirlist_len,
+		    int mask, const char *language,
+		    const char *territory, const char *codeset,
+		    const char *normalized_codeset, const char *modifier,
+		    const char *filename, int do_allocate)
 {
   char *abs_filename;
   struct loaded_l10nfile *last = NULL;
@@ -315,9 +298,7 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
    names.  The return value is dynamically allocated and has to be
    freed by the caller.  */
 const char *
-_nl_normalize_codeset (codeset, name_len)
-     const char *codeset;
-     size_t name_len;
+_nl_normalize_codeset (const char *codeset, size_t name_len)
 {
   int len = 0;
   int only_digit = 1;
@@ -368,9 +349,7 @@ _nl_normalize_codeset (codeset, name_len)
    to be defined.  */
 #if !_LIBC && !HAVE_STPCPY
 static char *
-stpcpy (dest, src)
-     char *dest;
-     const char *src;
+stpcpy (char *dest, const char *src)
 {
   while ((*dest++ = *src++) != '\0')
     /* Do nothing. */ ;

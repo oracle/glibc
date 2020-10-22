@@ -40,7 +40,7 @@ string-bench := bcopy bzero memccpy memchr memcmp memcpy memmem memmove \
 		strspn strstr strcpy_chk stpcpy_chk memrchr strsep strtok
 wcsmbs-bench := wcslen wcsnlen wcscpy wcpcpy wcsncpy wcpncpy wcscat wcsncat \
 		wcsncmp wcsncmp wcschr wcschrnul wcsrchr wcsspn wcspbrk wcscspn \
-		wmemchr wmemset
+		wmemchr wmemset wmemcmp
 string-bench-all := $(string-bench) ${wcsmbs-bench}
 
 stdlib-bench := strtod

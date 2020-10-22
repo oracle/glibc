@@ -52,12 +52,9 @@ __scandir_cancel_handler (void *arg)
 
 
 int
-SCANDIRAT (dfd, dir, namelist, select, cmp)
-     int dfd;
-     const char *dir;
-     DIRENT_TYPE ***namelist;
-     int (*select) (const DIRENT_TYPE *);
-     int (*cmp) (const DIRENT_TYPE **, const DIRENT_TYPE **);
+SCANDIRAT (int dfd, const char *dir, DIRENT_TYPE ***namelist,
+	   int (*select) (const DIRENT_TYPE *),
+	   int (*cmp) (const DIRENT_TYPE **, const DIRENT_TYPE **))
 {
   DIR *dp = __opendirat (dfd, dir);
   DIRENT_TYPE **v = NULL;

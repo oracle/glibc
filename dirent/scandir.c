@@ -34,11 +34,9 @@
 
 
 int
-SCANDIR (dir, namelist, select, cmp)
-     const char *dir;
-     DIRENT_TYPE ***namelist;
-     int (*select) (const DIRENT_TYPE *);
-     int (*cmp) (const DIRENT_TYPE **, const DIRENT_TYPE **);
+SCANDIR (const char *dir, DIRENT_TYPE ***namelist,
+         int (*select) (const DIRENT_TYPE *),
+         int (*cmp) (const DIRENT_TYPE **, const DIRENT_TYPE **))
 {
   return SCANDIRAT (AT_FDCWD, dir, namelist, select, cmp);
 }

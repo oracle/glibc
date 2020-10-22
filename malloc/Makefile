@@ -27,7 +27,8 @@ headers := $(dist-headers) obstack.h mcheck.h
 tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 	 tst-mallocstate tst-mcheck tst-mallocfork tst-trim1 \
 	 tst-malloc-usable \
-	 tst-malloc-backtrace tst-malloc-thread-exit
+	 tst-malloc-backtrace tst-malloc-thread-exit \
+	 tst-malloc-thread-fail
 test-srcs = tst-mtrace
 
 routines = malloc morecore mcheck mtrace obstack
@@ -43,6 +44,8 @@ libmemusage-routines = memusage
 libmemusage-inhibit-o = $(filter-out .os,$(object-suffixes))
 
 $(objpfx)tst-malloc-backtrace: $(common-objpfx)nptl/libpthread.so \
+			       $(common-objpfx)nptl/libpthread_nonshared.a
+$(objpfx)tst-malloc-thread-fail: $(common-objpfx)nptl/libpthread.so \
 			       $(common-objpfx)nptl/libpthread_nonshared.a
 $(objpfx)tst-malloc-thread-exit: $(common-objpfx)nptl/libpthread.so \
 			       $(common-objpfx)nptl/libpthread_nonshared.a
@@ -149,3 +152,7 @@ $(objpfx)libmemusage.so: $(common-objpfx)dlfcn/libdl.so $(elfobjdir)/ld.so
 
 # Extra dependencies
 $(foreach o,$(all-object-suffixes),$(objpfx)malloc$(o)): arena.c hooks.c
+
+# Compile the tests with a flag which suppresses the mallopt call in
+# the test skeleton.
+$(tests:%=$(objpfx)%.o): CPPFLAGS += -DTEST_NO_MALLOPT

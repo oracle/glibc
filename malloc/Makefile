@@ -34,6 +34,9 @@ tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 	 tst-interpose-static-nothread \
 	 tst-interpose-static-thread \
 	 tst-scratch_buffer \
+	 tst-dynarray \
+	 tst-dynarray-fail \
+	 tst-dynarray-at-fail \
 
 tests-static := \
 	 tst-interpose-static-nothread \
@@ -41,10 +44,17 @@ tests-static := \
 
 test-srcs = tst-mtrace
 
+generated += tst-dynarray-mem tst-dynarray-fail-mem
+
 routines = malloc morecore mcheck mtrace obstack \
   scratch_buffer_grow \
   scratch_buffer_grow_preserve \
   scratch_buffer_set_array_size \
+  dynarray_at_failure \
+  dynarray_emplace_enlarge \
+  dynarray_finalize \
+  dynarray_resize \
+  dynarray_resize_clear \
 
 
 install-lib := libmcheck.a
@@ -143,8 +153,7 @@ ifeq ($(run-built-tests),yes)
 ifeq (yes,$(build-shared))
 ifneq ($(PERL),no)
 tests: $(objpfx)tst-mtrace.out
-$(objpfx)tst-mtrace.out: tst-mtrace.sh $(objpfx)tst-mtrace
-	$(SHELL) $< $(common-objpfx) '$(run-program-prefix)'
+tests: $(objpfx)tst-dynarray-mem $(objpfx)tst-dynarray-fail-mem
 endif
 endif
 endif
@@ -190,3 +199,11 @@ $(objpfx)tst-interpose-static-thread: \
 # Compile the tests with a flag which suppresses the mallopt call in
 # the test skeleton.
 $(tests:%=$(objpfx)%.o): CPPFLAGS += -DTEST_NO_MALLOPT
+
+tst-dynarray-ENV = MALLOC_TRACE=$(objpfx)tst-dynarray.mtrace
+$(objpfx)tst-dynarray-mem: $(objpfx)tst-dynarray.out
+	$(common-objpfx)malloc/mtrace $(objpfx)tst-dynarray.mtrace > $@
+
+tst-dynarray-fail-ENV = MALLOC_TRACE=$(objpfx)tst-dynarray-fail.mtrace
+$(objpfx)tst-dynarray-fail-mem: $(objpfx)tst-dynarray-fail.out
+	$(common-objpfx)malloc/mtrace $(objpfx)tst-dynarray-fail.mtrace > $@

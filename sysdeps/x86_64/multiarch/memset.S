@@ -29,6 +29,13 @@ ENTRY(memset)
 	HAS_ARCH_FEATURE (Prefer_SSE_for_memop)
 	jz	2f
 	leaq	__memset_sse2(%rip), %rax
+#ifdef HAVE_AVX512_ASM_SUPPORT
+	HAS_ARCH_FEATURE (AVX512F_Usable)
+	jz	2f
+	HAS_ARCH_FEATURE (Prefer_No_VZEROUPPER)
+	jz	2f
+	leaq	__memset_avx512_no_vzeroupper(%rip), %rax
+#endif
 2:	ret
 END(memset)
 

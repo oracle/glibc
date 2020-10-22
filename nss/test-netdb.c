@@ -42,6 +42,8 @@
 #include <errno.h>
 #include "nss.h"
 
+#include <support/support.h>
+
 /*
   The following define is necessary for glibc 2.0.6
 */
@@ -179,7 +181,7 @@ test_hosts (void)
   while (gethostname (name, namelen) < 0 && errno == ENAMETOOLONG)
     {
       namelen += 2;		/* tiny increments to test a lot */
-      name = realloc (name, namelen);
+      name = xrealloc (name, namelen);
     }
   if (gethostname (name, namelen) == 0)
     {
@@ -377,5 +379,4 @@ do_test (void)
   return (error_count != 0);
 }
 
-#define TEST_FUNCTION do_test ()
-#include "../test-skeleton.c"
+#include <support/test-driver.c>

@@ -68,7 +68,7 @@ include ../Makeconfig
 ifeq (yes,$(build-shared))
 tests = bug-iconv1 bug-iconv2 tst-loading tst-e2big tst-iconv4 bug-iconv4 \
 	tst-iconv6 bug-iconv5 bug-iconv6 tst-iconv7 bug-iconv8 bug-iconv9 \
-	bug-iconv10
+	bug-iconv10 bug-iconv12
 ifeq ($(have-thread-library),yes)
 tests += bug-iconv3
 endif
@@ -293,6 +293,8 @@ $(objpfx)bug-iconv3.out: $(objpfx)gconv-modules \
 $(objpfx)bug-iconv5.out: $(objpfx)gconv-modules \
 			 $(addprefix $(objpfx),$(modules.so))
 $(objpfx)bug-iconv10.out: $(objpfx)gconv-modules \
+			  $(addprefix $(objpfx),$(modules.so))
+$(objpfx)bug-iconv12.out: $(objpfx)gconv-modules \
 			  $(addprefix $(objpfx),$(modules.so))
 $(objpfx)tst-loading.out: $(objpfx)gconv-modules \
 			  $(addprefix $(objpfx),$(modules.so))

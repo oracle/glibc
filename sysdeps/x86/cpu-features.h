@@ -34,8 +34,7 @@
 #define bit_AVX512DQ_Usable		(1 << 13)
 #define bit_Prefer_MAP_32BIT_EXEC	(1 << 16)
 #define bit_Prefer_No_VZEROUPPER	(1 << 17)
-#define bit_Use_dl_runtime_resolve_opt	(1 << 20)
-#define bit_Use_dl_runtime_resolve_slow	(1 << 21)
+#define bit_XSAVEC_Usable		(1 << 18)
 
 
 /* CPUID Feature flags.  */
@@ -70,10 +69,20 @@
 /* The current maximum size of the feature integer bit array.  */
 #define FEATURE_INDEX_MAX 1
 
+/* Offset for fxsave/xsave area used by _dl_runtime_resolve.  Also need
+   space to preserve RCX, RDX, RSI, RDI, R8, R9 and RAX.  It must be
+   aligned to 16 bytes for fxsave and 64 bytes for xsave.  */
+#define STATE_SAVE_OFFSET (8 * 7 + 8)
+
+/* Save SSE, AVX, AVX512, mask and bound registers.  */
+#define STATE_SAVE_MASK \
+  ((1 << 1) | (1 << 2) | (1 << 3) | (1 << 5) | (1 << 6) | (1 << 7))
+
 #ifdef	__ASSEMBLER__
 
 # include <ifunc-defines.h>
 # include <rtld-global-offsets.h>
+# include <cpu-features-offsets.h>
 
 # define index_SSE2	COMMON_CPUID_INDEX_1*CPUID_SIZE+CPUID_EDX_OFFSET
 # define index_SSSE3	COMMON_CPUID_INDEX_1*CPUID_SIZE+CPUID_ECX_OFFSET
@@ -98,8 +107,6 @@
 # define index_AVX512DQ_Usable		FEATURE_INDEX_1*FEATURE_SIZE
 # define index_Prefer_MAP_32BIT_EXEC	FEATURE_INDEX_1*FEATURE_SIZE
 # define index_Prefer_No_VZEROUPPER	FEATURE_INDEX_1*FEATURE_SIZE
-# define index_Use_dl_runtime_resolve_opt FEATURE_INDEX_1*FEATURE_SIZE
-# define index_Use_dl_runtime_resolve_slow FEATURE_INDEX_1*FEATURE_SIZE
 
 
 # if defined (_LIBC) && !IS_IN (nonlib)
@@ -214,6 +221,12 @@ struct cpu_features
   } cpuid[COMMON_CPUID_INDEX_MAX];
   unsigned int family;
   unsigned int model;
+  /* The type must be unsigned long int so that we use
+
+	sub xsave_state_size_offset(%rip) %RSP_LP
+
+     in _dl_runtime_resolve.  */
+  unsigned long int xsave_state_size;
   unsigned int feature[FEATURE_INDEX_MAX];
 };
 
@@ -279,8 +292,7 @@ extern const struct cpu_features *__get_cpu_features (void)
 # define index_AVX512DQ_Usable		FEATURE_INDEX_1
 # define index_Prefer_MAP_32BIT_EXEC	FEATURE_INDEX_1
 # define index_Prefer_No_VZEROUPPER     FEATURE_INDEX_1
-# define index_Use_dl_runtime_resolve_opt FEATURE_INDEX_1
-# define index_Use_dl_runtime_resolve_slow FEATURE_INDEX_1
+# define index_XSAVEC_Usable		FEATURE_INDEX_1
 
 #endif	/* !__ASSEMBLER__ */
 

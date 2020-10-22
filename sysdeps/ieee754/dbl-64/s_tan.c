@@ -84,7 +84,7 @@ tan(double x) {
     goto ret;
   }
 
-  w=(x<ZERO) ? -x : x;
+  w=(x<0) ? -x : x;
 
   /* (I) The case abs(x) <= 1.259e-8 */
   if (w<=g1.d) { retval = x; goto ret; }
@@ -125,11 +125,11 @@ tan(double x) {
 
     /* First stage */
     i = ((int) (mfftnhf.d+TWO8*w));
-    z = w-xfg[i][0].d;  z2 = z*z;   s = (x<ZERO) ? MONE : ONE;
+    z = w-xfg[i][0].d;  z2 = z*z;   s = (x<0) ? -1 : 1;
     pz = z+z*z2*(e0.d+z2*e1.d);
     fi = xfg[i][1].d;   gi = xfg[i][2].d;   t2 = pz*(gi+fi)/(gi-pz);
     if ((y=fi+(t2-fi*u3.d))==fi+(t2+fi*u3.d)) { retval = (s*y); goto ret; }
-    t3 = (t2<ZERO) ? -t2 : t2;
+    t3 = (t2<0) ? -t2 : t2;
     t4 = fi*ua3.d+t3*ub3.d;
     if ((y=fi+(t2-t4))==fi+(t2+t4)) { retval = (s*y); goto ret; }
 
@@ -165,8 +165,8 @@ tan(double x) {
     da = xn*mp3.d;
     a=t1-da;
     da = (t1-a)-da;
-    if (a<ZERO)  {ya=-a;  yya=-da;  sy=MONE;}
-    else         {ya= a;  yya= da;  sy= ONE;}
+    if (a<0)  {ya=-a;  yya=-da;  sy=-1;}
+    else         {ya= a;  yya= da;  sy= 1;}
 
     /* (IV),(V) The case 0.787 < abs(x) <= 25,    abs(y) <= 1e-7 */
     if (ya<=gy1.d) { retval = tanMp(x); goto ret; }
@@ -240,14 +240,14 @@ tan(double x) {
       /* -cot */
       t2 = pz*(fi+gi)/(fi+pz);
       if ((y=gi-(t2-gi*u10.d))==gi-(t2+gi*u10.d)) { retval = (-sy*y); goto ret; }
-      t3 = (t2<ZERO) ? -t2 : t2;
+      t3 = (t2<0) ? -t2 : t2;
       t4 = gi*ua10.d+t3*ub10.d;
       if ((y=gi-(t2-t4))==gi-(t2+t4)) { retval = (-sy*y); goto ret; } }
     else   {
       /* tan */
       t2 = pz*(gi+fi)/(gi-pz);
       if ((y=fi+(t2-fi*u9.d))==fi+(t2+fi*u9.d)) { retval = (sy*y); goto ret; }
-      t3 = (t2<ZERO) ? -t2 : t2;
+      t3 = (t2<0) ? -t2 : t2;
       t4 = fi*ua9.d+t3*ub9.d;
       if ((y=fi+(t2-t4))==fi+(t2+t4)) { retval = (sy*y); goto ret; } }
 
@@ -295,8 +295,8 @@ tan(double x) {
     a = t - t1;
     da = ((t-a)-t1)+da;
     EADD(a,da,t1,t2)   a=t1;  da=t2;
-    if (a<ZERO)  {ya=-a;  yya=-da;  sy=MONE;}
-    else         {ya= a;  yya= da;  sy= ONE;}
+    if (a<0)  {ya=-a;  yya=-da;  sy=-1;}
+    else         {ya= a;  yya= da;  sy= 1;}
 
     /* (+++) The case 25 < abs(x) <= 1e8,    abs(y) <= 1e-7 */
     if (ya<=gy1.d) { retval = tanMp(x); goto ret; }
@@ -355,14 +355,14 @@ tan(double x) {
       /* -cot */
       t2 = pz*(fi+gi)/(fi+pz);
       if ((y=gi-(t2-gi*u18.d))==gi-(t2+gi*u18.d)) { retval = (-sy*y); goto ret; }
-      t3 = (t2<ZERO) ? -t2 : t2;
+      t3 = (t2<0) ? -t2 : t2;
       t4 = gi*ua18.d+t3*ub18.d;
       if ((y=gi-(t2-t4))==gi-(t2+t4)) { retval = (-sy*y); goto ret; } }
     else   {
       /* tan */
       t2 = pz*(gi+fi)/(gi-pz);
       if ((y=fi+(t2-fi*u17.d))==fi+(t2+fi*u17.d)) { retval = (sy*y); goto ret; }
-      t3 = (t2<ZERO) ? -t2 : t2;
+      t3 = (t2<0) ? -t2 : t2;
       t4 = fi*ua17.d+t3*ub17.d;
       if ((y=fi+(t2-t4))==fi+(t2+t4)) { retval = (sy*y); goto ret; } }
 
@@ -398,8 +398,8 @@ tan(double x) {
   /* Range reduction by algorithm iii */
   n = (__branred(x,&a,&da)) & 0x00000001;
   EADD(a,da,t1,t2)   a=t1;  da=t2;
-  if (a<ZERO)  {ya=-a;  yya=-da;  sy=MONE;}
-  else         {ya= a;  yya= da;  sy= ONE;}
+  if (a<0)  {ya=-a;  yya=-da;  sy=-1;}
+  else         {ya= a;  yya= da;  sy= 1;}
 
   /* (+++) The case 1e8 < abs(x) < 2**1024,    abs(y) <= 1e-7 */
   if (ya<=gy1.d) { retval = tanMp(x); goto ret; }
@@ -463,14 +463,14 @@ tan(double x) {
     /* -cot */
     t2 = pz*(fi+gi)/(fi+pz);
     if ((y=gi-(t2-gi*u26.d))==gi-(t2+gi*u26.d)) { retval = (-sy*y); goto ret; }
-    t3 = (t2<ZERO) ? -t2 : t2;
+    t3 = (t2<0) ? -t2 : t2;
     t4 = gi*ua26.d+t3*ub26.d;
     if ((y=gi-(t2-t4))==gi-(t2+t4)) { retval = (-sy*y); goto ret; } }
   else   {
     /* tan */
     t2 = pz*(gi+fi)/(gi-pz);
     if ((y=fi+(t2-fi*u25.d))==fi+(t2+fi*u25.d)) { retval = (sy*y); goto ret; }
-    t3 = (t2<ZERO) ? -t2 : t2;
+    t3 = (t2<0) ? -t2 : t2;
     t4 = fi*ua25.d+t3*ub25.d;
     if ((y=fi+(t2-t4))==fi+(t2+t4)) { retval = (sy*y); goto ret; } }
 

@@ -138,8 +138,6 @@
 #endif
 #endif
 
-#define  ZERO      zero.d
-#define  ONE       one.d
 #define  A         a.d
 #define  B         b.d
 #define  C         c.d
@@ -160,7 +158,5 @@
 #define  U6        u6.d
 #define  U7        u7.d
 #define  U8        u8.d
-#define  TWO8      two8.d
-#define  TWO52     two52.d
 
 #endif

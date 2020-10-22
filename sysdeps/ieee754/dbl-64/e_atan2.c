@@ -98,15 +98,15 @@ __ieee754_atan2(double y,double x) {
   /* y=+-0 */
   if      (uy==0x00000000) {
     if    (dy==0x00000000) {
-      if  ((ux&0x80000000)==0x00000000)  return ZERO;
+      if  ((ux&0x80000000)==0x00000000)  return 0;
       else                               return opi.d; } }
   else if (uy==0x80000000) {
     if    (dy==0x00000000) {
-      if  ((ux&0x80000000)==0x00000000)  return MZERO;
+      if  ((ux&0x80000000)==0x00000000)  return -0.0;
       else                               return mopi.d;} }
 
   /* x=+-0 */
-  if (x==ZERO) {
+  if (x==0) {
     if ((uy&0x80000000)==0x00000000)     return hpi.d;
     else                                 return mhpi.d; }
 
@@ -118,8 +118,8 @@ __ieee754_atan2(double y,double x) {
       else if (uy==0xfff00000) {
 	if    (dy==0x00000000)  return mqpi.d; }
       else {
-	if    ((uy&0x80000000)==0x00000000)  return ZERO;
-	else                                 return MZERO; }
+	if    ((uy&0x80000000)==0x00000000)  return 0;
+	else                                 return -0.0; }
     }
   }
   else if     (ux==0xfff00000) {
@@ -141,14 +141,14 @@ __ieee754_atan2(double y,double x) {
     if    (dy==0x00000000)  return mhpi.d; }
 
   /* either x/y or y/x is very close to zero */
-  ax = (x<ZERO) ? -x : x;    ay = (y<ZERO) ? -y : y;
+  ax = (x<0) ? -x : x;    ay = (y<0) ? -y : y;
   de = (uy & 0x7ff00000) - (ux & 0x7ff00000);
-  if      (de>=ep)  { return ((y>ZERO) ? hpi.d : mhpi.d); }
+  if      (de>=ep)  { return ((y>0) ? hpi.d : mhpi.d); }
   else if (de<=em)  {
-    if    (x>ZERO)  {
+    if    (x>0)  {
       if  ((z=ay/ax)<TWOM1022)  return normalized(ax,ay,y,z);
       else                      return signArctan2(y,z); }
-    else            { return ((y>ZERO) ? opi.d : mopi.d); } }
+    else            { return ((y>0) ? opi.d : mopi.d); } }
 
   /* if either x or y is extremely close to zero, scale abs(x), abs(y). */
   if (ax<twom500.d || ay<twom500.d) { ax*=two500.d;  ay*=two500.d; }
@@ -170,7 +170,7 @@ __ieee754_atan2(double y,double x) {
     EMULV(ay,u,v,vv,t1,t2,t3,t4,t5)
     du=((ax-v)-vv)/ay; }
 
-  if (x>ZERO) {
+  if (x>0) {
 
     /* (i)   x>0, abs(y)< abs(x):  atan(ay/ax) */
     if (ay<ax) {
@@ -180,7 +180,7 @@ __ieee754_atan2(double y,double x) {
 
 	MUL2(u,du,u,du,v,vv,t1,t2,t3,t4,t5,t6,t7,t8)
 	s1=v*(f11.d+v*(f13.d+v*(f15.d+v*(f17.d+v*f19.d))));
-	ADD2(f9.d,ff9.d,s1,ZERO,s2,ss2,t1,t2)
+	ADD2(f9.d,ff9.d,s1,0,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
 	ADD2(f7.d,ff7.d,s1,ss1,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
@@ -212,7 +212,7 @@ __ieee754_atan2(double y,double x) {
 	EADD(t1,du,v,vv)
 	s1=v*(hij[i][11].d+v*(hij[i][12].d+v*(hij[i][13].d+
 	   v*(hij[i][14].d+v* hij[i][15].d))));
-	ADD2(hij[i][9].d,hij[i][10].d,s1,ZERO,s2,ss2,t1,t2)
+	ADD2(hij[i][9].d,hij[i][10].d,s1,0,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
 	ADD2(hij[i][7].d,hij[i][8].d,s1,ss1,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
@@ -237,7 +237,7 @@ __ieee754_atan2(double y,double x) {
 
 	MUL2(u,du,u,du,v,vv,t1,t2,t3,t4,t5,t6,t7,t8)
 	s1=v*(f11.d+v*(f13.d+v*(f15.d+v*(f17.d+v*f19.d))));
-	ADD2(f9.d,ff9.d,s1,ZERO,s2,ss2,t1,t2)
+	ADD2(f9.d,ff9.d,s1,0,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
 	ADD2(f7.d,ff7.d,s1,ss1,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
@@ -265,7 +265,7 @@ __ieee754_atan2(double y,double x) {
 	EADD(t1,du,v,vv)
 	s1=v*(hij[i][11].d+v*(hij[i][12].d+v*(hij[i][13].d+
 	   v*(hij[i][14].d+v* hij[i][15].d))));
-	ADD2(hij[i][9].d,hij[i][10].d,s1,ZERO,s2,ss2,t1,t2)
+	ADD2(hij[i][9].d,hij[i][10].d,s1,0,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
 	ADD2(hij[i][7].d,hij[i][8].d,s1,ss1,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
@@ -293,7 +293,7 @@ __ieee754_atan2(double y,double x) {
 
 	MUL2(u,du,u,du,v,vv,t1,t2,t3,t4,t5,t6,t7,t8)
 	s1=v*(f11.d+v*(f13.d+v*(f15.d+v*(f17.d+v*f19.d))));
-	ADD2(f9.d,ff9.d,s1,ZERO,s2,ss2,t1,t2)
+	ADD2(f9.d,ff9.d,s1,0,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
 	ADD2(f7.d,ff7.d,s1,ss1,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
@@ -321,7 +321,7 @@ __ieee754_atan2(double y,double x) {
 	EADD(t1,du,v,vv)
 	s1=v*(hij[i][11].d+v*(hij[i][12].d+v*(hij[i][13].d+
 	   v*(hij[i][14].d+v* hij[i][15].d))));
-	ADD2(hij[i][9].d,hij[i][10].d,s1,ZERO,s2,ss2,t1,t2)
+	ADD2(hij[i][9].d,hij[i][10].d,s1,0,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
 	ADD2(hij[i][7].d,hij[i][8].d,s1,ss1,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
@@ -347,7 +347,7 @@ __ieee754_atan2(double y,double x) {
 
 	MUL2(u,du,u,du,v,vv,t1,t2,t3,t4,t5,t6,t7,t8)
 	s1=v*(f11.d+v*(f13.d+v*(f15.d+v*(f17.d+v*f19.d))));
-	ADD2(f9.d,ff9.d,s1,ZERO,s2,ss2,t1,t2)
+	ADD2(f9.d,ff9.d,s1,0,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
 	ADD2(f7.d,ff7.d,s1,ss1,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
@@ -375,7 +375,7 @@ __ieee754_atan2(double y,double x) {
 	EADD(t1,du,v,vv)
 	s1=v*(hij[i][11].d+v*(hij[i][12].d+v*(hij[i][13].d+
 	   v*(hij[i][14].d+v* hij[i][15].d))));
-	ADD2(hij[i][9].d,hij[i][10].d,s1,ZERO,s2,ss2,t1,t2)
+	ADD2(hij[i][9].d,hij[i][10].d,s1,0,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)
 	ADD2(hij[i][7].d,hij[i][8].d,s1,ss1,s2,ss2,t1,t2)
 	MUL2(v,vv,s2,ss2,s1,ss1,t1,t2,t3,t4,t5,t6,t7,t8)

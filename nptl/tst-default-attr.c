@@ -110,8 +110,6 @@ run_threads (void)
 static int
 do_test (void)
 {
-  pthread_attr_t attr;
-
   pagesize = sysconf (_SC_PAGESIZE);
   if (pagesize < 0)
     {

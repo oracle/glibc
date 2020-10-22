@@ -346,7 +346,7 @@ __LABEL(name)						\
 
 #include <stdint.h>
 
-#if defined NOT_IN_libc && defined IS_IN_rtld
+#ifdef IS_IN_rtld
 # ifdef __ASSEMBLER__
 #  define PTR_MANGLE(dst, src, tmp)				\
 	ldah	tmp, __pointer_chk_guard_local($29) !gprelhigh;	\

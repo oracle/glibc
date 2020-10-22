@@ -38,8 +38,7 @@
 #include <errno.h>
 
 ssize_t
-aio_return (aiocbp)
-     struct aiocb *aiocbp;
+aio_return (struct aiocb *aiocbp)
 {
   if (aiocbp->__error_code == EINPROGRESS)
     __aio_read_one_event ();

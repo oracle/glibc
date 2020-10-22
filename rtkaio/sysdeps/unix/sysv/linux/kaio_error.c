@@ -37,8 +37,7 @@
 #include <errno.h>
 
 int
-aio_error (aiocbp)
-     const struct aiocb *aiocbp;
+aio_error (const struct aiocb *aiocbp)
 {
   int ret = aiocbp->__error_code;
 

@@ -27,7 +27,7 @@
 
        .text
 
-#if defined SHARED && !defined NOT_IN_libc
+#if defined SHARED && IS_IN (libc)
 
 ENTRY(__memcpy_z196)
 	.machine "z196"
@@ -88,11 +88,11 @@ ENTRY(__memcpy_z10)
 	mvc     0(1,%r1),0(%r3)
 END(__memcpy_z10)
 
-#endif /* SHARED && !defined NOT_IN_libc */
+#endif /* SHARED && IS_IN (libc) */
 
 #include "../memcpy.S"
 
-#if !defined SHARED || defined NOT_IN_libc
+#if !defined SHARED || !IS_IN (libc)
 .globl   memcpy
 .set     memcpy,__memcpy_default
 #endif

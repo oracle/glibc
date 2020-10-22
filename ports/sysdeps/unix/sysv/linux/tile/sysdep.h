@@ -45,7 +45,7 @@
 #ifndef PIC
 /* For static code, on error jump to __syscall_error directly. */
 # define SYSCALL_ERROR_NAME __syscall_error
-#elif !defined NOT_IN_libc || IS_IN (libpthread)
+#elif IS_IN (libc) || IS_IN (libpthread)
 /* Use the internal name for libc/libpthread shared objects. */
 # define SYSCALL_ERROR_NAME __GI___syscall_error
 #else
@@ -205,7 +205,7 @@
 #endif /* not __ASSEMBLER__ */
 
 /* Pointer mangling support.  */
-#if defined NOT_IN_libc && IS_IN (rtld)
+#if !IS_IN (libc) && IS_IN (rtld)
 /* We cannot use the thread descriptor because in ld.so we use setjmp
    earlier than the descriptor is initialized.  */
 #else

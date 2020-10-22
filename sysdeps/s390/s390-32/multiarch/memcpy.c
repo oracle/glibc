@@ -17,7 +17,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 /* In the static lib memcpy is needed before the reloc is resolved.  */
-#if defined SHARED && !defined NOT_IN_libc
+#if defined SHARED && IS_IN (libc)
 # include <ifunc-resolve.h>
 
 s390_libc_ifunc (memcpy)

@@ -16,7 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+#if defined HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc)
 
 # include "sysdep.h"
 # include "asm-syntax.h"
@@ -278,4 +278,4 @@ ENTRY(__strcspn_vx)
 	vlgvg	%r9,%v31,1
 	br	%r14
 END(__strcspn_vx)
-#endif /* HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc */
+#endif /* HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc) */

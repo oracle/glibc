@@ -16,7 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+#if defined HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc)
 # include <string.h>
 # include <ifunc-resolve.h>
 
@@ -24,4 +24,4 @@ s390_vx_libc_ifunc2 (__strcat, strcat)
 
 #else
 # include <string/strcat.c>
-#endif /* !(defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc) */
+#endif /* !(defined HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc)) */

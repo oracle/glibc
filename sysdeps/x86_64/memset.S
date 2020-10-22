@@ -23,7 +23,7 @@
 #define __STOS_UPPER_BOUNDARY	$65536
 
 	.text
-#if !defined NOT_IN_libc && !defined USE_MULTIARCH
+#if IS_IN (libc) && !defined USE_MULTIARCH
 ENTRY(__bzero)
 	mov	%rsi,%rdx	/* Adjust parameter.  */
 	xorl	%esi,%esi	/* Fill with 0s.  */
@@ -32,7 +32,7 @@ END(__bzero)
 weak_alias (__bzero, bzero)
 #endif
 
-#if defined PIC && !defined NOT_IN_libc
+#if defined PIC && IS_IN (libc)
 ENTRY_CHK (__memset_chk)
 	cmpq	%rdx, %rcx
 	jb	HIDDEN_JUMPTARGET (__chk_fail)
@@ -1354,7 +1354,7 @@ L(8byte_nt_move_skip):
 END (memset)
 libc_hidden_builtin_def (memset)
 
-#if defined PIC && !defined NOT_IN_libc && !defined USE_MULTIARCH
+#if defined PIC && IS_IN (libc) && !defined USE_MULTIARCH
 strong_alias (__memset_chk, __memset_zero_constant_len_parameter)
 	.section .gnu.warning.__memset_zero_constant_len_parameter
 	.string "memset used with constant zero length parameter; this could be due to transposed parameters"

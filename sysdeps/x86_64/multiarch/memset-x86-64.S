@@ -1,6 +1,6 @@
 #include <sysdep.h>
 
-#ifndef NOT_IN_libc
+#if IS_IN (libc)
 # undef ENTRY_CHK
 # define ENTRY_CHK(name) \
 	.type __memset_chk_x86_64, @function; \

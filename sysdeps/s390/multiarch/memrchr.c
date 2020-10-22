@@ -16,7 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+#if defined HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc)
 # include <string.h>
 # include <ifunc-resolve.h>
 
@@ -25,4 +25,4 @@ weak_alias (__memrchr, memrchr)
 
 #else
 # include <string/memrchr.c>
-#endif /* !(defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc) */
+#endif /* !(defined HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc)) */

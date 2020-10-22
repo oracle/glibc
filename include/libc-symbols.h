@@ -548,7 +548,7 @@ for linking")
 # define hidden_nolink(name, lib, version)
 #endif
 
-#if !defined NOT_IN_libc
+#if IS_IN (libc)
 # define libc_hidden_proto(name, attrs...) hidden_proto (name, ##attrs)
 # define libc_hidden_def(name) hidden_def (name)
 # define libc_hidden_weak(name) hidden_weak (name)

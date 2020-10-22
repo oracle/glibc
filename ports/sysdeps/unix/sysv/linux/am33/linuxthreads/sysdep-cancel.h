@@ -23,7 +23,7 @@
 # include <linuxthreads/internals.h>
 #endif
 
-#if !defined NOT_IN_libc || IS_IN (libpthread) || IS_IN (librt)
+#if IS_IN (libc) || IS_IN (libpthread) || IS_IN (librt)
 
 # undef PSEUDO
 # define PSEUDO(name, syscall_name, args)				\
@@ -103,7 +103,7 @@
 #  define CDISABLE	call +__libc_disable_asynccancel,[],0;
 # endif
 
-#if !defined NOT_IN_libc
+#if IS_IN (libc)
 # define __local_multiple_threads __libc_multiple_threads
 #elif IS_IN (libpthread)
 # define __local_multiple_threads __pthread_multiple_threads
@@ -118,7 +118,7 @@
 				   p_header.data.multiple_threads) == 0, 1)
 #  else
 extern int __local_multiple_threads
-#   if !defined NOT_IN_libc || IS_IN (libpthread)
+#   if IS_IN (libc) || IS_IN (libpthread)
   attribute_hidden;
 #   else
   ;
@@ -130,7 +130,7 @@ extern int __local_multiple_threads
 #   define SINGLE_THREAD_P \
 	mov (+__local_multiple_threads),d0; \
 	cmp 0,d0
-#  elif !defined NOT_IN_libc || IS_IN (libpthread)
+#  elif IS_IN (libc) || IS_IN (libpthread)
 #   define SINGLE_THREAD_P \
 	movm [a2],(sp); \
      1: mov pc,a2; \

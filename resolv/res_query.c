@@ -705,6 +705,96 @@ hostalias (const char *name)
     (__resolv_context_get (), name, abuf, sizeof (abuf));
 }
 
+#ifdef SHARED
+/* Compatibiliaty functions to support old nss_dns modules.  */
+
+typedef int (*compat_query_function) (struct resolv_context *,
+				      const char *name,
+				      int class, int type,
+				      u_char *answer,
+				      int anslen,
+				      u_char **answerp,
+				      u_char **answerp2,
+				      int *nanswerp2,
+				      int *resplen2,
+				      int *answerp2_malloced);
+
+attribute_compat_text_section
+static int
+wrap_compat_call (compat_query_function qf,
+		  res_state statp,
+		  const char *name,	/* domain name */
+		  int class, int type,	/* class and type of query */
+		  u_char *answer,	/* buffer to put answer */
+		  int anslen,		/* size of answer buffer */
+		  u_char **answerp,	/* if buffer needs to be enlarged */
+		  u_char **answerp2,
+		  int *nanswerp2,
+		  int *resplen2,
+		  int *answerp2_malloced)
+{
+  if (statp == &_res)
+    {
+      struct resolv_context *ctx = __resolv_context_get ();
+      if (ctx == NULL)
+	{
+	  __set_h_errno (NO_RECOVERY);
+	  return -1;
+	}
+      int ret = qf (ctx, name, class, type,
+		    answer, anslen, answerp, answerp2,
+		    nanswerp2, resplen2, answerp2_malloced);
+      __resolv_context_put (ctx);
+      return ret;
+    }
+  else
+    {
+      __set_h_errno (NO_RECOVERY);
+      __set_errno (ENOTSUP);
+      return -1;
+    }
+}
+
+attribute_compat_text_section
+int
+__libc_res_nquery(res_state statp,
+		  const char *name,	/* domain name */
+		  int class, int type,	/* class and type of query */
+		  u_char *answer,	/* buffer to put answer */
+		  int anslen,		/* size of answer buffer */
+		  u_char **answerp,	/* if buffer needs to be enlarged */
+		  u_char **answerp2,
+		  int *nanswerp2,
+		  int *resplen2,
+		  int *answerp2_malloced)
+{
+  return wrap_compat_call (__res_context_query, statp, name, class, type,
+			   answer, anslen, answerp, answerp2,
+			   nanswerp2, resplen2, answerp2_malloced);
+}
+asm (".symver __libc_res_nquery, __libc_res_nquery@GLIBC_PRIVATE");
+
+attribute_compat_text_section
+int
+__libc_res_nsearch(res_state statp,
+		   const char *name,	/* domain name */
+		   int class, int type,	/* class and type of query */
+		   u_char *answer,	/* buffer to put answer */
+		   int anslen,		/* size of answer */
+		   u_char **answerp,
+		   u_char **answerp2,
+		   int *nanswerp2,
+		   int *resplen2,
+		   int *answerp2_malloced)
+{
+  return wrap_compat_call (__res_context_search, statp, name, class, type,
+			   answer, anslen, answerp, answerp2,
+			   nanswerp2, resplen2, answerp2_malloced);
+}
+asm (".symver __libc_res_nsearch, __libc_res_nsearch@GLIBC_PRIVATE");
+
+#endif /* SHARED */
+
 #if SHLIB_COMPAT (libresolv, GLIBC_2_0, GLIBC_2_2)
 # undef res_query
 # undef res_querydomain

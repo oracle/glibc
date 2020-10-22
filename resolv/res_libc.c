@@ -41,6 +41,7 @@
 #include <resolv.h>
 #include <libc-lock.h>
 #include <resolv-internal.h>
+#include <resolv_context.h>
 
 int
 res_init (void)
@@ -80,7 +81,34 @@ res_init (void)
 
   return __res_vinit (&_res, 1);
 }
-
+
+#ifdef SHARED
+
+/* An old nscd binary may bind to __res_maybe_init during a glibc
+   update.  Emulate it using the new functions.  Ignore PREINIT
+   because almost all existing __res_maybe_init callers used zero
+   PREINIT, and the difference for RESP == &_res is very minor (a
+   potential override of application configuration).  */
+attribute_compat_text_section
+int
+__res_maybe_init (res_state resp, int preinit)
+{
+  if (resp == &_res)
+    {
+      /* This performs an implicit initialization of _res.  */
+      struct resolv_context *ctx = __resolv_context_get ();
+      if (ctx == NULL)
+        return -1;
+      __resolv_context_put (ctx);
+      return 0;
+    }
+  else
+    return __res_vinit (resp, 0);
+}
+asm (".symver __res_maybe_init, __res_maybe_init@GLIBC_PRIVATE");
+
+#endif /* SHARED */
+
 /* This needs to be after the use of _res in res_init, above.  */
 #undef _res
 

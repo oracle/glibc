@@ -170,10 +170,8 @@ _IO_cookie_init (struct _IO_cookie_file *cfile, int read_write,
 
 
 _IO_FILE *
-_IO_fopencookie (cookie, mode, io_functions)
-     void *cookie;
-     const char *mode;
-     _IO_cookie_io_functions_t io_functions;
+_IO_fopencookie (void *cookie, const char *mode,
+		 _IO_cookie_io_functions_t io_functions)
 {
   int read_write;
   struct locked_FILE
@@ -264,10 +262,8 @@ static const struct _IO_jump_t _IO_old_cookie_jumps libio_vtable = {
 
 _IO_FILE *
 attribute_compat_text_section
-_IO_old_fopencookie (cookie, mode, io_functions)
-     void *cookie;
-     const char *mode;
-     _IO_cookie_io_functions_t io_functions;
+_IO_old_fopencookie (void *cookie, const char *mode,
+		     _IO_cookie_io_functions_t io_functions)
 {
   _IO_FILE *ret;
 

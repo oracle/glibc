@@ -99,8 +99,8 @@ ENTRY(__socket)
 	l       %r15,0(0,%r15)          /* load back chain */
 	lm      %r6,15,24(%r15)         /* load registers */
 
-	/* gpr2 is < 0 if there was an error.  */
-	lhi     %r0,-125
+	/* gpr2 is in [-4095, -1] if there was an error.  */
+	lhi     %r0,-4095
 	clr     %r2,%r0
 	jnl     SYSCALL_ERROR_LABEL
 

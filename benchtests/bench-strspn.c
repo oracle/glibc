@@ -139,7 +139,7 @@ do_test (size_t align, size_t pos, size_t len)
   for (i = 0; i < pos; ++i)
     s[i] = acc[random () % len];
   s[pos] = random () & BIG_CHAR;
-  if (strchr (acc, s[pos]))
+  if (STRCHR (acc, s[pos]))
     s[pos] = '\0';
   else
     {

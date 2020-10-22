@@ -210,7 +210,7 @@ do_test (size_t align1, size_t align2, size_t len, size_t n, int max_char,
   if (align1 + (n + 1) * CHARBYTES >= page_size)
     return;
 
-  align2 &= 7;
+  align2 &= 63;
   if (align2 + (n + 1) * CHARBYTES >= page_size)
     return;
 
@@ -359,8 +359,8 @@ check1 (void)
   size_t i, offset;
   int exp_result;
 
-  strcpy(s1, L("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs"));
-  strcpy(s2, L("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkLMNOPQRSTUV"));
+  STRCPY(s1, L("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs"));
+  STRCPY(s2, L("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkLMNOPQRSTUV"));
 
   /* Check possible overflow bug for wcsncmp */
   s1[4] = CHAR__MAX;

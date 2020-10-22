@@ -69,7 +69,8 @@ tests		:= test-utime test-stat test-stat2 test-lfs tst-getcwd \
 		   tst-renameat tst-fchownat tst-fchmodat tst-faccessat \
 		   tst-symlinkat tst-linkat tst-readlinkat tst-mkdirat \
 		   tst-mknodat tst-mkfifoat tst-ttyname_r bug-ftw5 \
-		   tst-posix_fallocate
+		   tst-posix_fallocate \
+		   tst-open-tmpfile
 
 include ../Rules
 

@@ -41,7 +41,7 @@ libc_ifunc (__libc_memmove,
 	     : (IS_FALKOR (midr) || IS_PHECDA (midr)
 		? __memmove_falkor
 # if HAVE_AARCH64_SVE_ASM
-		: (IS_A64FX (midr)
+		: (IS_A64FX (midr) && sve
 		   ? __memmove_a64fx
 		   : __memmove_generic))));
 # else

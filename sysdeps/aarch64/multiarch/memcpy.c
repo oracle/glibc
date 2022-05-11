@@ -44,7 +44,7 @@ libc_ifunc (__libc_memcpy,
 		: (IS_THUNDERX2 (midr) || IS_THUNDERX2PA (midr)
 		  ? __memcpy_thunderx2
 # if HAVE_AARCH64_SVE_ASM
-		  : (IS_A64FX (midr)
+		  : (IS_A64FX (midr) && sve
 		     ? __memcpy_a64fx
 		     : __memcpy_generic)))));
 # else

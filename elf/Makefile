@@ -162,6 +162,12 @@ tst-tls1-static-non-pie-no-pie = yes
 tests-container = \
 			  tst-ldconfig-bad-aux-cache
 
+ifeq (no,$(build-hardcoded-path-in-tests))
+# This is an ld.so.cache test, and RPATH/RUNPATH in the executable
+# interferes with its test objectives.
+tests-container += tst-glibc-hwcaps-prepend-cache
+endif
+
 tests := tst-tls9 tst-leaks1 \
 	tst-array1 tst-array2 tst-array3 tst-array4 tst-array5 \
 	tst-auxv tst-stringtable
@@ -1784,6 +1790,14 @@ $(objpfx)tst-glibc-hwcaps-prepend.out: \
 	  $< > $@; \
 	$(evaluate-test)
 
+# Like tst-glibc-hwcaps-prepend, but uses a container and loads the
+# library via ld.so.cache.  Test setup is contained in the test
+# itself.
+$(objpfx)tst-glibc-hwcaps-prepend-cache: $(libdl)
+$(objpfx)tst-glibc-hwcaps-prepend-cache.out: \
+  $(objpfx)tst-glibc-hwcaps-prepend-cache $(objpfx)libmarkermod1-1.so \
+  $(objpfx)libmarkermod1-2.so $(objpfx)libmarkermod1-3.so
+
 # tst-glibc-hwcaps-mask checks that --glibc-hwcaps-mask can be used to
 # suppress all auto-detected subdirectories.
 $(objpfx)tst-glibc-hwcaps-mask: $(objpfx)libmarkermod1-1.so
@@ -1795,3 +1809,7 @@ $(objpfx)tst-glibc-hwcaps-mask.out: \
 	  --glibc-hwcaps-mask does-not-exist \
 	  $< > $@; \
 	$(evaluate-test)
+
+# Generic dependency for sysdeps implementation of
+# tst-glibc-hwcaps-cache.
+$(objpfx)tst-glibc-hwcaps-cache.out: $(objpfx)tst-glibc-hwcaps

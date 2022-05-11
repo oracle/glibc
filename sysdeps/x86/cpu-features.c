@@ -17,9 +17,14 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <cpuid.h>
-#include <cpu-features.h>
 #include <dl-hwcap.h>
 #include <libc-pointer-arith.h>
+#if IS_IN (libc) && !defined SHARED
+# include <assert.h>
+# include <unistd.h>
+# include <dl-cacheinfo.h>
+# include <cacheinfo.h>
+#endif
 
 #if HAVE_TUNABLES
 # define TUNABLE_NAMESPACE cpu
@@ -751,5 +756,10 @@ no_cpuid:
 	}
 # endif
     }
+#endif
+
+#ifndef SHARED
+  /* NB: In libc.a, call init_cacheinfo.  */
+  init_cacheinfo ();
 #endif
 }

@@ -43,6 +43,10 @@ void xunlink (const char *path);
 long xsysconf (int name);
 long long xlseek (int fd, long long offset, int whence);
 void xftruncate (int fd, long long length);
+void xsymlink (const char *target, const char *linkpath);
+
+/* Equivalent of "mkdir -p".  */
+void xmkdirp (const char *, mode_t);
 
 /* Read the link at PATH.  The caller should free the returned string
    with free.  */
@@ -59,6 +63,9 @@ void xwrite (int, const void *, size_t);
 void *xmmap (void *addr, size_t length, int prot, int flags, int fd);
 void xmprotect (void *addr, size_t length, int prot);
 void xmunmap (void *addr, size_t length);
+
+ssize_t xcopy_file_range(int fd_in, loff_t *off_in, int fd_out,
+			 loff_t *off_out, size_t len, unsigned int flags);
 
 __END_DECLS
 

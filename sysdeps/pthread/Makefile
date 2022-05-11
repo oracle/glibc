@@ -25,3 +25,24 @@ $(objpfx)tst-timer: $(objpfx)librt.a $(static-thread-library)
 endif
 
 endif
+
+ifneq (,$(filter $(subdir),htl nptl))
+ifeq ($(build-shared),yes)
+tests += tst-create1
+endif
+
+tst-create1mod.so-no-z-defs = yes
+
+ifeq ($(build-shared),yes)
+# Build all the modules even when not actually running test programs.
+tests: $(test-modules)
+endif
+
+modules-names += tst-create1mod
+test-modules = $(addprefix $(objpfx),$(addsuffix .so,$(modules-names)))
+
+LDFLAGS-tst-create1 = -Wl,-export-dynamic
+$(objpfx)tst-create1: $(libdl) $(shared-thread-library)
+$(objpfx)tst-create1.out: $(objpfx)tst-create1mod.so
+
+endif

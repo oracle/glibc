@@ -192,7 +192,8 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-latepthread tst-tls-manydynamic tst-nodelete-dlclose \
 	 tst-debug1 tst-main1 tst-absolute-sym tst-absolute-zero tst-big-note \
 	 tst-sonamemove-link tst-sonamemove-dlopen tst-initfinilazyfail \
-	 tst-dlopenfail tst-dlopenfail-2
+	 tst-dlopenfail tst-dlopenfail-2 \
+	 tst-filterobj tst-filterobj-dlopen tst-auxobj tst-auxobj-dlopen
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
@@ -302,7 +303,8 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-sonamemove-runmod1 tst-sonamemove-runmod2 \
 		tst-initlazyfailmod tst-finilazyfailmod \
 		tst-dlopenfailmod1 tst-dlopenfaillinkmod tst-dlopenfailmod2 \
-		tst-dlopenfailmod3
+		tst-dlopenfailmod3 \
+		tst-filterobj-flt tst-filterobj-aux tst-filterobj-filtee
 
 ifeq (yes,$(have-mtls-dialect-gnu2))
 tests += tst-gnu2-tls1
@@ -1619,3 +1621,15 @@ $(objpfx)tst-dlopen-nodelete-reloc-mod17.so: \
   $(objpfx)tst-dlopen-nodelete-reloc-mod15.so \
   $(objpfx)tst-dlopen-nodelete-reloc-mod16.so
 LDFLAGS-tst-dlopen-nodelete-reloc-mod17.so = -Wl,--no-as-needed
+
+LDFLAGS-tst-filterobj-flt.so = -Wl,--filter=$(objpfx)tst-filterobj-filtee.so
+$(objpfx)tst-filterobj: $(objpfx)tst-filterobj-flt.so
+$(objpfx)tst-filterobj-dlopen: $(libdl)
+$(objpfx)tst-filterobj.out: $(objpfx)tst-filterobj-filtee.so
+$(objpfx)tst-filterobj-dlopen.out: $(objpfx)tst-filterobj-filtee.so
+
+LDFLAGS-tst-filterobj-aux.so = -Wl,--auxiliary=$(objpfx)tst-filterobj-filtee.so
+$(objpfx)tst-auxobj: $(objpfx)tst-filterobj-aux.so
+$(objpfx)tst-auxobj-dlopen: $(libdl)
+$(objpfx)tst-auxobj.out: $(objpfx)tst-filterobj-filtee.so
+$(objpfx)tst-auxobj-dlopen.out: $(objpfx)tst-filterobj-filtee.so

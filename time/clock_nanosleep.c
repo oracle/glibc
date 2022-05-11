@@ -1,4 +1,5 @@
-/* Copyright (C) 1999-2018 Free Software Foundation, Inc.
+/* High-resolution sleep with the specified clock.  Stub version.
+   Copyright (C) 2000-2018 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,45 +18,29 @@
 
 #include <errno.h>
 #include <time.h>
-#include <sys/time.h>
 #include <shlib-compat.h>
 
-/* Set CLOCK to value TP.  */
 int
-__clock_settime (clockid_t clock_id, const struct timespec *tp)
+__clock_nanosleep (clockid_t clock_id, int flags, const struct timespec *req,
+		   struct timespec *rem)
 {
-  int retval = -1;
+  if (__builtin_expect (req->tv_nsec, 0) < 0
+      || __builtin_expect (req->tv_nsec, 0) >= 1000000000)
+    return EINVAL;
 
-  /* Make sure the time cvalue is OK.  */
-  if (tp->tv_nsec < 0 || tp->tv_nsec >= 1000000000)
-    {
-      __set_errno (EINVAL);
-      return -1;
-    }
+  if (flags != TIMER_ABSTIME && flags != 0)
+    return EINVAL;
 
-  switch (clock_id)
-    {
-    case CLOCK_REALTIME:
-      {
-	struct timeval tv;
-	TIMESPEC_TO_TIMEVAL (&tv, tp);
-	retval = __settimeofday (&tv, NULL);
-      }
-      break;
-
-    default:
-      __set_errno (EINVAL);
-      break;
-    }
-
-  return retval;
+  /* Not implemented.  */
+  return ENOSYS;
 }
-libc_hidden_def (__clock_settime)
 
-versioned_symbol (libc, __clock_settime, clock_settime, GLIBC_2_17);
-/* clock_settime moved to libc in version 2.17;
+versioned_symbol (libc, __clock_nanosleep, clock_nanosleep, GLIBC_2_17);
+/* clock_nanosleep moved to libc in version 2.17;
    old binaries may expect the symbol version it had in librt.  */
 #if SHLIB_COMPAT (libc, GLIBC_2_2, GLIBC_2_17)
-strong_alias (__clock_settime, __clock_settime_2);
-compat_symbol (libc, __clock_settime_2, clock_settime, GLIBC_2_2);
+strong_alias (__clock_nanosleep, __clock_nanosleep_2);
+compat_symbol (libc, __clock_nanosleep_2, clock_nanosleep, GLIBC_2_2);
 #endif
+
+stub_warning (clock_nanosleep)

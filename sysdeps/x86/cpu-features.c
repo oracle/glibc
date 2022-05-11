@@ -56,7 +56,7 @@ get_extended_indices (struct cpu_features *cpu_features)
 }
 
 static void
-get_common_indeces (struct cpu_features *cpu_features,
+get_common_indices (struct cpu_features *cpu_features,
 		    unsigned int *family, unsigned int *model,
 		    unsigned int *extended_model, unsigned int *stepping)
 {
@@ -234,7 +234,7 @@ init_cpu_features (struct cpu_features *cpu_features)
 
       kind = arch_kind_intel;
 
-      get_common_indeces (cpu_features, &family, &model, &extended_model,
+      get_common_indices (cpu_features, &family, &model, &extended_model,
 			  &stepping);
 
       get_extended_indices (cpu_features);
@@ -356,7 +356,7 @@ init_cpu_features (struct cpu_features *cpu_features)
 
       kind = arch_kind_amd;
 
-      get_common_indeces (cpu_features, &family, &model, &extended_model,
+      get_common_indices (cpu_features, &family, &model, &extended_model,
 			  &stepping);
 
       get_extended_indices (cpu_features);
@@ -393,7 +393,7 @@ init_cpu_features (struct cpu_features *cpu_features)
   else
     {
       kind = arch_kind_other;
-      get_common_indeces (cpu_features, NULL, NULL, NULL, NULL);
+      get_common_indices (cpu_features, NULL, NULL, NULL, NULL);
     }
 
   /* Support i586 if CX8 is available.  */

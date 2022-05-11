@@ -306,6 +306,11 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-dlopenfailmod3 \
 		tst-filterobj-flt tst-filterobj-aux tst-filterobj-filtee
 
+# Most modules build with _ISOMAC defined, but those filtered out
+# depend on internal headers.
+modules-names-tests = $(filter-out ifuncmod% tst-libc_dlvsym-dso tst-tlsmod%,\
+				   $(modules-names))
+
 ifeq (yes,$(have-mtls-dialect-gnu2))
 tests += tst-gnu2-tls1
 modules-names += tst-gnu2-tls1mod

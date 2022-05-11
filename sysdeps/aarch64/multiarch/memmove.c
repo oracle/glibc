@@ -31,14 +31,22 @@ extern __typeof (__redirect_memmove) __libc_memmove;
 extern __typeof (__redirect_memmove) __memmove_generic attribute_hidden;
 extern __typeof (__redirect_memmove) __memmove_thunderx attribute_hidden;
 extern __typeof (__redirect_memmove) __memmove_falkor attribute_hidden;
+# if HAVE_AARCH64_SVE_ASM
+extern __typeof (__redirect_memmove) __memmove_a64fx attribute_hidden;
+# endif
 
 libc_ifunc (__libc_memmove,
             (IS_THUNDERX (midr)
 	     ? __memmove_thunderx
 	     : (IS_FALKOR (midr) || IS_PHECDA (midr)
 		? __memmove_falkor
+# if HAVE_AARCH64_SVE_ASM
+		: (IS_A64FX (midr)
+		   ? __memmove_a64fx
+		   : __memmove_generic))));
+# else
 		: __memmove_generic)));
-
+# endif
 # undef memmove
 strong_alias (__libc_memmove, memmove);
 #endif

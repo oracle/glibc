@@ -20,6 +20,7 @@
 #define _CPU_FEATURES_AARCH64_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define MIDR_PARTNUM_SHIFT	4
 #define MIDR_PARTNUM_MASK	(0xfff << MIDR_PARTNUM_SHIFT)
@@ -52,10 +53,14 @@
 #define IS_PHECDA(midr) (MIDR_IMPLEMENTOR(midr) == 'h'			      \
                         && MIDR_PARTNUM(midr) == 0x000)
 
+#define IS_A64FX(midr) (MIDR_IMPLEMENTOR(midr) == 'F'			      \
+			&& MIDR_PARTNUM(midr) == 0x001)
+
 struct cpu_features
 {
   uint64_t midr_el1;
   unsigned zva_size;
+  bool sve;
 };
 
 #endif /* _CPU_FEATURES_AARCH64_H  */

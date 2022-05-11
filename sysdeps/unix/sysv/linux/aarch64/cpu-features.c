@@ -36,6 +36,7 @@ static struct cpu_list cpu_list[] = {
       {"thunderx2t99",   0x431F0AF0},
       {"thunderx2t99p1", 0x420F5160},
       {"phecda",	 0x680F0000},
+      {"a64fx",		 0x460F0010},
       {"generic", 	 0x0}
 };
 
@@ -80,4 +81,7 @@ init_cpu_features (struct cpu_features *cpu_features)
 
   if ((dczid & DCZID_DZP_MASK) == 0)
     cpu_features->zva_size = 4 << (dczid & DCZID_BS_MASK);
+
+  /* Check if SVE is supported.  */
+  cpu_features->sve = GLRO (dl_hwcap) & HWCAP_SVE;
 }

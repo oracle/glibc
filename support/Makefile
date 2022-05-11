@@ -86,6 +86,7 @@ libsupport-routines = \
   xconnect \
   xcopy_file_range \
   xdlfcn \
+  xdlmopen \
   xdup2 \
   xfclose \
   xfopen \

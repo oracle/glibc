@@ -151,7 +151,8 @@ endif
 tests-static-normal := tst-leaks1-static tst-array1-static tst-array5-static \
 	       tst-dl-iter-static \
 	       tst-tlsalign-static tst-tlsalign-extern-static \
-	       tst-linkall-static tst-env-setuid tst-env-setuid-tunables
+	       tst-linkall-static tst-env-setuid tst-env-setuid-tunables \
+	       tst-dst-static
 tests-static-internal := tst-tls1-static tst-tls2-static \
 	       tst-ptrguard1-static tst-stackguard1-static \
 	       tst-tls1-static-non-pie tst-libc_dlvsym-static
@@ -1811,3 +1812,5 @@ $(objpfx)tst-glibc-hwcaps-mask.out: \
 # Generic dependency for sysdeps implementation of
 # tst-glibc-hwcaps-cache.
 $(objpfx)tst-glibc-hwcaps-cache.out: $(objpfx)tst-glibc-hwcaps
+
+tst-dst-static-ENV = LD_LIBRARY_PATH='$$ORIGIN'

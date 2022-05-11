@@ -37,7 +37,7 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 
   INIT_ARCH ();
 
-  /* Support sysdeps/aarch64/multiarch/memcpy.c and memmove.c.  */
+  /* Support sysdeps/aarch64/multiarch/memcpy.c, memmove.c and memset.c.  */
   IFUNC_IMPL (i, name, memcpy,
 	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_thunderx)
 	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_thunderx2)
@@ -57,6 +57,9 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      /* Enable this on non-falkor processors too so that other cores
 		 can do a comparative analysis with __memset_generic.  */
 	      IFUNC_IMPL_ADD (array, i, memset, (zva_size == 64), __memset_falkor)
+#if HAVE_AARCH64_SVE_ASM
+	      IFUNC_IMPL_ADD (array, i, memset, sve, __memset_a64fx)
+#endif
 	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_generic))
 
   return i;

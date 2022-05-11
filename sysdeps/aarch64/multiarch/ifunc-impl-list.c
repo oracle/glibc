@@ -60,6 +60,7 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 #if HAVE_AARCH64_SVE_ASM
 	      IFUNC_IMPL_ADD (array, i, memset, sve, __memset_a64fx)
 #endif
+	      IFUNC_IMPL_ADD (array, i, memset, (zva_size == 64), __memset_emag)
 	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_generic))
 
   IFUNC_IMPL (i, name, strlen,

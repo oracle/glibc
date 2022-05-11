@@ -464,6 +464,9 @@ extern int __pthread_attr_getstack (const pthread_attr_t *__restrict __attr,
 				    size_t *__restrict __stacksize);
 extern int __pthread_attr_setstack (pthread_attr_t *__attr, void *__stackaddr,
 				    size_t __stacksize);
+extern int __pthread_attr_setaffinity_np (pthread_attr_t *attr,
+					  size_t cpusetsize,
+					  const cpu_set_t *cpuset);
 extern int __pthread_rwlock_init (pthread_rwlock_t *__restrict __rwlock,
 				  const pthread_rwlockattr_t *__restrict
 				  __attr);
@@ -604,6 +607,11 @@ extern void __wait_lookup_done (void) attribute_hidden;
 #else
 # define PTHREAD_STATIC_FN_REQUIRE(name) __asm (".globl " #name);
 #endif
+
+/* Make a deep copy of the attribute *SOURCE in *TARGET.  *TARGET is
+   not assumed to have been initialized.  Returns 0 on success, or a
+   positive error code otherwise.  */
+int __pthread_attr_copy (pthread_attr_t *target, const pthread_attr_t *source);
 
 /* Returns 0 if POL is a valid scheduling policy.  */
 static inline int

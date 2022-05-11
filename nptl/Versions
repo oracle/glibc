@@ -283,5 +283,6 @@ libpthread {
     __pthread_barrier_init; __pthread_barrier_wait;
     __shm_directory;
     __libpthread_freeres;
+    __pthread_attr_copy;
   }
 }

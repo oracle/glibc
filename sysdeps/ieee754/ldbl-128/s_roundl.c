@@ -22,11 +22,16 @@
 
 #include <math_private.h>
 #include <libm-alias-ldouble.h>
+#include <math-use-builtins.h>
 
 
 _Float128
 __roundl (_Float128 x)
 {
+#if USE_ROUNDL_BUILTIN
+  return __builtin_roundl (x);
+#else
+  /* Use generic implementation.  */
   int32_t j0;
   uint64_t i1, i0;
 
@@ -77,5 +82,6 @@ __roundl (_Float128 x)
 
   SET_LDOUBLE_WORDS64 (x, i0, i1);
   return x;
+#endif /* ! USE_ROUNDL_BUILTIN  */
 }
 libm_alias_ldouble (__round, round)

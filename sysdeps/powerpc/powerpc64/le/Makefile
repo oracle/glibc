@@ -82,3 +82,31 @@ CFLAGS-printf_fp.c = -mfloat128
 CFLAGS-printf_fphex.c = -mfloat128
 CFLAGS-printf_size.c = -mfloat128
 endif
+
+ifeq ($(subdir),elf)
+$(objpfx)tst-glibc-hwcaps: \
+  $(objpfx)libmarkermod2-1.so $(objpfx)libmarkermod3-1.so
+$(objpfx)tst-glibc-hwcaps.out: \
+  $(objpfx)libmarkermod2.so \
+    $(objpfx)glibc-hwcaps/power9/libmarkermod2.so \
+  $(objpfx)libmarkermod3.so \
+    $(objpfx)glibc-hwcaps/power9/libmarkermod3.so \
+    $(objpfx)glibc-hwcaps/power10/libmarkermod3.so \
+
+$(objpfx)glibc-hwcaps/power9/libmarkermod2.so: $(objpfx)libmarkermod2-2.so
+	$(make-target-directory)
+	cp $< $@
+$(objpfx)glibc-hwcaps/power9/libmarkermod3.so: $(objpfx)libmarkermod3-2.so
+	$(make-target-directory)
+	cp $< $@
+$(objpfx)glibc-hwcaps/power10/libmarkermod3.so: $(objpfx)libmarkermod3-3.so
+	$(make-target-directory)
+	cp $< $@
+
+ifeq (no,$(build-hardcoded-path-in-tests))
+# This is an ld.so.cache test, and RPATH/RUNPATH in the executable
+# interferes with its test objectives.
+tests-container += tst-glibc-hwcaps-cache
+endif
+
+endif # $(subdir) == elf

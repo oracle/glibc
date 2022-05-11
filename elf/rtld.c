@@ -297,6 +297,23 @@ audit_list_next (struct audit_list *list)
     }
 }
 
+/* Count audit modules before they are loaded so GLRO(dl_naudit)
+   is not yet usable.  */
+static size_t
+audit_list_count (struct audit_list *list)
+{
+  /* Restore the audit_list iterator state at the end.  */
+  const char *saved_tail = list->current_tail;
+  size_t naudit = 0;
+
+  assert (list->current_index == 0);
+  while (audit_list_next (list) != NULL)
+    naudit++;
+  list->current_tail = saved_tail;
+  list->current_index = 0;
+  return naudit;
+}
+
 /* Set nonzero during loading and initialization of executable and
    libraries, cleared before the executable's entry point runs.  This
    must not be initialized to nonzero, because the unused dynamic
@@ -734,7 +751,7 @@ match_version (const char *string, struct link_map *map)
 static bool tls_init_tp_called;
 
 static void *
-init_tls (void)
+init_tls (size_t naudit)
 {
   /* Number of elements in the static TLS block.  */
   GL(dl_tls_static_nelem) = GL(dl_tls_max_dtv_idx);
@@ -777,7 +794,7 @@ init_tls (void)
   assert (i == GL(dl_tls_max_dtv_idx));
 
   /* Calculate the size of the static TLS surplus.  */
-  _dl_tls_static_surplus_init ();
+  _dl_tls_static_surplus_init (naudit);
 
   /* Compute the TLS offsets for the various blocks.  */
   _dl_determine_tlsoffset ();
@@ -1659,9 +1676,11 @@ ERROR: '%s': cannot process note segment.\n", _dl_argv[0]);
   bool need_security_init = true;
   if (audit_list.length > 0)
     {
+      size_t naudit = audit_list_count (&audit_list);
+
       /* Since we start using the auditing DSOs right away we need to
 	 initialize the data structures now.  */
-      tcbp = init_tls ();
+      tcbp = init_tls (naudit);
 
       /* Initialize security features.  We need to do it this early
 	 since otherwise the constructors of the audit libraries will
@@ -1671,6 +1690,10 @@ ERROR: '%s': cannot process note segment.\n", _dl_argv[0]);
       need_security_init = false;
 
       load_audit_modules (main_map, &audit_list);
+
+      /* The count based on audit strings may overestimate the number
+	 of audit modules that got loaded, but not underestimate.  */
+      assert (GLRO(dl_naudit) <= naudit);
     }
 
   /* Keep track of the currently loaded modules to count how many
@@ -1914,7 +1937,7 @@ ERROR: '%s': cannot process note segment.\n", _dl_argv[0]);
      multiple threads (from a non-TLS-using libpthread).  */
   bool was_tls_init_tp_called = tls_init_tp_called;
   if (tcbp == NULL)
-    tcbp = init_tls ();
+    tcbp = init_tls (0);
 
   if (__glibc_likely (need_security_init))
     /* Initialize security features.  But only if we have not done it

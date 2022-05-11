@@ -58,6 +58,7 @@ libsupport-routines = \
   support_format_hostent \
   support_format_netent \
   support_isolate_in_subprocess \
+  support_process_state \
   support_ptrace \
   support_openpty \
   support_paths \
@@ -90,6 +91,7 @@ libsupport-routines = \
   xfopen \
   xfork \
   xftruncate \
+  xgetline \
   xgetsockname \
   xlisten \
   xlseek \
@@ -217,6 +219,7 @@ tests = \
   tst-support_capture_subprocess \
   tst-support_descriptors \
   tst-support_format_dns_packet \
+  tst-support-process_state \
   tst-support_quote_blob \
   tst-support_quote_string \
   tst-support_record_failure \

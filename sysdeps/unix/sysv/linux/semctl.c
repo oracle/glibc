@@ -51,6 +51,7 @@ __new_semctl (int semid, int semnum, int cmd, ...)
     case IPC_STAT:      /* arg.buf */
     case IPC_SET:
     case SEM_STAT:
+    case SEM_STAT_ANY:
     case IPC_INFO:      /* arg.__buf */
     case SEM_INFO:
       va_start (ap, cmd);
@@ -90,6 +91,7 @@ __old_semctl (int semid, int semnum, int cmd, ...)
     case IPC_STAT:      /* arg.buf */
     case IPC_SET:
     case SEM_STAT:
+    case SEM_STAT_ANY:
     case IPC_INFO:      /* arg.__buf */
     case SEM_INFO:
       va_start (ap, cmd);

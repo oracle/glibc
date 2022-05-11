@@ -1,5 +1,5 @@
-/* Test case for x86 __get_cpu_features interface
-   Copyright (C) 2015-2018 Free Software Foundation, Inc.
+/* Test case for __x86_get_cpu_features interface
+   Copyright (C) 2015-2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <cpu-features.h>
+#include <sys/platform/x86.h>
 #include <support/check.h>
 
 #define CHECK_CPU_FEATURE(name)		\
@@ -44,7 +44,7 @@ static const char * const cpu_kinds[] =
 static int
 do_test (void)
 {
-  const struct cpu_features *cpu_features = __get_cpu_features ();
+  const struct cpu_features *cpu_features = __x86_get_cpu_features (0);
 
   switch (cpu_features->basic.kind)
     {

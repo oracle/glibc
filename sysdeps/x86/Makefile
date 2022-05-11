@@ -5,7 +5,8 @@ endif
 ifeq ($(subdir),elf)
 sysdep-dl-routines += dl-get-cpu-features
 
-tests += tst-get-cpu-features tst-get-cpu-features-static
+tests += tst-get-cpu-features tst-get-cpu-features-static \
+	 tst-cpu-features-cpuinfo tst-cpu-features-supports
 tests-static += tst-get-cpu-features-static
 endif
 

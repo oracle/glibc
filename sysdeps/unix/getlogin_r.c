@@ -34,9 +34,7 @@
 STATIC
 #endif
 int
-getlogin_r (name, name_len)
-     char *name;
-     size_t name_len;
+getlogin_r (char *name, size_t name_len)
 {
   char tty_pathname[2 + 2 * NAME_MAX];
   char *real_tty_path = tty_pathname;

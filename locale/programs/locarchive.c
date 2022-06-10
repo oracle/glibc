@@ -521,7 +521,7 @@ open_archive (struct locarhandle *ah, bool readonly)
   int retry = 0;
   size_t prefix_len = output_prefix ? strlen (output_prefix) : 0;
   char fname[prefix_len + sizeof (ARCHIVE_NAME)];
-  char *archivefname = ah->fname;
+  const char *archivefname = ah->fname;
   bool defaultfname = false;
 
   /* If ah has a non-NULL fname open that otherwise open the default.  */
@@ -530,8 +530,8 @@ open_archive (struct locarhandle *ah, bool readonly)
       defaultfname = true;
       archivefname = fname;
       if (output_prefix)
-        memcpy (archivefname, output_prefix, prefix_len);
-      strcpy (archivefname + prefix_len, ARCHIVE_NAME);
+        memcpy (fname, output_prefix, prefix_len);
+      strcpy (fname + prefix_len, ARCHIVE_NAME);
     }
 
   while (1)

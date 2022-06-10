@@ -68,8 +68,18 @@ elision_init (int argc __attribute__ ((unused)),
 {
   int elision_available = HAS_CPU_FEATURE (RTM);
 #ifdef ENABLE_LOCK_ELISION
-  __pthread_force_elision = __libc_enable_secure ? 0 : elision_available;
-  __rwlock_rtm_enabled = __libc_enable_secure ? 0 : elision_available;
+  if (!__libc_enable_secure && elision_available)
+    {
+      /* RHEL 7 specific change: Check if elision is enabled for the
+	 process.  */
+      __pthread_force_elision = GLRO(dl_elision_enabled);
+      __rwlock_rtm_enabled = GLRO(dl_elision_enabled);
+    }
+  else
+    {
+      __pthread_force_elision = 0;
+      __rwlock_rtm_enabled = 0;
+    }
 #endif
 }
 

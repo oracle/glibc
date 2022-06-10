@@ -421,10 +421,10 @@ __libc_res_nsend(res_state statp, const u_char *buf, int buflen,
 				EXT(statp).nsmap[n] = MAXNS;
 			}
 		}
-		n = statp->nscount;
-		if (statp->nscount > EXT(statp).nscount)
+		n = statp->nscount - EXT(statp).nscount6;
+		if (n > EXT(statp).nscount)
 			for (n = EXT(statp).nscount, ns = 0;
-			     n < statp->nscount; n++) {
+			     n < statp->nscount - EXT(statp).nscount6; n++) {
 				while (ns < MAXNS
 				       && EXT(statp).nsmap[ns] != MAXNS)
 					ns++;
@@ -441,7 +441,7 @@ __libc_res_nsend(res_state statp, const u_char *buf, int buflen,
 				    malloc(sizeof (struct sockaddr_in6));
 			if (EXT(statp).nsaddrs[n] != NULL) {
 				memset (mempcpy(EXT(statp).nsaddrs[n],
-						&statp->nsaddr_list[n],
+						&statp->nsaddr_list[ns],
 						sizeof (struct sockaddr_in)),
 					'\0',
 					sizeof (struct sockaddr_in6)

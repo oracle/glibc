@@ -2473,9 +2473,9 @@ typedef Elf32_Addr Elf32_Conflict;
 #define R_AARCH64_GLOB_DAT     1025	/* Create GOT entry.  */
 #define R_AARCH64_JUMP_SLOT    1026	/* Create PLT entry.  */
 #define R_AARCH64_RELATIVE     1027	/* Adjust by program base.  */
-#define R_AARCH64_TLS_DTPMOD64 1028	/* Module number, 64 bit.  */
-#define R_AARCH64_TLS_DTPREL64 1029	/* Module-relative offset, 64 bit.  */
-#define R_AARCH64_TLS_TPREL64  1030	/* TP-relative offset, 64 bit.  */
+#define R_AARCH64_TLS_DTPMOD   1028	/* Module number, 64 bit.  */
+#define R_AARCH64_TLS_DTPREL   1029	/* Module-relative offset, 64 bit.  */
+#define R_AARCH64_TLS_TPREL    1030	/* TP-relative offset, 64 bit.  */
 #define R_AARCH64_TLSDESC      1031	/* TLS Descriptor.  */
 #define R_AARCH64_IRELATIVE    1032	/* STT_GNU_IFUNC relocation.  */
 

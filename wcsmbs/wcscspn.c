@@ -18,6 +18,9 @@
 
 #include <wchar.h>
 
+#ifdef WCSCSPN
+# define wcscspn WCSCSPN
+#endif
 
 /* Return the length of the maximum initial segment
    of WCS which contains only wide-characters not in REJECT.  */

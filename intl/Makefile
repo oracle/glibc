@@ -45,6 +45,9 @@ plural.c: plural.y
 	$(BISON) $(BISONFLAGS) $@ $^
 endif
 $(objpfx)plural.o: plural.c
+# The generated plural.c file generates unitialized variable warnings
+# with GCC 4.8 on 32-bit architectures.
+CFLAGS-plural.c = -Wno-error=maybe-uninitialized
 
 include ../Rules
 

@@ -41,6 +41,6 @@ ENTRY (__sigsetjmp)
 #else
 	j	__sigsetjmp_aux
 #endif
-	.end __sigsetjmp
+END (__sigsetjmp)
         .section        .note.GNU-stack,"",@progbits
 

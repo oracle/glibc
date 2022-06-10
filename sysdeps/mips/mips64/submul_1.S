@@ -34,11 +34,7 @@
 #ifdef __PIC__
 	.option pic2
 #endif
-	.text
-	.align	4
-	.globl	__mpn_submul_1
-	.ent	__mpn_submul_1
-__mpn_submul_1:
+ENTRY (__mpn_submul_1)
 #ifdef __PIC__
 	SETUP_GP /* ??? unused */
 #endif
@@ -104,4 +100,4 @@ L(LC0):	ld	$10,0($4)
 	j	$31
 	daddu	$2,$9,$2	# add high product limb and carry from addition
 
-	.end	__mpn_submul_1
+END (__mpn_submul_1)

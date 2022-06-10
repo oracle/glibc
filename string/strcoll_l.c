@@ -45,7 +45,7 @@
 typedef struct
 {
   int len;			/* Length of the current sequence.  */
-  int val;			/* Position of the sequence relative to the
+  size_t val;			/* Position of the sequence relative to the
 				   previous non-ignored sequence.  */
   size_t idxnow;		/* Current index in sequences.  */
   size_t idxmax;		/* Maximum index in sequences.  */
@@ -70,7 +70,7 @@ get_next_seq_cached (coll_seq *seq, int nrules, int pass,
 		     const unsigned char *rulesets,
 		     const USTRING_TYPE *weights)
 {
-  int val = seq->val = 0;
+  size_t val = seq->val = 0;
   int len = seq->len;
   size_t backw_stop = seq->backw_stop;
   size_t backw = seq->backw;
@@ -152,7 +152,7 @@ get_next_seq (coll_seq *seq, int nrules, const unsigned char *rulesets,
 	      const USTRING_TYPE *extra, const int32_t *indirect)
 {
 #include WEIGHT_H
-  int val = seq->val = 0;
+  size_t val = seq->val = 0;
   int len = seq->len;
   size_t backw_stop = seq->backw_stop;
   size_t backw = seq->backw;
@@ -168,7 +168,7 @@ get_next_seq (coll_seq *seq, int nrules, const unsigned char *rulesets,
       ++val;
       if (backw_stop != ~0ul)
 	{
-	  /* The is something pushed.  */
+	  /* There is something pushed.  */
 	  if (backw == backw_stop)
 	    {
 	      /* The last pushed character was handled.  Continue
@@ -242,7 +242,7 @@ get_next_seq_nocache (coll_seq *seq, int nrules, const unsigned char *rulesets,
 		      int pass)
 {
 #include WEIGHT_H
-  int val = seq->val = 0;
+  size_t val = seq->val = 0;
   int len = seq->len;
   size_t backw_stop = seq->backw_stop;
   size_t backw = seq->backw;
@@ -374,8 +374,8 @@ do_compare_nocache (coll_seq *seq1, coll_seq *seq2, int position,
 {
   int seq1len = seq1->len;
   int seq2len = seq2->len;
-  int val1 = seq1->val;
-  int val2 = seq2->val;
+  size_t val1 = seq1->val;
+  size_t val2 = seq2->val;
   int idx1 = seq1->idx;
   int idx2 = seq2->idx;
   int result = 0;
@@ -383,7 +383,7 @@ do_compare_nocache (coll_seq *seq1, coll_seq *seq2, int position,
   /* Test for position if necessary.  */
   if (position && val1 != val2)
     {
-      result = val1 - val2;
+      result = val1 > val2 ? 1 : -1;
       goto out;
     }
 
@@ -424,8 +424,8 @@ do_compare (coll_seq *seq1, coll_seq *seq2, int position,
 {
   int seq1len = seq1->len;
   int seq2len = seq2->len;
-  int val1 = seq1->val;
-  int val2 = seq2->val;
+  size_t val1 = seq1->val;
+  size_t val2 = seq2->val;
   int32_t *idx1arr = seq1->idxarr;
   int32_t *idx2arr = seq2->idxarr;
   int idx1now = seq1->idxnow;
@@ -435,7 +435,7 @@ do_compare (coll_seq *seq1, coll_seq *seq2, int position,
   /* Test for position if necessary.  */
   if (position && val1 != val2)
     {
-      result = val1 - val2;
+      result = val1 > val2 ? 1 : -1;
       goto out;
     }
 

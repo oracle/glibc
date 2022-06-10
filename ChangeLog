@@ -1,6 +1,15 @@
+2013-12-17  Marcus Shawcroft  <marcus.shawcroft@linaro.org>
+
+	* sysdeps/unix/sysv/linux/aarch64/nptl/lowlevellock.h
+	(FUTEX_WAIT_REQUEUE_PI): Define.
+	(FUTEX_CMP_REQUEUE_PI): Likewise.
+	(lll_futex_wait_requeue_pi): Likewise.
+	(lll_futex_timed_wait_requeue_pi): Likewise.
+	(lll_futex_cmp_requeue_pi): Likewise.
+
 2013-11-14  Steve Ellcey  <sellcey@mips.com>
 
-        * sysdeps/mips/strcmp.c: New.
+	* sysdeps/mips/strcmp.c: New.
 
 2013-09-23  Steve Ellcey  <sellcey@mips.com>
 

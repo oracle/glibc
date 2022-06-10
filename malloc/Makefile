@@ -90,6 +90,9 @@ $(objpfx)tst-malloc-thread-exit: $(common-objpfx)nptl/libpthread.so \
 			       $(common-objpfx)nptl/libpthread_nonshared.a
 $(objpfx)tst-malloc-fork-deadlock: $(shared-thread-library)
 
+# Export the __malloc_initialize_hook variable to libc.so.
+LDFLAGS-tst-mallocstate = -rdynamic
+
 # These should be removed by `make clean'.
 extra-objs = mcheck-init.o libmcheck.a
 

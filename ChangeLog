@@ -1,3 +1,8 @@
+2017-03-17  Chris Evans  <scarybeasts@gmail.com>
+
+	* malloc/malloc.c (unlink): Add consistency check between size and
+	next->prev->size, to further harden against 1-byte overflows.
+
 2017-01-04  Joseph Myers  <joseph@codesourcery.com>
 
 	* malloc/tst-malloc.c: Include <libc-internal.h>.

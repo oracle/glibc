@@ -1,3 +1,11 @@
+2013-07-09  Marcus Shawcroft  <marcus.shawcroft@linaro.org>
+
+	* sysdeps/unix/sysv/linux/aarch64/dl-static.c: New file to support
+	variable page size for AArch64.
+	* sysdeps/unix/sysv/linux/aarch64/ldsodefs.h: Likewise.
+	* sysdeps/unix/sysv/linux/aarch64/Makefile: Build dl-static in elf.
+	* sysdeps/unix/sysv/linux/aarch64/Versions: Add _dl_var_init
+
 2013-07-06  Andrew Pinski  <apinski@cavium.com>
 
 	* elf/elf.h (R_AARCH64_TLS_DTPMOD64): Rename based on the new ABI.

@@ -1,3 +1,8 @@
+2014-11-10  Renlin Li  <Renlin.Li@arm.com>
+
+	[BZ #17555]
+	* sysdeps/aarch64/start.S (_start): Delete x29 overwritten assignment.
+
 2014-11-05  Richard Earnshaw  <rearnsha@arm.com>
 
 	* sysdeps/aarch64/strchrnul.S: New file.

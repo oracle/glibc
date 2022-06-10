@@ -1,3 +1,8 @@
+2013-07-23  Andrew Pinski  <apinski@cavium.com>
+
+	* sysdeps/unix/sysv/linux/aarch64/bits/typesizes.h: New file.
+	Change clock_t/time_t to be 64bit.
+
 2013-07-12  Marcus Shawcroft  <marcus.shawcroft@linaro.org>
 
 	* sysdeps/aarch64/Makefile (CFLAGS-backtrace.c): Define.

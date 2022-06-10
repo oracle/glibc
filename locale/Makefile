@@ -87,8 +87,7 @@ locale-CPPFLAGS = -DLOCALEDIR='"$(localedir)"' \
 CPPFLAGS-locale-programs = -DLOCALE_PATH='$(localepath)' \
 			   -DCHARMAP_PATH='"$(i18ndir)/charmaps"' \
 			   -DREPERTOIREMAP_PATH='"$(i18ndir)/repertoiremaps"' \
-			   -DLOCSRCDIR='"$(i18ndir)/locales"' \
-			   -DHAVE_CONFIG_H
+			   -DLOCSRCDIR='"$(i18ndir)/locales"'
 
 CFLAGS-charmap.c = -Wno-write-strings -Wno-char-subscripts
 CFLAGS-locfile.c = -Wno-write-strings -Wno-char-subscripts

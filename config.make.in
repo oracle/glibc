@@ -73,6 +73,8 @@ bind-now = @bindnow@
 have-hash-style = @libc_cv_hashstyle@
 use-default-link = @use_default_link@
 output-format = @libc_cv_output_format@
+have-cxx-thread_local = @libc_cv_cxx_thread_local@
+have-loop-to-function = @libc_cv_cc_loop_to_function@
 
 static-libgcc = @libc_cv_gcc_static_libgcc@
 

@@ -24,10 +24,7 @@
    reset to SIG_DFL before `sv_handler' is entered.  If OVEC is non-NULL,
    it is filled in with the old information for SIG.  */
 int
-__sigvec (sig, vec, ovec)
-     int sig;
-     const struct sigvec *vec;
-     struct sigvec *ovec;
+__sigvec (int sig, const struct sigvec *vec, struct sigvec *ovec)
 {
   __set_errno (ENOSYS);
   return -1;

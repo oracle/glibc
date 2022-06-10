@@ -60,6 +60,9 @@ endif
 ifeq (yes,$(have-ssp))
 pt_chown-cflags += -fstack-protector
 endif
+ifeq (yes,$(have-ssp-strong))
+pt_chown-cflags += -fstack-protector-strong
+endif
 ifeq (yes,$(have-libcap))
 libcap = -lcap
 endif

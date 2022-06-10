@@ -62,6 +62,7 @@ have-mfma4 = @libc_cv_cc_fma4@
 have-as-vis3 = @libc_cv_sparc_as_vis3@
 gnu89-inline-CFLAGS = @gnu89_inline@
 have-ssp = @libc_cv_ssp@
+have-ssp-strong = @libc_cv_ssp_strong@
 have-selinux = @have_selinux@
 have-libaudit = @have_libaudit@
 have-libcap = @have_libcap@

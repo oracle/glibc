@@ -77,6 +77,7 @@ libsupport-routines = \
   xcalloc \
   xchdir \
   xchroot \
+  xclone \
   xclose \
   xconnect \
   xcopy_file_range \

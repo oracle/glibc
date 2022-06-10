@@ -51,7 +51,7 @@ ENTRY (BP_SYM (__sigsetjmp))
 	LEAVE /* pop frame pointer to prepare for tail-call.  */
 	movl %ebp, (JB_BP*4)(%eax) /* Save caller's frame pointer.  */
 
-#if defined NOT_IN_libc && defined IS_IN_rtld
+#ifdef IS_IN_rtld
 	/* In ld.so we never save the signal mask.  */
 	xorl %eax, %eax
 	ret

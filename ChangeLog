@@ -1,3 +1,12 @@
+2012-07-11  Andrew Pinski  <apinski@cavium.com>
+
+	Bug #2964
+	* sysdeps/unix/sysv/linux/mips/sys/user.h (PAGE_SHIFT): Delete.
+	(PAGE_SIZE): Delete.
+	(PAGE_MASK): Delete.
+	(NBPG): Delete.
+	(HOST_STACK_END_ADDR): Delete.
+
 2012-07-11  Chandrakala Chavva   <cchavva@caviumnetworks.com>
 
 	Bug #1552

@@ -221,7 +221,11 @@ dl_open_worker (void *a)
 	}
     }
 
-  assert (_dl_debug_initialize (0, args->nsid)->r_state == RT_CONSISTENT);
+  /* One might be tempted to assert that we are RT_CONSISTENT at this point, but that
+     may not be true if this is a recursive call to dlopen.
+     TODO: Fix all of the debug state so we end up at RT_CONSISTENT only when the last
+     recursive dlopen completes.  */
+  _dl_debug_initialize (0, args->nsid);
 
   /* Load the named object.  */
   struct link_map *new;

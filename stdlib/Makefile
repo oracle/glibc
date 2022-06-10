@@ -72,7 +72,7 @@ tests		:= tst-strtol tst-strtod testmb testrand testsort testdiv   \
 		   tst-makecontext3 bug-getcontext bug-fmtmsg1		    \
 		   tst-secure-getenv tst-strtod-overflow tst-strtod-round   \
 		   tst-tininess tst-strtod-underflow tst-strfmon_l	    \
-		   tst-makecontext-align
+		   tst-makecontext-align test-bz22786
 tests-static	:= tst-secure-getenv
 
 include ../Makeconfig

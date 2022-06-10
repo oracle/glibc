@@ -1,3 +1,8 @@
+2019-08-30  Patrick McGehearty <patrick.mcgehearty@oracle.com>
+
+	* sysdeps/mips/memcpy.S clean up to make comparable to
+	SDK version; don't accept prefetch/partial stores version
+
 2013-05-17  Alexandre Oliva <aoliva@redhat.com>
 
 	From http://sourceware.org/ml/libc-alpha/2013-02/msg00052.html

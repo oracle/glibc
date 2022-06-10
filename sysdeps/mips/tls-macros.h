@@ -41,6 +41,7 @@
 	  ADDU " %0,%0,$3"				\
 	  : "+r" (__result) : : "$3");			\
      __result; })
+# if !defined _MIPS_ARCH_OCTEON
 # define TLS_IE(x)					\
   ({ void *__result, *__tmp;				\
      asm (".set push\n\t.set mips32r2\n\t"		\
@@ -62,3 +63,23 @@
 	  ADDU " %0,%0,$3"				\
 	  : "+r" (__result) : : "$3");			\
      __result; })
+
+# else /* OCTEON */
+/* On Octeon the kernel stores the value of the thread pointer in the k0 ($26)
+   register.  */
+# define TLS_IE(x)					\
+  ({ void *__result, *__tmp;				\
+     asm (LOAD_GP LW " $3,%%gottprel(" #x ")($28)\n\t"	\
+	  ADDU " %0,$26,$3"				\
+	  UNLOAD_GP					\
+	  : "+r" (__result), [tmp] "=&r" (__tmp)	\
+	  : : "$3");					\
+     __result; })
+# define TLS_LE(x)					\
+  ({ void *__result;					\
+     asm ("lui $3,%%tprel_hi(" #x ")\n\t"		\
+	  "addiu $3,$3,%%tprel_lo(" #x ")\n\t"		\
+	  ADDU " %0,$26,$3"				\
+	  : "+r" (__result) : : "$3");			\
+     __result; })
+# endif /* OCTEON */

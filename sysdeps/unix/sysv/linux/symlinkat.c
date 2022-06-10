@@ -28,10 +28,7 @@
 
 /* Make a symbolic link to FROM named TO relative to TOFD.  */
 int
-symlinkat (from, tofd, to)
-     const char *from;
-     int tofd;
-     const char *to;
+symlinkat (const char *from, int tofd, const char *to)
 {
   int result;
 

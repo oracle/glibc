@@ -29,10 +29,7 @@
 
 /* Remove the link named NAME.  */
 int
-unlinkat (fd, file, flag)
-     int fd;
-     const char *file;
-     int flag;
+unlinkat (int fd, const char *file, int flag)
 {
   int result;
 

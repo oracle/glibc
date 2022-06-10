@@ -29,11 +29,7 @@
 /* Read the contents of the symbolic link PATH relative to FD into no
    more than LEN bytes of BUF.  */
 ssize_t
-readlinkat (fd, path, buf, len)
-     int fd;
-     const char *path;
-     char *buf;
-     size_t len;
+readlinkat (int fd, const char *path, char *buf, size_t len)
 {
   int result;
 

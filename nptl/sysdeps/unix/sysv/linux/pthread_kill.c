@@ -25,9 +25,7 @@
 
 
 int
-__pthread_kill (threadid, signo)
-     pthread_t threadid;
-     int signo;
+__pthread_kill (pthread_t threadid, int signo)
 {
   struct pthread *pd = (struct pthread *) threadid;
 

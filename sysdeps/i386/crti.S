@@ -49,6 +49,13 @@
 # define PREINIT_FUNCTION_WEAK 1
 #endif
 
+/* If the preinit function takes the argc, argv and envp arguments, push them
+   again on top before making the call.  This is only used by for pt-crti for
+   nptl.  */
+#ifndef PREINIT_FUNCTION_HAS_ARGS
+# define PREINIT_FUNCTION_HAS_ARGS 0
+#endif
+
 #if PREINIT_FUNCTION_WEAK
 	weak_extern (PREINIT_FUNCTION)
 #else
@@ -64,6 +71,18 @@ _init:
 	/* Maintain 16-byte stack alignment for called functions.  */
 	subl $8, %esp
 	LOAD_PIC_REG (bx)
+#if PREINIT_FUNCTION_HAS_ARGS
+/* Get argc, argv and envp from the stack and push them again on top so that
+   the called function can access them.  Maintain 16-byte alignment for value
+   in %esp for called functions.  */
+	movl 16(%esp), %eax
+	movl 20(%esp), %ecx
+	movl 24(%esp), %edx
+	subl $4, %esp
+	pushl %edx
+	pushl %ecx
+	pushl %eax
+#endif
 #if PREINIT_FUNCTION_WEAK
 	movl PREINIT_FUNCTION@GOT(%ebx), %eax
 	testl %eax, %eax
@@ -72,6 +91,9 @@ _init:
 .Lno_weak_fn:
 #else
 	call PREINIT_FUNCTION
+#endif
+#if PREINIT_FUNCTION_HAS_ARGS
+	addl $16, %esp
 #endif
 
 	.section .fini,"ax",@progbits

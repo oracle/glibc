@@ -144,6 +144,8 @@ do_test (size_t align1, size_t align2, size_t len, size_t n, int max_char)
   size_t i;
   CHAR *s1, *s2;
 
+/* For wcsncpy: align1 and align2 here mean alignment not in bytes,
+   but in wchar_ts, in bytes it will equal to align * (sizeof (wchar_t)).  */
   align1 &= 7;
   if ((align1 + len) * sizeof (CHAR) >= page_size)
     return;
@@ -152,8 +154,8 @@ do_test (size_t align1, size_t align2, size_t len, size_t n, int max_char)
   if ((align2 + len) * sizeof (CHAR) >= page_size)
     return;
 
-  s1 = (CHAR *) (buf1 + align1);
-  s2 = (CHAR *) (buf2 + align2);
+  s1 = (CHAR *) (buf1) + align1;
+  s2 = (CHAR *) (buf2) + align2;
 
   for (i = 0; i < len; ++i)
     s1[i] = 32 + 23 * i % (max_char - 32);

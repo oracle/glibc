@@ -27,11 +27,9 @@
 	.text
 ENTRY(__strnlen)
 	.type	__strnlen, @gnu_indirect_function
-	cmpl	$0, __cpu_features+KIND_OFFSET(%rip)
-	jne	1f
-	call	__init_cpu_features
-1:	leaq	__strnlen_sse2(%rip), %rax
-	testl	$bit_Slow_BSF, __cpu_features+FEATURE_OFFSET+index_Slow_BSF(%rip)
+	LOAD_RTLD_GLOBAL_RO_RDX
+	leaq	__strnlen_sse2(%rip), %rax
+	HAS_ARCH_FEATURE (Slow_BSF)
 	jz	2f
 	leaq	__strnlen_sse2_no_bsf(%rip), %rax
 2:	ret

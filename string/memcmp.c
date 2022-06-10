@@ -97,8 +97,7 @@ static int memcmp_bytes (op_t, op_t) __THROW;
 __inline
 # endif
 static int
-memcmp_bytes (a, b)
-     op_t a, b;
+memcmp_bytes (op_t a, op_t b)
 {
   long int srcp1 = (long int) &a;
   long int srcp2 = (long int) &b;

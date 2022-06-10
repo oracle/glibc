@@ -19,6 +19,8 @@
 #ifndef _LOWLEVELLOCK_H
 #define _LOWLEVELLOCK_H	1
 
+#include <stap-probe.h>
+
 #include <time.h>
 #include <sys/param.h>
 #include <bits/pthreadtypes.h>
@@ -122,6 +124,7 @@
     register unsigned long int __r4 asm ("4") = (unsigned long int) (nr);     \
     register unsigned long int __result asm ("2");			      \
 									      \
+    LIBC_PROBE (lll_futex_wake, 3, futex, nr, private);			      \
     __asm __volatile ("svc %b1"						      \
 		      : "=d" (__result)					      \
 		      : "i" (SYS_futex), "0" (__r2), "d" (__r3), "d" (__r4)   \

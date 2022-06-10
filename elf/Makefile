@@ -1020,7 +1020,8 @@ $(objpfx)tst-dlmopen3.out: $(objpfx)tst-dlmopen1mod.so
 $(objpfx)tst-audit1.out: $(objpfx)tst-auditmod1.so
 tst-audit1-ENV = LD_AUDIT=$(objpfx)tst-auditmod1.so
 
-$(objpfx)tst-audit2.out: $(objpfx)tst-auditmod1.so
+$(objpfx)tst-audit2: $(libdl)
+$(objpfx)tst-audit2.out: $(objpfx)tst-auditmod1.so $(objpfx)tst-auditmod9b.so
 tst-audit2-ENV = LD_AUDIT=$(objpfx)tst-auditmod1.so
 
 $(objpfx)tst-audit3: $(objpfx)tst-auditmod3a.so

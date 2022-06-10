@@ -32,6 +32,6 @@ __getdents64 (int fd, char *buf, size_t nbytes)
   return INLINE_SYSCALL (getdents64, 3, fd, buf, nbytes);
 }
 
-#if __WORDSIZE == 64
+#if __WORDSIZE == 64 || (defined __OFF_T_MATCHES_OFF64_T && defined __INO_T_MATCHES_INO64_T)
 strong_alias (__getdents64, __getdents)
 #endif

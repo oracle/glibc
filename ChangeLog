@@ -1,3 +1,24 @@
+2014-03-15  Andrew Pinski  <apinski@cavium.com>
+
+	* sysdeps/unix/sysv/linux/generic/bits/stat.h (__field64):
+	Handle the case where __OFF_T_MATCHES_OFF64_T, __INO_T_MATCHES_INO64_T,
+	and __FSBLKCNT_T_TYPE_MATCHES_FSBLKCNT64_T_TYPE are all true.
+	* sysdeps/unix/sysv/linux/generic/bits/statfs.h (__field64):
+	Handle __STATFS_MATCHES_STATFS64_TYPE case.
+	* sysdeps/unix/sysv/linux/generic/getdents64.c (__getdents):
+	Also alias when __OFF_T_MATCHES_OFF64_T and __INO_T_MATCHES_INO64_T
+	are defined.
+	* sysdeps/unix/sysv/linux/generic/wordsize-32/overflow.h
+	(stat_overflow): Return 0 when __OFF_T_MATCHES_OFF64_T,
+	__INO_T_MATCHES_INO64_T and __FSBLKCNT_T_TYPE_MATCHES_FSBLKCNT64_T_TYPE
+	are all 1.
+	(statfs_overflow): Return 0 when __STATFS_MATCHES_STATFS64_TYPE is true.
+	* sysdeps/unix/sysv/linux/aarch64/bits/typesizes.h: Fix so types are
+	using the syscall long type when needed.
+	(__INO_T_MATCHES_INO64_T): Define.
+	(__FSBLKCNT_T_TYPE_MATCHES_FSBLKCNT64_T_TYPE): Define.
+	(__STATFS_MATCHES_STATFS64_TYPE): Define.
+
 2014-03-11  Andrew Pinski  <apinski@cavium.com>
 
 	* sysdeps/unix/sysv/linux/aarch64/bits/typesizes.h (__OFF_T_TYPE):

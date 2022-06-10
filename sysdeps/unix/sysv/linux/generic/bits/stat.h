@@ -42,7 +42,10 @@
 
 #if defined __USE_FILE_OFFSET64
 # define __field64(type, type64, name) type64 name
-#elif __WORDSIZE == 64
+#elif __WORDSIZE == 64 \
+      || (defined(__OFF_T_MATCHES_OFF64_T) \
+	  && defined(__INO_T_MATCHES_INO64_T) \
+	  && defined (__FSBLKCNT_T_TYPE_MATCHES_FSBLKCNT64_T_TYPE))
 # define __field64(type, type64, name) type name
 #elif __BYTE_ORDER == __LITTLE_ENDIAN
 # define __field64(type, type64, name) \

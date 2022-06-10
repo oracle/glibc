@@ -45,7 +45,7 @@ long double __nearbyintl(long double x)
 	if(j0<112) {
 	    if(j0<0) {
 		feholdexcept (&env);
-	        w = TWO112[sx]+x;
+	        w = TWO112[sx] + math_opt_barrier (x);
 	        t = w-TWO112[sx];
 	        fesetenv (&env);
 		GET_LDOUBLE_MSW64(i0,t);
@@ -57,7 +57,7 @@ long double __nearbyintl(long double x)
 	    else return x;		/* x is integral */
 	}
 	feholdexcept (&env);
-	w = TWO112[sx]+x;
+	w = TWO112[sx] + math_opt_barrier (x);
 	t = w-TWO112[sx];
 	fesetenv (&env);
 	return t;

@@ -37,7 +37,7 @@ __nearbyintf(float x)
 	if(j0<23) {
 	    if(j0<0) {
 		libc_feholdexceptf (&env);
-		w = TWO23[sx]+x;
+		w = TWO23[sx] + math_opt_barrier (x);
 		t =  w-TWO23[sx];
 		libc_fesetenvf (&env);
 		GET_FLOAT_WORD(i0,t);
@@ -49,7 +49,7 @@ __nearbyintf(float x)
 	    else return x;		/* x is integral */
 	}
 	libc_feholdexceptf (&env);
-	w = TWO23[sx]+x;
+	w = TWO23[sx] + math_opt_barrier (x);
 	t = w-TWO23[sx];
 	libc_fesetenvf (&env);
 	return t;

@@ -2289,6 +2289,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
               else
                 {
                   p = (mchunkptr) mm;
+		  set_prev_size (p, 0);
                   set_head (p, size | IS_MMAPPED);
                 }
 

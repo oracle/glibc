@@ -1,3 +1,8 @@
+2016-10-27  Florian Weimer  <fweimer@redhat.com>
+
+	* malloc/malloc.c (sysmalloc): Initialize previous size field of
+	mmapped chunks.
+
 2016-10-26  Florian Weimer  <fweimer@redhat.com>
 
 	[BZ #19473]

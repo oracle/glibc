@@ -84,3 +84,5 @@ L(LC0):	mflo	$10
 	j	$31
 	addu	$2,$9,$2	/* add high product limb and carry from addition */
 	END (__mpn_mul_1)
+        .section        .note.GNU-stack,"",@progbits
+

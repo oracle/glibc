@@ -119,3 +119,5 @@ L(end):	addu	$11,$11,$2
 	j	$31
 	or	$2,$2,$8
 	.end __mpn_add_n
+        .section        .note.GNU-stack,"",@progbits
+

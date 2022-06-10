@@ -626,3 +626,5 @@ END(MEMCPY_NAME)
 #ifdef _LIBC
 libc_hidden_builtin_def (MEMCPY_NAME)
 #endif
+        .section        .note.GNU-stack,"",@progbits
+

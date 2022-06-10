@@ -40,3 +40,5 @@ ENTRY (_setjmp)
 #endif
 	.end	_setjmp
 libc_hidden_def (_setjmp)
+        .section        .note.GNU-stack,"",@progbits
+

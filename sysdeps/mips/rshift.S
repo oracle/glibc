@@ -92,3 +92,5 @@ L(Lend):	srl	$8,$10,$7
 	j	$31
 	sw	$8,0($4)
 	END (__mpn_rshift)
+        .section        .note.GNU-stack,"",@progbits
+

@@ -96,3 +96,5 @@ L(LC0):	lw	$10,0($4)
 	j	$31
 	addu	$2,$9,$2	/* add high product limb and carry from addition */
 	END (__mpn_submul_1)
+        .section        .note.GNU-stack,"",@progbits
+

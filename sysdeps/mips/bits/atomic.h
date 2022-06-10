@@ -51,7 +51,11 @@ typedef uintmax_t uatomic_max_t;
 
 /* See the comments in <sys/asm.h> about the use of the sync instruction.  */
 #ifndef MIPS_SYNC
-# define MIPS_SYNC	sync
+# ifdef __OCTEON__
+#  define MIPS_SYNC	syncw;syncw
+# else
+#  define MIPS_SYNC	sync
+# endif
 #endif
 
 /* Certain revisions of the R10000 Processor need an LL/SC Workaround
@@ -273,21 +277,25 @@ typedef uintmax_t uatomic_max_t;
 # define __arch_compare_and_exchange_bool_8_int(mem, new, old, rel, acq) \
 ({ typeof (*mem) __prev __attribute__ ((unused)); int __cmp;		\
    __arch_compare_and_exchange_xxx_8_int(mem, new, old, rel, acq);	\
+   (void)__prev;
    !__cmp; })
 
 # define __arch_compare_and_exchange_bool_16_int(mem, new, old, rel, acq) \
 ({ typeof (*mem) __prev __attribute__ ((unused)); int __cmp;		\
    __arch_compare_and_exchange_xxx_16_int(mem, new, old, rel, acq);	\
+   (void)__prev;
    !__cmp; })
 
 # define __arch_compare_and_exchange_bool_32_int(mem, new, old, rel, acq) \
 ({ typeof (*mem) __prev __attribute__ ((unused)); int __cmp;		\
    __arch_compare_and_exchange_xxx_32_int(mem, new, old, rel, acq);	\
+   (void)__prev;
    !__cmp; })
 
 # define __arch_compare_and_exchange_bool_64_int(mem, new, old, rel, acq) \
 ({ typeof (*mem) __prev __attribute__ ((unused)); int __cmp;		\
    __arch_compare_and_exchange_xxx_64_int(mem, new, old, rel, acq);	\
+   (void)__prev;
    !__cmp; })
 
 /* For all "val" routines, return the old value whether exchange
@@ -296,21 +304,25 @@ typedef uintmax_t uatomic_max_t;
 # define __arch_compare_and_exchange_val_8_int(mem, new, old, rel, acq)	\
 ({ typeof (*mem) __prev; int __cmp;					\
    __arch_compare_and_exchange_xxx_8_int(mem, new, old, rel, acq);	\
+   (void)__cmp;
    (typeof (*mem))__prev; })
 
 # define __arch_compare_and_exchange_val_16_int(mem, new, old, rel, acq) \
 ({ typeof (*mem) __prev; int __cmp;					\
    __arch_compare_and_exchange_xxx_16_int(mem, new, old, rel, acq);	\
+   (void)__cmp;
    (typeof (*mem))__prev; })
 
 # define __arch_compare_and_exchange_val_32_int(mem, new, old, rel, acq) \
 ({ typeof (*mem) __prev; int __cmp;					\
    __arch_compare_and_exchange_xxx_32_int(mem, new, old, rel, acq);	\
+   (void)__cmp;
    (typeof (*mem))__prev; })
 
 # define __arch_compare_and_exchange_val_64_int(mem, new, old, rel, acq) \
 ({ typeof (*mem) __prev; int __cmp;					\
    __arch_compare_and_exchange_xxx_64_int(mem, new, old, rel, acq);	\
+   (void)__cmp;
    (typeof (*mem))__prev; })
 
 /* Compare and exchange with "acquire" semantics, ie barrier after.  */

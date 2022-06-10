@@ -479,7 +479,11 @@ symbol		=	value
    using MIPS I implement parts of MIPS II.  */
 
 #ifndef MIPS_SYNC
-# define MIPS_SYNC	sync
+# ifdef __OCTEON__
+#  define MIPS_SYNC	syncw;syncw
+# else
+#  define MIPS_SYNC	sync
+# endif
 #endif
 
 #endif /* sys/asm.h */

@@ -29,10 +29,7 @@
 
 
 int
-__sigaction (sig, act, oact)
-     int sig;
-     const struct sigaction *act;
-     struct sigaction *oact;
+__sigaction (int sig, const struct sigaction *act, struct sigaction *oact)
 {
   if (__builtin_expect (sig == SIGCANCEL || sig == SIGSETXID, 0))
     {

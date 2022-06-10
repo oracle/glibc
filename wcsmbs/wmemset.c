@@ -23,10 +23,7 @@
 #endif
 
 wchar_t *
-wmemset (s, c, n)
-     wchar_t *s;
-     wchar_t c;
-     size_t n;
+wmemset (wchar_t *s, wchar_t c, size_t n)
 {
   wchar_t *wp = s;
 

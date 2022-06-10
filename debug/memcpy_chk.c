@@ -22,11 +22,7 @@
 #include <memcopy.h>
 
 void *
-__memcpy_chk (dstpp, srcpp, len, dstlen)
-     void *dstpp;
-     const void *srcpp;
-     size_t len;
-     size_t dstlen;
+__memcpy_chk (void *dstpp, const void *srcpp, size_t len, size_t dstlen)
 {
   if (__builtin_expect (dstlen < len, 0))
     __chk_fail ();

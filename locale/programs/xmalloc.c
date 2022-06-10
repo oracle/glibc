@@ -53,8 +53,7 @@ void free ();
 int xmalloc_exit_failure = EXIT_FAILURE;
 
 static VOID *
-fixup_null_alloc (n)
-     size_t n;
+fixup_null_alloc (size_t n)
 {
   VOID *p;
 
@@ -69,8 +68,7 @@ fixup_null_alloc (n)
 /* Allocate N bytes of memory dynamically, with error checking.  */
 
 VOID *
-xmalloc (n)
-     size_t n;
+xmalloc (size_t n)
 {
   VOID *p;
 
@@ -99,9 +97,7 @@ xcalloc (n, s)
    If P is NULL, run xmalloc.  */
 
 VOID *
-xrealloc (p, n)
-     VOID *p;
-     size_t n;
+xrealloc (VOID *p, size_t n)
 {
   if (p == 0)
     return xmalloc (n);

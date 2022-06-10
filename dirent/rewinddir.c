@@ -22,8 +22,7 @@
 
 /* Rewind DIRP to the beginning of the directory.  */
 void
-rewinddir (dirp)
-     DIR *dirp;
+rewinddir (DIR *dirp)
 {
   __set_errno (ENOSYS);
   /* No way to indicate failure.	*/

@@ -1,5 +1,5 @@
-/* Copyright (C) 2011-2012 Free Software Foundation, Inc.
-
+/* AArch64 definitions for profiling support.
+   Copyright (C) 1996-2014 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -13,13 +13,22 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library.  If not, see
+   License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#define _MCOUNT_DECL(from, self) \
- void __mcount_internal (u_long from, u_long self)
+/* Accept 'frompc' address as argument from the function that calls
+   __mcount for profiling.  Use  __builtin_return_address (0)
+   for the 'selfpc' address.  */
 
-/* Call __mcount_internal with our the return PC for our caller, and
-   the return PC our caller will return to.  Empty since we use an
-   assembly stub instead. */
-#define MCOUNT
+#include <sysdep.h>
+
+static void mcount_internal (u_long frompc, u_long selfpc);
+
+#define _MCOUNT_DECL(frompc, selfpc) \
+static inline void mcount_internal (u_long frompc, u_long selfpc)
+
+#define MCOUNT                                                    \
+void __mcount (void *frompc)                                      \
+{                                                                 \
+  mcount_internal ((u_long) frompc, (u_long) RETURN_ADDRESS (0)); \
+}

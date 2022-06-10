@@ -31,9 +31,9 @@ ENTRY (BP_SYM (__brk))
 	CALL_MCOUNT 1
 	DISCARD_BOUNDS (r3)	/* the bounds are meaningless, so toss 'em.  */
 
-	std	r3,48(r1)
+	std	r3,-8(r1)
 	DO_CALL(SYS_ify(brk))
-	ld	r6,48(r1)
+	ld	r6,-8(r1)
 	ld	r5,.LC__curbrk@toc(r2)
 	std     r3,0(r5)
 	cmpld   r6,r3

@@ -1,3 +1,8 @@
+/* Change for backporting: The build system does not define _ISOMAC
+   for us because the tests-internal changes have not been
+   backported.  */
+#define _ISOMAC 1
+
 #include <iostream>
 
 using namespace std;

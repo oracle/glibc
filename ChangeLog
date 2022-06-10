@@ -1,3 +1,8 @@
+2016-02-11  Szabolcs Nagy  <szabolcs.nagy@arm.com>
+
+	[BZ #19529]
+	* stdlib/Makefile (CFLAGS-tst-makecontext.c): Add -funwind-tables.
+
 2013-06-28  Marcus Shawcroft  <marcus.shawcroft@linaro.org>
 
 	* sysdeps/aarch64/dl-machine.h (elf_machine_dynamic): De-reference

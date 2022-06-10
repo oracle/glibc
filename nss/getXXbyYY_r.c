@@ -179,6 +179,9 @@ INTERNAL (REENTRANT_NAME) (ADD_PARAMS, LOOKUP_TYPE *resbuf, char *buffer,
     case -1:
       return errno;
     case 1:
+#ifdef NEED_H_ERRNO
+      any_service = true;
+#endif
       goto done;
     }
 #endif
@@ -288,7 +291,7 @@ done:
     /* This happens when we weren't able to use a service for reasons other
        than the module not being found.  In such a case, we'd want to tell the
        caller that errno has the real reason for failure.  */
-      *h_errnop = NETDB_INTERNAL;
+    *h_errnop = NETDB_INTERNAL;
   else if (status != NSS_STATUS_SUCCESS && !any_service)
     /* We were not able to use any service.  */
     *h_errnop = NO_RECOVERY;

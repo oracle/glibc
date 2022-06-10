@@ -1,4 +1,5 @@
-/* Copyright (C) 1991, 1995, 1996, 1997 Free Software Foundation, Inc.
+/* Check file access permission.  NaCl version.
+   Copyright (C) 2015-2016 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,30 +16,20 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
-#include <stddef.h>
 #include <unistd.h>
+#include <nacl-interfaces.h>
 
-/* Test for access to FILE without setting errno.   */
+/* Test for access to FILE without setting errno.  */
 int
 __access_noerrno (const char *file, int type)
 {
-  return -1;
+  return NACL_CALL_NOERRNO (__nacl_irt_dev_filename.access (file, type), 0);
 }
 
 /* Test for access to FILE.  */
 int
 __access (const char *file, int type)
 {
-  if (file == NULL || (type & ~(R_OK|W_OK|X_OK|F_OK)) != 0)
-    {
-      __set_errno (EINVAL);
-      return -1;
-    }
-
-  __set_errno (ENOSYS);
-  return -1;
+  return NACL_CALL (__nacl_irt_dev_filename.access (file, type), 0);
 }
-stub_warning (access)
-
 weak_alias (__access, access)

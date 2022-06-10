@@ -656,6 +656,7 @@ multi_arch
 base_machine
 add_on_subdirs
 add_ons
+have_tunables
 build_pt_chown
 build_nscd
 link_obsolete_rpc
@@ -767,6 +768,8 @@ enable_systemtap
 enable_build_nscd
 enable_nscd
 enable_pt_chown
+enable_tunables
+enable_mathvec
 with_cpu
 '
       ac_precious_vars='build_alias
@@ -1431,6 +1434,9 @@ Optional Features:
   --disable-build-nscd    disable building and installing the nscd daemon
   --disable-nscd          library functions will not contact the nscd daemon
   --enable-pt_chown       Enable building and installing pt_chown
+  --enable-tunables       Enable tunables support
+  --enable-mathvec        Enable building and installing mathvec [default
+                          depends on architecture]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3980,11 +3986,23 @@ if test $build_pt_chown = yes; then
 
 fi
 
-# The way shlib-versions is used to generate soversions.mk uses a
-# fairly simplistic model for name recognition that can't distinguish
-# i486-pc-linux-gnu fully from i486-pc-gnu.  So we mutate a $host_os
-# of `gnu*' here to be `gnu-gnu*' just so that shlib-versions can
-# tell.  This doesn't get used much beyond that, so it's fairly safe.
+# Check whether --enable-tunables was given.
+if test "${enable_tunables+set}" = set; then :
+  enableval=$enable_tunables; have_tunables=$enableval
+else
+  have_tunables=no
+fi
+
+
+if test "$have_tunables" = yes; then
+  $as_echo "#define HAVE_TUNABLES 1" >>confdefs.h
+
+fi
+
+# The abi-tags file uses a fairly simplistic model for name recognition that
+# can't distinguish i486-pc-linux-gnu fully from i486-pc-gnu.  So we mutate a
+# $host_os of `gnu*' here to be `gnu-gnu*' just so that it can tell.
+# This doesn't get used much beyond that, so it's fairly safe.
 case "$host_os" in
 linux*)
   ;;

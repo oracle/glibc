@@ -20,6 +20,9 @@
 #include <unistd.h>
 #include <ldsodefs.h>
 #include <exit-thread.h>
+#include <libc-internal.h>
+
+#include <elf/dl-tunables.h>
 
 extern void __libc_init_first (int argc, char **argv, char **envp);
 #ifndef SHARED
@@ -167,6 +170,11 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
       DL_SYSDEP_OSCHECK (__libc_fatal);
     }
 # endif
+
+  /* Initialize very early so that tunables can use it.  */
+  __libc_init_secure ();
+
+  __tunables_init (__environ);
 
   /* Perform IREL{,A} relocations.  */
   apply_irel ();

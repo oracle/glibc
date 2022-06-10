@@ -17,23 +17,17 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <sysdep.h>
-#include <bp-sym.h>
-#include <bp-asm.h>
 
 /* See strlen.s for comments on how the end-of-string testing works.  */
 
 /* int [r3] strcmp (const char *s1 [r3], const char *s2 [r4])  */
 
-EALIGN (BP_SYM (strcmp), 4, 0)
+EALIGN (strcmp, 4, 0)
 
 #define rTMP2	r0
 #define rRTN	r3
 #define rSTR1	r3	/* first string arg */
 #define rSTR2	r4	/* second string arg */
-#if __BOUNDED_POINTERS__
-# define rHIGH1	r11
-# define rHIGH2 r12
-#endif
 #define rWORD1	r5	/* current word in s1 */
 #define rWORD2	r6	/* current word in s2 */
 #define rFEFE	r7	/* constant 0xfefefeff (-0x01010101) */
@@ -42,8 +36,6 @@ EALIGN (BP_SYM (strcmp), 4, 0)
 #define rBITDIF	r10	/* bits that differ in s1 & s2 words */
 #define rTMP	r11
 
-	CHECK_BOUNDS_LOW (rSTR1, rTMP, rHIGH1)
-	CHECK_BOUNDS_LOW (rSTR2, rTMP, rHIGH2)
 
 	or	rTMP, rSTR2, rSTR1
 	clrlwi.	rTMP, rTMP, 30
@@ -118,7 +110,6 @@ L(endstring):
 	bgelr+	cr1
 L(equal):
 	li	rRTN, 0
-	/* GKM FIXME: check high bounds.  */
 	blr
 
 L(different):
@@ -128,7 +119,6 @@ L(different):
 	bgelr+
 L(highbit):
 	ori	rRTN, rWORD2, 1
-	/* GKM FIXME: check high bounds.  */
 	blr
 #endif
 
@@ -152,11 +142,9 @@ L(u1):	cmpwi	cr1, rWORD1, 0
 	cmpw	rWORD1, rWORD2
 	bne+	cr1, L(u0)
 L(u3):	sub	rRTN, rWORD1, rWORD2
-	/* GKM FIXME: check high bounds.  */
 	blr
 L(u4):	lbz	rWORD1, -1(rSTR1)
 	sub	rRTN, rWORD1, rWORD2
-	/* GKM FIXME: check high bounds.  */
 	blr
-END (BP_SYM (strcmp))
+END (strcmp)
 libc_hidden_builtin_def (strcmp)

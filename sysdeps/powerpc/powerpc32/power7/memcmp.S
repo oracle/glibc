@@ -17,15 +17,13 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <sysdep.h>
-#include <bp-sym.h>
-#include <bp-asm.h>
 
 /* int [r3] memcmp (const char *s1 [r3],
 		    const char *s2 [r4],
 		    size_t size [r5])  */
 
 	.machine power7
-EALIGN (BP_SYM(memcmp), 4, 0)
+EALIGN (memcmp, 4, 0)
 	CALL_MCOUNT
 
 #define rRTN	r3
@@ -1371,7 +1369,7 @@ L(dureturn25):
 	addi	r1, r1, 64
 	cfi_adjust_cfa_offset(-64)
 	blr
-END (BP_SYM (memcmp))
+END (memcmp)
 
 libc_hidden_builtin_def (memcmp)
 weak_alias (memcmp,bcmp)

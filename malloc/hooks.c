@@ -88,7 +88,18 @@ __malloc_check_init (void)
    overruns.  The goal here is to avoid obscure crashes due to invalid
    usage, unlike in the MALLOC_DEBUG code. */
 
-#define MAGICBYTE(p) ((((size_t) p >> 3) ^ ((size_t) p >> 11)) & 0xFF)
+static unsigned char
+magicbyte (const void *p)
+{
+  unsigned char magic;
+
+  magic = (((uintptr_t) p >> 3) ^ ((uintptr_t) p >> 11)) & 0xFF;
+  /* Do not return 1.  See the comment in mem2mem_check().  */
+  if (magic == 1)
+    ++magic;
+  return magic;
+}
+
 
 /* Visualize the chunk as being partitioned into blocks of 255 bytes from the
    highest address of the chunk, downwards.  The end of each block tells
@@ -101,7 +112,7 @@ malloc_check_get_size (mchunkptr p)
 {
   size_t size;
   unsigned char c;
-  unsigned char magic = MAGICBYTE (p);
+  unsigned char magic = magicbyte (p);
 
   assert (using_malloc_checking == 1);
 
@@ -126,28 +137,32 @@ malloc_check_get_size (mchunkptr p)
 
 static void *
 internal_function
-mem2mem_check (void *ptr, size_t sz)
+mem2mem_check (void *ptr, size_t req_sz)
 {
   mchunkptr p;
   unsigned char *m_ptr = ptr;
-  size_t i;
+  size_t max_sz, block_sz, i;
+  unsigned char magic;
 
   if (!ptr)
     return ptr;
 
   p = mem2chunk (ptr);
-  for (i = chunksize (p) - (chunk_is_mmapped (p) ? 2 * SIZE_SZ + 1 : SIZE_SZ + 1);
-       i > sz;
-       i -= 0xFF)
+  magic = magicbyte (p);
+  max_sz = chunksize (p) - 2 * SIZE_SZ;
+  if (!chunk_is_mmapped (p))
+    max_sz += SIZE_SZ;
+  for (i = max_sz - 1; i > req_sz; i -= block_sz)
     {
-      if (i - sz < 0x100)
-        {
-          m_ptr[i] = (unsigned char) (i - sz);
-          break;
-        }
-      m_ptr[i] = 0xFF;
+      block_sz = MIN (i - req_sz, 0xff);
+      /* Don't allow the magic byte to appear in the chain of length bytes.
+         For the following to work, magicbyte cannot return 0x01.  */
+      if (block_sz == magic)
+        --block_sz;
+
+      m_ptr[i] = block_sz;
     }
-  m_ptr[sz] = MAGICBYTE (p);
+  m_ptr[req_sz] = magic;
   return (void *) m_ptr;
 }
 
@@ -166,24 +181,24 @@ mem2chunk_check (void *mem, unsigned char **magic_p)
     return NULL;
 
   p = mem2chunk (mem);
+  sz = chunksize (p);
+  magic = magicbyte (p);
   if (!chunk_is_mmapped (p))
     {
       /* Must be a chunk in conventional heap memory. */
       int contig = contiguous (&main_arena);
-      sz = chunksize (p);
       if ((contig &&
            ((char *) p < mp_.sbrk_base ||
             ((char *) p + sz) >= (mp_.sbrk_base + main_arena.system_mem))) ||
           sz < MINSIZE || sz & MALLOC_ALIGN_MASK || !inuse (p) ||
-          (!prev_inuse (p) && (p->prev_size & MALLOC_ALIGN_MASK ||
+          (!prev_inuse (p) && ((prev_size (p) & MALLOC_ALIGN_MASK) != 0 ||
                                (contig && (char *) prev_chunk (p) < mp_.sbrk_base) ||
                                next_chunk (prev_chunk (p)) != p)))
         return NULL;
 
-      magic = MAGICBYTE (p);
       for (sz += SIZE_SZ - 1; (c = ((unsigned char *) p)[sz]) != magic; sz -= c)
         {
-          if (c <= 0 || sz < (c + 2 * SIZE_SZ))
+          if (c == 0 || sz < (c + 2 * SIZE_SZ))
             return NULL;
         }
     }
@@ -199,15 +214,14 @@ mem2chunk_check (void *mem, unsigned char **magic_p)
            offset != 0x20 && offset != 0x40 && offset != 0x80 && offset != 0x100 &&
            offset != 0x200 && offset != 0x400 && offset != 0x800 && offset != 0x1000 &&
            offset < 0x2000) ||
-          !chunk_is_mmapped (p) || (p->size & PREV_INUSE) ||
-          ((((unsigned long) p - p->prev_size) & page_mask) != 0) ||
-          ((sz = chunksize (p)), ((p->prev_size + sz) & page_mask) != 0))
+          !chunk_is_mmapped (p) || prev_inuse (p) ||
+          ((((unsigned long) p - prev_size (p)) & page_mask) != 0) ||
+          ((prev_size (p) + sz) & page_mask) != 0)
         return NULL;
 
-      magic = MAGICBYTE (p);
       for (sz -= 1; (c = ((unsigned char *) p)[sz]) != magic; sz -= c)
         {
-          if (c <= 0 || sz < (c + 2 * SIZE_SZ))
+          if (c == 0 || sz < (c + 2 * SIZE_SZ))
             return NULL;
         }
     }
@@ -237,9 +251,7 @@ top_check (void)
         (char *) t + chunksize (t) == mp_.sbrk_base + main_arena.system_mem)))
     return 0;
 
-  mutex_unlock(&main_arena.mutex);
   malloc_printerr (check_action, "malloc: top chunk is corrupt", t);
-  mutex_lock(&main_arena.mutex);
 
   /* Try to set up a new top chunk. */
   brk = MORECORE (0);

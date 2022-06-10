@@ -800,6 +800,10 @@ getanswer_r (const querybuf *answer, int anslen, const char *qname, int qtype,
 
       if (qtype == T_PTR && type == T_CNAME)
 	{
+	  /* A CNAME could also have a TTL entry.  */
+	  if (ttlp != NULL && ttl < *ttlp)
+	      *ttlp = ttl;
+
 	  n = dn_expand (answer->buf, end_of_message, cp, tbuf, sizeof tbuf);
 	  if (__builtin_expect (n < 0 || res_dnok (tbuf) == 0, 0))
 	    {
@@ -863,6 +867,8 @@ getanswer_r (const querybuf *answer, int anslen, const char *qname, int qtype,
 	      ++had_error;
 	      break;
 	    }
+	  if (ttlp != NULL && ttl < *ttlp)
+	      *ttlp = ttl;
 #if MULTI_PTRS_ARE_ALIASES
 	  cp += n;
 	  if (haveanswer == 0)

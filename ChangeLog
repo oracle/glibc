@@ -1,3 +1,8 @@
+2017-07-01  Ramana Radhakrishnan  <ramana.gcc@googlemail.com>
+
+	* sysdeps/unix/sysv/aarch64/cpu-features.c (init_cpu_features):
+	Fix typo.
+
 2017-06-30  Siddhesh Poyarekar  <siddhesh@sourceware.org>
 
 	* elf/dl-tunables.h (tunable_is_name): Move from...
@@ -10,6 +15,8 @@
 	(cpu_list): New list of CPU names and their MIDR.
 	(get_midr_from_mcpu): New function.
 	(init_cpu_features): Override MIDR if necessary.
+
+2017-06-30  Siddhesh Poyarekar  <siddhesh@sourceware.org>
 
 	* sysdeps/aarch64/multiarch/ifunc-impl-list.c
 	(__libc_ifunc_impl_list): Unconditionally select thunderx

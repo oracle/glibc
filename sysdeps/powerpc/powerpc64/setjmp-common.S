@@ -23,8 +23,6 @@
 #else
 #include <jmpbuf-offsets.h>
 #endif
-#include <bp-sym.h>
-#include <bp-asm.h>
 
 #ifndef __NO_VMX__
 	.section	".toc","aw"
@@ -73,7 +71,6 @@ libc_hidden_def (_setjmp)
 ENTRY (__sigsetjmp)
 	CALL_MCOUNT 2
 JUMPTARGET(GLUE(__sigsetjmp,_ent)):
-	CHECK_BOUNDS_BOTH_WIDE_LIT (r3, r8, r9, JB_SIZE)
 #ifdef PTR_MANGLE
 	mr   r5, r1
 	PTR_MANGLE (r5, r6)

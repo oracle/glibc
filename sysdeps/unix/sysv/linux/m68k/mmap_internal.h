@@ -1,4 +1,5 @@
-/* Copyright (C) 1997-2012 Free Software Foundation, Inc.
+/* Common mmap definition for Linux implementation.  Linux/m68k version.
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,23 +16,14 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
-#include <grp.h>
-#include <unistd.h>
-#include <sys/types.h>
+#ifndef MMAP_M68K_INTERNAL_LINUX_H
+#define MMAP_M68K_INTERNAL_LINUX_H
 
-#include <sysdep.h>
-#include <sys/syscall.h>
+/* ColdFire and Sun 3 kernels have PAGE_SHIFT set to 13 and expect
+   mmap2 offset to be provided in 8K pages.  Determine the shift
+   dynamically with getpagesize.  */
+#define MMAP2_PAGE_SHIFT -1
 
-#include <setxid.h>
-#include <linux/posix_types.h>
+#include_next <mmap_internal.h>
 
-/* Set the group set for the current user to GROUPS (N of them).  For
-   Linux we must convert the array of groups into the format that the
-   kernel expects.  */
-int
-setgroups (size_t n, const gid_t *groups)
-{
-  return INLINE_SETXID_SYSCALL (setgroups32, 2, n, groups);
-}
-libc_hidden_def (setgroups)
+#endif

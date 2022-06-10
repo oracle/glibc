@@ -1,4 +1,5 @@
-/* Copyright (C) 2007, 2009, 2011 Free Software Foundation, Inc.
+/* mmap - map files or devices into memory.  Linux/s390 version.
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -12,32 +13,20 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library.  If not, see
+   License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
-#include <fcntl.h>
-#include <sysdep-cancel.h>
+#ifndef MMAP_S390_INTERNAL_H
+# define MMAP_S390_INTERNAL_H
 
+#define MMAP_CALL(__nr, __addr, __len, __prot, __flags, __fd, __offset)	\
+  ({									\
+    long int __args[6] = { (long int) (__addr), (long int) (__len),	\
+			   (long int) (__prot), (long int) (__flags),	\
+			   (long int) (__fd), (long int) (__offset) };	\
+    INLINE_SYSCALL_CALL (__nr, __args);					\
+  })
 
-/* Reserve storage for the data of the file associated with FD.  */
-int
-fallocate64 (int fd, int mode, __off64_t offset, __off64_t len)
-{
-#ifdef __NR_fallocate
-  if (SINGLE_THREAD_P)
-    return INLINE_SYSCALL (fallocate, 4, fd, mode, offset, len);
+#include_next <mmap_internal.h>
 
-  int result;
-  int oldtype = LIBC_CANCEL_ASYNC ();
-
-  result = INLINE_SYSCALL (fallocate, 4, fd, mode, offset, len);
-
-  LIBC_CANCEL_RESET (oldtype);
-
-  return result;
-#else
-  __set_errno (ENOSYS);
-  return -1;
 #endif
-}

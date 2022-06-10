@@ -238,7 +238,9 @@ Paul Pluzhnikov for various fixes.
 Marek Polacek for various fixes.
 
 @item
-Siddhesh Poyarekar for various fixes.
+Siddhesh Poyarekar for various fixes, an implementation of a framework for
+performance benchmarking of functions and implementing the tunables
+infrastructure.
 
 @item
 Tom Quinn for contributing the startup code to support SunOS shared

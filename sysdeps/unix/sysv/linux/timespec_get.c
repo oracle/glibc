@@ -34,9 +34,7 @@
 
 /* Set TS to calendar time based in time base BASE.  */
 int
-timespec_get (ts, base)
-     struct timespec *ts;
-     int base;
+timespec_get (struct timespec *ts, int base)
 {
   switch (base)
     {

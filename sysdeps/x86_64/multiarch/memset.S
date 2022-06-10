@@ -21,7 +21,7 @@
 #include <init-arch.h>
 
 /* Define multiple versions only for the definition in lib.  */
-#ifndef NOT_IN_libc
+#if IS_IN (libc)
 ENTRY(memset)
 	.type	memset, @gnu_indirect_function
 	cmpl	$0, __cpu_features+KIND_OFFSET(%rip)

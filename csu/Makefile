@@ -146,13 +146,13 @@ $(objpfx)version-info.h: $(common-objpfx)config.make $(all-Banner-files)
 	   linux*) version=`(printf '%s\n%s\n' \
 				    '#include <linux/version.h>' \
 				    UTS_RELEASE \
-			     | $(CC) $(CPPFLAGS) -O -E -P - -DNOT_IN_libc=1 | \
+			     | $(CC) $(CPPFLAGS) -O -E -P - | \
 			     sed -e 's/"\([^"]*\)".*/\1/p' -e d) 2>/dev/null`;\
 		   if [ -z "$$version" ]; then \
 		     version=`(printf '%s\n%s\n' \
 				      '#include <linux/version.h>' \
 				       LINUX_VERSION_CODE \
-			       | $(CC) $(CPPFLAGS) -O -E -P - -DNOT_IN_libc=1 \
+			       | $(CC) $(CPPFLAGS) -O -E -P - \
 			       | sed -n -e '/^[123456789].*/p' \
 			       | awk '{v=$$1; \
 				       printf("%d.%d.%d\n", \

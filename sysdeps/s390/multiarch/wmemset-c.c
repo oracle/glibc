@@ -16,7 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+#if defined HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc)
 # define WMEMSET  __wmemset_c
 
 # include <wchar.h>
@@ -28,4 +28,4 @@ extern __typeof (wmemset) __wmemset_c;
 # endif /* SHARED */
 
 # include <wcsmbs/wmemset.c>
-#endif /* HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc */
+#endif /* HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc) */

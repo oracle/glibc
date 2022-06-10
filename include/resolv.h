@@ -16,7 +16,7 @@
 # ifdef _LIBC_REENTRANT
 #  include <tls.h>
 #  undef _res
-#  ifndef NOT_IN_libc
+#  if IS_IN (libc)
 #   define __resp __libc_resp
 #  endif
 #  define _res (*__resp)

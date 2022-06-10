@@ -1,3 +1,7 @@
+2014-03-27  Andrew Pinski  <apinski@cavium.com>
+
+	* elf/sotruss.ksh: Convert to standard Bourne function syntax.
+
 2014-03-17  Andrew Pinski  <apinski@cavium.com>
 
 	* sysdeps/unix/sysv/linux/generic/bits/shm.h (shmid_ds): Change size_t

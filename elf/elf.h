@@ -1380,6 +1380,10 @@ typedef struct
 #define EF_MIPS_64BIT_WHIRL 16
 #define EF_MIPS_ABI2	    32
 #define EF_MIPS_ABI_ON32    64
+#define EF_MIPS_FP64	    512  /* Uses FP64 (12 callee-saved).  */
+#define EF_MIPS_NAN2008	    1024  /* Uses IEEE 754-2008 NaN encoding.  */
+#define EF_MIPS_HARD_FLOAT    0x00000800
+#define EF_MIPS_SINGLE_FLOAT  0x00001000
 #define EF_MIPS_ARCH	    0xf0000000	/* MIPS architecture level */
 
 /* Legal values for MIPS architecture level.  */

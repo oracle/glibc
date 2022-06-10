@@ -1,3 +1,20 @@
+2012-07-11  Chandrakala Chavva   <cchavva@caviumnetworks.com>
+
+	Bug #1552
+	* sysdeps/unix/sysv/linux/mips/mips64/n32/syscalls.list:
+	Removed posix_fadvise.
+	* sysdeps/unix/sysv/linux/mips/mips64/n32/posix_fadvise64.c:
+	Moved to ....
+	* sysdeps/unix/sysv/linux/mips/mips64/posix_fadvise64.c:
+	to ... here. Both n32 and n64 take 4 parameters to fadvise64.
+	* sysdeps/unix/sysv/linux/mips/mips64/posix_fadvise.c:
+	New file, as fadvise() expects 4 parameters.
+	* sysdeps/unix/sysv/linux/mips/mips64/n64/sendfile64.c:
+	New file. The NR_sendfile64 is not defined for n64, call
+	sendfile() for sendfile64().
+	* sysdeps/unix/sysv/linux/mips/mips64/n64/syscalls.list:
+	New file.
+
 2012-07-11  Adam Nemet  <anemet@caviumnetworks.com>
 
 	Bug #1591

@@ -175,7 +175,7 @@ preserve_capabilities (void)
   if (prctl (PR_SET_KEEPCAPS, 1) == -1)
     {
       dbg_log (_("Failed to set keep-capabilities"));
-      error (EXIT_FAILURE, errno, _("prctl(KEEPCAPS) failed"));
+      do_exit (EXIT_FAILURE, errno, _("prctl(KEEPCAPS) failed"));
       /* NOTREACHED */
     }
 
@@ -190,7 +190,7 @@ preserve_capabilities (void)
 	cap_free (tmp_caps);
 
       dbg_log (_("Failed to initialize drop of capabilities"));
-      error (EXIT_FAILURE, 0, _("cap_init failed"));
+      do_exit (EXIT_FAILURE, 0, _("cap_init failed"));
     }
 
   /* There is no reason why these should not work.  */
@@ -212,7 +212,7 @@ preserve_capabilities (void)
     {
       cap_free (new_caps);
       dbg_log (_("Failed to drop capabilities"));
-      error (EXIT_FAILURE, 0, _("cap_set_proc failed"));
+      do_exit (EXIT_FAILURE, 0, _("cap_set_proc failed"));
     }
 
   return new_caps;
@@ -229,7 +229,7 @@ install_real_capabilities (cap_t new_caps)
     {
       cap_free (new_caps);
       dbg_log (_("Failed to drop capabilities"));
-      error (EXIT_FAILURE, 0, _("cap_set_proc failed"));
+      do_exit (EXIT_FAILURE, 0, _("cap_set_proc failed"));
       /* NOTREACHED */
     }
 
@@ -238,7 +238,7 @@ install_real_capabilities (cap_t new_caps)
   if (prctl (PR_SET_KEEPCAPS, 0) == -1)
     {
       dbg_log (_("Failed to unset keep-capabilities"));
-      error (EXIT_FAILURE, errno, _("prctl(KEEPCAPS) failed"));
+      do_exit (EXIT_FAILURE, errno, _("prctl(KEEPCAPS) failed"));
       /* NOTREACHED */
     }
 }
@@ -254,7 +254,7 @@ nscd_selinux_enabled (int *selinux_enabled)
   if (*selinux_enabled < 0)
     {
       dbg_log (_("Failed to determine if kernel supports SELinux"));
-      exit (EXIT_FAILURE);
+      do_exit (EXIT_FAILURE, 0, NULL);
     }
 }
 
@@ -268,7 +268,7 @@ avc_create_thread (void (*run) (void))
   rc =
     pthread_create (&avc_notify_thread, NULL, (void *(*) (void *)) run, NULL);
   if (rc != 0)
-    error (EXIT_FAILURE, rc, _("Failed to start AVC thread"));
+    do_exit (EXIT_FAILURE, rc, _("Failed to start AVC thread"));
 
   return &avc_notify_thread;
 }
@@ -290,7 +290,7 @@ avc_alloc_lock (void)
 
   avc_mutex = malloc (sizeof (pthread_mutex_t));
   if (avc_mutex == NULL)
-    error (EXIT_FAILURE, errno, _("Failed to create AVC lock"));
+    do_exit (EXIT_FAILURE, errno, _("Failed to create AVC lock"));
   pthread_mutex_init (avc_mutex, NULL);
 
   return avc_mutex;
@@ -330,7 +330,7 @@ nscd_avc_init (void)
   avc_entry_ref_init (&aeref);
 
   if (avc_init ("avc", NULL, &log_cb, &thread_cb, &lock_cb) < 0)
-    error (EXIT_FAILURE, errno, _("Failed to start AVC"));
+    do_exit (EXIT_FAILURE, errno, _("Failed to start AVC"));
   else
     dbg_log (_("Access Vector Cache (AVC) started"));
 #ifdef HAVE_LIBAUDIT

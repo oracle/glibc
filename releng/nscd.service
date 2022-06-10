@@ -1,10 +1,13 @@
+# systemd service file for nscd
+
 [Unit]
 Description=Name Service Cache Daemon
 After=syslog.target
 
 [Service]
+Type=forking
 EnvironmentFile=-/etc/sysconfig/nscd
-ExecStart=/usr/sbin/nscd --foreground $NSCD_OPTIONS
+ExecStart=/usr/sbin/nscd $NSCD_OPTIONS
 ExecStop=/usr/sbin/nscd --shutdown
 ExecReload=/usr/sbin/nscd -i passwd
 ExecReload=/usr/sbin/nscd -i group
@@ -12,6 +15,7 @@ ExecReload=/usr/sbin/nscd -i hosts
 ExecReload=/usr/sbin/nscd -i services
 ExecReload=/usr/sbin/nscd -i netgroup
 Restart=always
+PIDFile=/run/nscd/nscd.pid
 
 [Install]
 WantedBy=multi-user.target

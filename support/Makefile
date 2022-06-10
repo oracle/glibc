@@ -75,6 +75,7 @@ libsupport-routines = \
   xasprintf \
   xbind \
   xcalloc \
+  xchdir \
   xchroot \
   xclose \
   xconnect \

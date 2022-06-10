@@ -51,9 +51,6 @@ union semun
   struct __old_semid_ds *__old_buf;
 };
 
-#include <bp-checks.h>
-#include <bp-semctl.h>		/* definition of CHECK_SEMCTL needs union semum */
-
 /* Return identifier for array of NSEMS semaphores associated with
    KEY.  */
 #if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_2)
@@ -92,7 +89,7 @@ __old_semctl (int semid, int semnum, int cmd, ...)
   va_end (ap);
 
   return INLINE_SYSCALL (ipc, 5, IPCOP_semctl, semid, semnum, cmd,
-			 CHECK_SEMCTL (&arg, semid, cmd));
+			 &arg);
 }
 compat_symbol (libc, __old_semctl, semctl, GLIBC_2_0);
 #endif
@@ -127,7 +124,7 @@ __new_semctl (int semid, int semnum, int cmd, ...)
 
 #if __ASSUME_IPC64 > 0
   return INLINE_SYSCALL (ipc, 5, IPCOP_semctl, semid, semnum, cmd | __IPC_64,
-			 CHECK_SEMCTL (&arg, semid, cmd | __IPC_64));
+			 &arg);
 #else
   switch (cmd)
     {
@@ -137,7 +134,7 @@ __new_semctl (int semid, int semnum, int cmd, ...)
       break;
     default:
       return INLINE_SYSCALL (ipc, 5, IPCOP_semctl, semid, semnum, cmd,
-			     CHECK_SEMCTL (&arg, semid, cmd));
+			     &arg);
     }
 
   {
@@ -148,7 +145,7 @@ __new_semctl (int semid, int semnum, int cmd, ...)
     /* Unfortunately there is no way how to find out for sure whether
        we should use old or new semctl.  */
     result = INLINE_SYSCALL (ipc, 5, IPCOP_semctl, semid, semnum, cmd | __IPC_64,
-			     CHECK_SEMCTL (&arg, semid, cmd | __IPC_64));
+			     &arg);
     if (result != -1 || errno != EINVAL)
       return result;
 
@@ -168,7 +165,7 @@ __new_semctl (int semid, int semnum, int cmd, ...)
 	  }
       }
     result = INLINE_SYSCALL (ipc, 5, IPCOP_semctl, semid, semnum, cmd,
-			     CHECK_SEMCTL (&arg, semid, cmd));
+			     &arg);
     if (result != -1 && cmd != IPC_SET)
       {
 	memset(buf, 0, sizeof(*buf));

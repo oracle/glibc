@@ -730,6 +730,7 @@ _int_new_arena (size_t size)
   return a;
 }
 
+
 /* Remove an arena from free_list.  */
 static mstate
 get_free_list (void)
@@ -744,7 +745,11 @@ get_free_list (void)
 	{
 	  free_list = result->next_free;
 
-          detach_arena (replaced_arena);
+	  /* The arena will be attached to this thread.  */
+	  assert (result->attached_threads == 0);
+	  result->attached_threads = 1;
+
+	  detach_arena (replaced_arena);
 	}
       (void) mutex_unlock (&list_lock);
 
@@ -826,6 +831,7 @@ reused_arena (mstate avoid_arena)
   (void) mutex_lock (&result->mutex);
 
 out:
+  /* Attach the arena to the current thread.  */
   {
     mstate replaced_arena = thread_arena;
     (void) mutex_lock (&free_list_lock);
@@ -840,6 +846,8 @@ out:
        reused_arena checked the free list and observed it to be empty,
        so the list is very short.  */
     remove_from_free_list (result);
+
+    ++result->attached_threads;
 
     (void) mutex_unlock (&free_list_lock);
   }

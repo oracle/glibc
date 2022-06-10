@@ -139,9 +139,10 @@ make_request (int fd, pid_t pid)
 #endif
   bool use_malloc = false;
   char *buf;
+  size_t alloca_used = 0;
 
   if (__libc_use_alloca (buf_size))
-    buf = alloca (buf_size);
+    buf = alloca_account (buf_size, alloca_used);
   else
     {
       buf = malloc (buf_size);
@@ -163,6 +164,7 @@ make_request (int fd, pid_t pid)
   {
     struct in6addrinfo info;
     struct in6ailist *next;
+    bool use_malloc;
   } *in6ailist = NULL;
   size_t in6ailistlen = 0;
   bool seen_ipv4 = false;
@@ -181,10 +183,10 @@ make_request (int fd, pid_t pid)
       ssize_t read_len = TEMP_FAILURE_RETRY (__recvmsg (fd, &msg, 0));
       __netlink_assert_response (fd, read_len);
       if (read_len < 0)
-	goto out_fail;
+	goto out_fail2;
 
       if (msg.msg_flags & MSG_TRUNC)
-	goto out_fail;
+	goto out_fail2;
 
       struct nlmsghdr *nlmh;
       for (nlmh = (struct nlmsghdr *) buf;
@@ -240,7 +242,19 @@ make_request (int fd, pid_t pid)
 		    }
 		}
 
-	      struct in6ailist *newp = alloca (sizeof (*newp));
+	      struct in6ailist *newp;
+	      if (__libc_use_alloca (alloca_used + sizeof (*newp)))
+		{
+		  newp = alloca_account (sizeof (*newp), alloca_used);
+		  newp->use_malloc = false;
+		}
+	      else
+		{
+		  newp = malloc (sizeof (*newp));
+		  if (newp == NULL)
+		    goto out_fail2;
+		  newp->use_malloc = true;
+		}
 	      newp->info.flags = (((ifam->ifa_flags
 				    & (IFA_F_DEPRECATED
 				       | IFA_F_OPTIMISTIC))
@@ -276,7 +290,7 @@ make_request (int fd, pid_t pid)
       result = malloc (sizeof (*result)
 		       + in6ailistlen * sizeof (struct in6addrinfo));
       if (result == NULL)
-	goto out_fail;
+	goto out_fail2;
 
       result->timestamp = get_nl_timestamp ();
       result->usecnt = 2;
@@ -287,7 +301,10 @@ make_request (int fd, pid_t pid)
       do
 	{
 	  result->in6ai[--in6ailistlen] = in6ailist->info;
-	  in6ailist = in6ailist->next;
+	  struct in6ailist *next = in6ailist->next;
+	  if (in6ailist->use_malloc)
+	    free (in6ailist);
+	  in6ailist = next;
 	}
       while (in6ailist != NULL);
     }
@@ -303,7 +320,15 @@ make_request (int fd, pid_t pid)
     free (buf);
   return result;
 
-out_fail:
+ out_fail2:
+  while (in6ailist != NULL)
+    {
+      struct in6ailist *next = in6ailist->next;
+      if (in6ailist->use_malloc)
+	free (in6ailist);
+      in6ailist = next;
+    }
+ out_fail:
   if (use_malloc)
     free (buf);
   return NULL;

@@ -2644,6 +2644,9 @@ ldouble: 2
 Test "tan_towardzero (2)":
 ildouble: 1
 ldouble: 1
+Test "tan_towardzero (2) == -2.1850398632615189916433061023136825434320":
+ildouble: 1
+ldouble: 1
 Test "tan_towardzero (3) == -0.1425465430742778052956354105339134932261":
 float: 1
 ifloat: 1

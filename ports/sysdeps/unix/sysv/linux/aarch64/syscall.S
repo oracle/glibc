@@ -37,8 +37,6 @@ ENTRY (syscall)
 	mov	x6, x7
 	svc	0x0
 	cmn	x0, #4095
-	b.cs	1f
+	b.cs	.Lsyscall_error
 	RET
-1:
-	b	SYSCALL_ERROR
 PSEUDO_END (syscall)

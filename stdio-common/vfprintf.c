@@ -263,6 +263,12 @@ vfprintf (FILE *s, const CHAR_T *format, va_list ap)
   /* For the argument descriptions, which may be allocated on the heap.  */
   void *args_malloced = NULL;
 
+  /* For positional argument handling.  */
+  struct printf_spec *specs;
+
+  /* Track if we malloced the SPECS array and thus must free it.  */
+  bool specs_malloced = false;
+
   /* This table maps a character into a number representing a
      class.  In each step there is a destination label for each
      class.  */
@@ -1672,8 +1678,8 @@ do_positional:
     size_t nspecs = 0;
     /* A more or less arbitrary start value.  */
     size_t nspecs_size = 32 * sizeof (struct printf_spec);
-    struct printf_spec *specs = alloca (nspecs_size);
 
+    specs = alloca (nspecs_size);
     /* The number of arguments the format string requests.  This will
        determine the size of the array needed to store the argument
        attributes.  */
@@ -1714,10 +1720,25 @@ do_positional:
 	  {
 	    /* Extend the array of format specifiers.  */
 	    struct printf_spec *old = specs;
-	    specs = extend_alloca (specs, nspecs_size, 2 * nspecs_size);
-
+	    if (__libc_use_alloca (2 * nspecs_size))
+	      specs = extend_alloca (specs, nspecs_size, 2 * nspecs_size);
+	    else
+	      {
+		nspecs_size *= 2;
+		specs = malloc (nspecs_size);
+	      }
+  
 	    /* Copy the old array's elements to the new space.  */
 	    memmove (specs, old, nspecs * sizeof (*specs));
+
+	    /* If we had previously malloc'd space for SPECS, then
+	       release it after the copy is complete.  */
+	    if (specs_malloced)
+	      free (old);
+ 
+	    /* Now set SPECS_MALLOCED if needed.  */
+	    if (!__libc_use_alloca (nspecs_size))
+	      specs_malloced = true;
 	  }
 
 	/* Parse the format specifier.  */
@@ -2032,6 +2053,8 @@ do_positional:
   }
 
 all_done:
+  if (specs_malloced)
+    free (specs);
   free (args_malloced);
   free (workstart);
   /* Unlock the stream.  */

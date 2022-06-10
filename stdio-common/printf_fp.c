@@ -151,6 +151,28 @@ static wchar_t *group_number (wchar_t *buf, wchar_t *bufend,
 			      wchar_t thousands_sep, int ngroups)
      internal_function;
 
+static __always_inline int
+isnanl_or_pseudo (long double in)
+{
+#if defined __x86_64__ || defined __i386__
+  union
+    {
+      long double f;
+      struct
+	{
+	  uint64_t low;
+	  uint64_t high;
+	} u;
+    } ldouble;
+
+  ldouble.f = in;
+
+  return __isnanl (in) || (ldouble.u.low & 0x8000000000000000) == 0;
+#else
+  return __isnanl (in);
+#endif
+}
+
 
 int
 __printf_fp_l (FILE *fp, locale_t loc,
@@ -335,7 +357,7 @@ __printf_fp_l (FILE *fp, locale_t loc,
 
       /* Check for special values: not a number or infinity.  */
       int res;
-      if (__isnanl (fpnum.ldbl))
+      if (isnanl_or_pseudo (fpnum.ldbl))
 	{
 	  is_neg = signbit (fpnum.ldbl);
 	  if (isupper (info->spec))

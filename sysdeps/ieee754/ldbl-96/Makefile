@@ -18,5 +18,7 @@
 
 ifeq ($(subdir),math)
 tests += test-sinl-pseudo
+ifeq ($(have-ssp),yes)
 CFLAGS-test-sinl-pseudo.c += -fstack-protector-all
 endif
+endif # $(subdir) == math

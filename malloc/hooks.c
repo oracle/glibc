@@ -386,10 +386,28 @@ memalign_check(size_t alignment, size_t bytes, const void *caller)
   if (alignment <= MALLOC_ALIGNMENT) return malloc_check(bytes, NULL);
   if (alignment <  MINSIZE) alignment = MINSIZE;
 
-  if (bytes+1 == 0) {
-    __set_errno (ENOMEM);
-    return NULL;
+  /* If the alignment is greater than SIZE_MAX / 2 + 1 it cannot be a
+     power of 2 and will cause overflow in the check below.  */
+  if (alignment > SIZE_MAX / 2 + 1)
+    {
+      __set_errno (EINVAL);
+      return 0;
+    }
+
+  /* Check for overflow.  */
+  if (bytes > SIZE_MAX - alignment - MINSIZE)
+    {
+      __set_errno (ENOMEM);
+      return 0;
+    }
+
+  /* Make sure alignment is power of 2.  */
+  if (!powerof2(alignment)) {
+    size_t a = MALLOC_ALIGNMENT * 2;
+    while (a < alignment) a <<= 1;
+    alignment = a;
   }
+
   (void)mutex_lock(&main_arena.mutex);
   mem = (top_check() >= 0) ? _int_memalign(&main_arena, alignment, bytes+1) :
     NULL;

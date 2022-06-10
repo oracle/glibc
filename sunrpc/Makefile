@@ -96,11 +96,13 @@ others += rpcgen
 
 all: # Make this the default target; it will be defined in Rules.
 
-tests = tst-xdrmem tst-xdrmem2
+tests = tst-xdrmem tst-xdrmem2 tst-udp-timeout \
+  tst-udp-nonblocking
 xtests := tst-getmyaddr
 
 ifeq ($(have-thread-library),yes)
 xtests += thrsvc
+tests += tst-udp-garbage
 endif
 
 headers += $(rpcsvc:%.x=rpcsvc/%.h)
@@ -225,3 +227,8 @@ endif
 endif
 
 $(objpfx)thrsvc: $(common-objpfx)linkobj/libc.so $(shared-thread-library)
+
+$(objpfx)tst-udp-timeout: $(common-objpfx)linkobj/libc.so
+$(objpfx)tst-udp-nonblocking: $(common-objpfx)linkobj/libc.so
+$(objpfx)tst-udp-garbage: \
+  $(common-objpfx)linkobj/libc.so $(shared-thread-library)

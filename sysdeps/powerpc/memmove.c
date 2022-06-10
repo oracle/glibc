@@ -40,10 +40,7 @@
 #endif
 
 rettype
-MEMMOVE (a1, a2, len)
-     a1const void *a1;
-     a2const void *a2;
-     size_t len;
+MEMMOVE (a1const void *a1, a2const void *a2, size_t len)
 {
   unsigned long int dstp = (long int) dest;
   unsigned long int srcp = (long int) src;

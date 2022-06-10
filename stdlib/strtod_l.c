@@ -472,11 +472,8 @@ __mpn_lshift_1 (mp_limb_t *ptr, mp_size_t size, unsigned int count,
    return 0.0.  If the number is too big to be represented, set `errno' to
    ERANGE and return HUGE_VAL with the appropriate sign.  */
 FLOAT
-____STRTOF_INTERNAL (nptr, endptr, group, loc)
-     const STRING_TYPE *nptr;
-     STRING_TYPE **endptr;
-     int group;
-     __locale_t loc;
+____STRTOF_INTERNAL (const STRING_TYPE *nptr, STRING_TYPE **endptr, int group,
+		     __locale_t loc)
 {
   int negative;			/* The sign of the number.  */
   MPN_VAR (num);		/* MP representation of the number.  */

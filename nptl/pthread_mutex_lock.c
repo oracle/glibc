@@ -58,8 +58,7 @@ static int __pthread_mutex_lock_full (pthread_mutex_t *mutex)
      __attribute_noinline__;
 
 int
-__pthread_mutex_lock (mutex)
-     pthread_mutex_t *mutex;
+__pthread_mutex_lock (pthread_mutex_t *mutex)
 {
   assert (sizeof (mutex->__size) >= sizeof (mutex->__data));
 
@@ -517,8 +516,8 @@ hidden_def (__pthread_mutex_lock)
 
 #ifdef NO_INCR
 void
-__pthread_mutex_cond_lock_adjust (mutex)
-     pthread_mutex_t *mutex;
+internal_function
+__pthread_mutex_cond_lock_adjust (pthread_mutex_t *mutex)
 {
   assert ((mutex->__data.__kind & PTHREAD_MUTEX_PRIO_INHERIT_NP) != 0);
   assert ((mutex->__data.__kind & PTHREAD_MUTEX_ROBUST_NORMAL_NP) == 0);

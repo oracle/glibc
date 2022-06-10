@@ -34,8 +34,7 @@
    lock state if the lock was actually busy.  */
 
 int
-__pthread_mutex_trylock (mutex)
-     pthread_mutex_t *mutex;
+__pthread_mutex_trylock (pthread_mutex_t *mutex)
 {
   int oldval;
   pid_t id = THREAD_GETMEM (THREAD_SELF, tid);

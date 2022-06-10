@@ -167,9 +167,7 @@ static int posixly_correct;
 
 # if !defined HAVE___STRCHRNUL && !defined _LIBC
 static char *
-__strchrnul (s, c)
-     const char *s;
-     int c;
+__strchrnul (const char *s, int c)
 {
   char *result = strchr (s, c);
   if (result == NULL)
@@ -180,9 +178,7 @@ __strchrnul (s, c)
 
 # if HANDLE_MULTIBYTE && !defined HAVE___STRCHRNUL && !defined _LIBC
 static wchar_t *
-__wcschrnul (s, c)
-     const wchar_t *s;
-     wint_t c;
+__wcschrnul (const wchar_t *s, wint_t c)
 {
   wchar_t *result = wcschr (s, c);
   if (result == NULL)
@@ -320,10 +316,7 @@ is_char_class (const wchar_t *wcs)
 
 
 int
-fnmatch (pattern, string, flags)
-     const char *pattern;
-     const char *string;
-     int flags;
+fnmatch (const char *pattern, const char *string, int flags)
 {
 # if HANDLE_MULTIBYTE
   if (__builtin_expect (MB_CUR_MAX, 1) != 1)

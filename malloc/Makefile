@@ -28,7 +28,7 @@ tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 	 tst-mallocstate tst-mcheck tst-mallocfork tst-trim1 \
 	 tst-malloc-usable \
 	 tst-malloc-backtrace tst-malloc-thread-exit \
-	 tst-malloc-thread-fail
+	 tst-malloc-thread-fail tst-malloc-fork-deadlock
 test-srcs = tst-mtrace
 
 routines = malloc morecore mcheck mtrace obstack
@@ -49,6 +49,7 @@ $(objpfx)tst-malloc-thread-fail: $(common-objpfx)nptl/libpthread.so \
 			       $(common-objpfx)nptl/libpthread_nonshared.a
 $(objpfx)tst-malloc-thread-exit: $(common-objpfx)nptl/libpthread.so \
 			       $(common-objpfx)nptl/libpthread_nonshared.a
+$(objpfx)tst-malloc-fork-deadlock: $(shared-thread-library)
 
 # These should be removed by `make clean'.
 extra-objs = mcheck-init.o libmcheck.a

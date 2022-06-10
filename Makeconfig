@@ -643,7 +643,7 @@ ifeq ($(all-warnings),yes)
 else
 +gccwarn := -Wall -Wwrite-strings -Winline
 endif
-+gccwarn-c = -Wstrict-prototypes
++gccwarn-c = -Wstrict-prototypes -Werror=implicit-function-declaration
 
 # We do not depend on the address of constants in different files to be
 # actually different, so allow the compiler to merge them all.

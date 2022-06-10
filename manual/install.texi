@@ -1,10 +1,10 @@
-@c This is for making the `INSTALL' file for the distribution.
-@c Makeinfo ignores it when processing the file from the include.
-@setfilename INSTALL
 @include macros.texi
 @include pkgvers.texi
 
+@ifclear plain
 @node Installation, Maintenance, Library Summary, Top
+@end ifclear
+
 @c %MENU% How to install the GNU C Library
 @appendix Installing @theglibc{}
 
@@ -21,6 +21,7 @@ to activate them, and they will be compiled into the library.
 You will need recent versions of several GNU tools: definitely GCC and
 GNU Make, and possibly others.  @xref{Tools for Compilation}, below.
 
+@ifclear plain
 @menu
 * Configuring and compiling::   How to compile and test GNU libc.
 * Running make install::        How to install it once you've got it
@@ -29,6 +30,7 @@ GNU Make, and possibly others.  @xref{Tools for Compilation}, below.
 * Linux::                       Specific advice for GNU/Linux systems.
 * Reporting Bugs::              So they'll get fixed.
 @end menu
+@end ifclear
 
 @node Configuring and compiling
 @appendixsec Configuring and compiling @theglibc{}
@@ -138,11 +140,6 @@ linker.
 Don't build libraries with profiling information.  You may want to use
 this option if you don't plan to do profiling.
 
-@item --disable-versioning
-Don't compile the shared libraries with symbol version information.
-Doing this will make the resulting library incompatible with old
-binaries, so it's not recommended.
-
 @item --enable-static-nss
 Compile static versions of the NSS (Name Service Switch) libraries.
 This is not recommended because it defeats the purpose of NSS; a program
@@ -154,6 +151,14 @@ By default the C library is built with support for thread-local storage
 if the used tools support it.  By using @samp{--without-tls} this can be
 prevented though there generally is no reason since it creates
 compatibility problems.
+
+@item --enable-hardcoded-path-in-tests
+By default, dynamic tests are linked to run with the installed C library.
+This option hardcodes the newly built C library path in dynamic tests
+so that they can be invoked directly.
+
+@item --enable-lock-elision=yes
+Enable lock elision for pthread mutexes by default.
 
 @pindex pt_chown
 @findex grantpt
@@ -180,11 +185,11 @@ the compiler and/or binutils.
 
 If you only specify @samp{--host}, @code{configure} will prepare for a
 native compile but use what you specify instead of guessing what your
-system is. This is most useful to change the CPU submodel.  For example,
-if @code{configure} guesses your machine as @code{i586-pc-linux-gnu} but
-you want to compile a library for 386es, give
-@samp{--host=i386-pc-linux-gnu} or just @samp{--host=i386-linux} and add
-the appropriate compiler flags (@samp{-mcpu=i386} will do the trick) to
+system is.  This is most useful to change the CPU submodel.  For example,
+if @code{configure} guesses your machine as @code{i686-pc-linux-gnu} but
+you want to compile a library for 586es, give
+@samp{--host=i586-pc-linux-gnu} or just @samp{--host=i586-linux} and add
+the appropriate compiler flags (@samp{-mcpu=i586} will do the trick) to
 @var{CFLAGS}.
 
 If you specify just @samp{--build}, @code{configure} will get confused.
@@ -230,6 +235,12 @@ The tests (and later installation) use some pre-existing files of the
 system such as @file{/etc/passwd}, @file{/etc/nsswitch.conf} and others.
 These files must all contain correct and sensible content.
 
+Normally, @code{make check} will run all the tests before reporting
+all problems found and exiting with error status if any problems
+occurred.  You can specify @samp{stop-on-test-failure=y} when running
+@code{make check} to make the test run stop and exit with an error
+status immediately when a failure occurs.
+
 To format the @cite{GNU C Library Reference Manual} for printing, type
 @w{@code{make dvi}}.  You need a working @TeX{} installation to do
 this.  The distribution builds the on-line formatted version of the
@@ -264,13 +275,15 @@ system and @var{hostname}.
 In general, when testing @theglibc{}, @samp{test-wrapper} may be set
 to the name and arguments of any program to run newly built binaries.
 This program must preserve the arguments to the binary being run, its
-working directory, all environment variables set as part of testing
-and the standard input, output and error file descriptors.  If
+working directory and the standard input, output and error file
+descriptors.  If
 @samp{@var{test-wrapper} env} will not work to run a program with
 environment variables set, then @samp{test-wrapper-env} must be set to
 a program that runs a newly built program with environment variable
 assignments in effect, those assignments being specified as
-@samp{@var{var}=@var{value}} before the name of the program to be run.
+@samp{@var{var}=@var{value}} before the name of the program to be
+run.  If multiple assignments to the same variable are specified,
+the last assignment specified must take precedence.
 
 
 @node Running make install
@@ -278,7 +291,7 @@ assignments in effect, those assignments being specified as
 @cindex installing
 
 To install the library and its header files, and the Info files of the
-manual, type @code{env LANGUAGE=C LC_ALL=C make install}.  This will
+manual, type @code{make install}.  This will
 build things, if necessary, before installing them; however, you should
 still compile everything first.  If you are installing @theglibc{} as your
 primary C library, we recommend that you shut the system down to
@@ -317,14 +330,11 @@ can dramatically improve performance with NIS+, and may help with DNS as
 well.
 
 One auxiliary program, @file{/usr/libexec/pt_chown}, is installed setuid
-@code{root}.  This program is invoked by the @code{grantpt} function; it
-sets the permissions on a pseudoterminal so it can be used by the
-calling process.  This means programs like @code{xterm} and
-@code{screen} do not have to be setuid to get a pty.  (There may be
-other reasons why they need privileges.)  If you are using a
-Linux kernel with the @code{devptsfs} or @code{devfs} filesystems
-providing pty slaves, you don't need this program; otherwise you do.
-The source for @file{pt_chown} is in @file{login/programs/pt_chown.c}.
+@code{root} if the @samp{--enable-pt_chown} configuration option is used.
+This program is invoked by the @code{grantpt} function; it sets the
+permissions on a pseudoterminal so it can be used by the calling process.
+If you are using a Linux kernel with the @code{devpts} filesystem enabled
+and mounted at @file{/dev/pts}, you don't need this program.
 
 After installation you might want to configure the timezone and locale
 installation of your system.  @Theglibc{} comes with a locale
@@ -362,9 +372,9 @@ recommend GNU @code{make} version 3.79.  All earlier versions have severe
 bugs or lack features.
 
 @item
-GCC 4.3 or newer, GCC 4.6 recommended
+GCC 4.4 or newer, GCC 4.6 recommended
 
-GCC 4.3 or higher is required; as of this writing, GCC 4.6 is the
+GCC 4.4 or higher is required; as of this writing, GCC 4.6 is the
 compiler we advise to use to build @theglibc{}.
 
 You can use whatever compiler you like to compile programs that use
@@ -388,10 +398,11 @@ understand all the tags used in the document, and the installation
 mechanism for the info files is not present or works differently.
 
 @item
-GNU @code{awk} 3.0, or higher
+GNU @code{awk} 3.1.2, or higher
 
-@code{Awk} is used in several places to generate files.
-@code{gawk} 3.0 is known to work.
+@code{awk} is used in several places to generate files.
+Some @code{gawk} extensions are used, including the @code{asorti}
+function, which was introduced in version 3.1.2 of @code{gawk}.
 
 @item
 Perl 5
@@ -412,7 +423,7 @@ should definitely upgrade @code{sed}.
 @end itemize
 
 @noindent
-If you change any of the @file{configure.in} files you will also need
+If you change any of the @file{configure.ac} files you will also need
 
 @itemize @bullet
 @item
@@ -436,7 +447,7 @@ patches, although we try to avoid this.
 @cindex kernel header files
 
 If you are installing @theglibc{} on @gnulinuxsystems{}, you need to have
-the header files from a 2.6.19.1 or newer kernel around for reference.
+the header files from a 2.6.32 or newer kernel around for reference.
 These headers must be installed using @samp{make headers_install}; the
 headers present in the kernel source directory are not suitable for
 direct use by @theglibc{}.  You do not need to use that kernel, just have

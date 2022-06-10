@@ -1,3 +1,8 @@
+2017-05-03  DJ Delorie  <dj@redhat.com>
+
+	[BZ #21411]
+	* malloc/malloc.c: Tweak realloc/MREMAP comment to be more accurate.
+
 2017-04-21  Florian Weimer  <fweimer@redhat.com>
 
 	[BZ #20424]

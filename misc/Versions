@@ -153,5 +153,6 @@ libc {
     __madvise;
     __mktemp;
     __libc_ifunc_impl_list;
+    __libc_allocate_once_slow;
   }
 }

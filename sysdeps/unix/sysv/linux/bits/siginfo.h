@@ -142,7 +142,10 @@ enum
 {
   SI_ASYNCNL = -60,		/* Sent by asynch name lookup completion.  */
 # define SI_ASYNCNL	SI_ASYNCNL
-  SI_TKILL = -6,		/* Sent by tkill.  */
+  SI_DETHREAD = -7,		/* Sent by execve killing subsidiary
+				   threads.  */
+#define SI_DETHREAD	SI_DETHREAD
+  SI_TKILL,			/* Sent by tkill.  */
 # define SI_TKILL	SI_TKILL
   SI_SIGIO,			/* Sent by queued SIGIO. */
 # define SI_SIGIO	SI_SIGIO
@@ -178,8 +181,10 @@ enum
 # define ILL_PRVREG	ILL_PRVREG
   ILL_COPROC,			/* Coprocessor error.  */
 # define ILL_COPROC	ILL_COPROC
-  ILL_BADSTK			/* Internal stack error.  */
+  ILL_BADSTK,			/* Internal stack error.  */
 # define ILL_BADSTK	ILL_BADSTK
+  ILL_BADIADDR			/* Unimplemented instruction address.  */
+# define ILL_BADIADDR ILL_BADIADDR
 };
 
 /* `si_code' values for SIGFPE signal.  */
@@ -199,8 +204,12 @@ enum
 # define FPE_FLTRES	FPE_FLTRES
   FPE_FLTINV,			/* Floating point invalid operation.  */
 # define FPE_FLTINV	FPE_FLTINV
-  FPE_FLTSUB			/* Subscript out of range.  */
+  FPE_FLTSUB,			/* Subscript out of range.  */
 # define FPE_FLTSUB	FPE_FLTSUB
+  FPE_FLTUNK = 14,		/* Undiagnosed floating-point exception.  */
+# define FPE_FLTUNK	FPE_FLTUNK
+  FPE_CONDTRAP			/* Trap on condition.  */
+# define FPE_CONDTRAP	FPE_CONDTRAP
 };
 
 /* `si_code' values for SIGSEGV signal.  */
@@ -208,8 +217,14 @@ enum
 {
   SEGV_MAPERR = 1,		/* Address not mapped to object.  */
 # define SEGV_MAPERR	SEGV_MAPERR
-  SEGV_ACCERR			/* Invalid permissions for mapped object.  */
+  SEGV_ACCERR,			/* Invalid permissions for mapped object.  */
 # define SEGV_ACCERR	SEGV_ACCERR
+  SEGV_ACCADI,			/* ADI not enabled for mapped object.  */
+# define SEGV_ACCADI	SEGV_ACCADI
+  SEGV_ADIDERR,			/* Disrupting MCD error.  */
+# define SEGV_ADIDERR	SEGV_ADIDERR
+  SEGV_ADIPERR			/* Precise MCD exception.  */
+# define SEGV_ADIPERR	SEGV_ADIPERR
 };
 
 /* `si_code' values for SIGBUS signal.  */
@@ -232,8 +247,14 @@ enum
 {
   TRAP_BRKPT = 1,		/* Process breakpoint.  */
 # define TRAP_BRKPT	TRAP_BRKPT
-  TRAP_TRACE			/* Process trace trap.  */
+  TRAP_TRACE,			/* Process trace trap.  */
 # define TRAP_TRACE	TRAP_TRACE
+  TRAP_BRANCH,			/* Process taken branch trap.  */
+# define TRAP_BRANCH	TRAP_BRANCH
+  TRAP_HWBKPT,			/* Hardware breakpoint/watchpoint.  */
+# define TRAP_HWBKPT	TRAP_HWBKPT
+  TRAP_UNK			/* Undiagnosed trap.  */
+# define TRAP_UNK	TRAP_UNK
 };
 
 /* `si_code' values for SIGCHLD signal.  */

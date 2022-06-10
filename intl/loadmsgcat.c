@@ -487,8 +487,7 @@ int _nl_msg_cat_cntr;
 
 /* Expand a system dependent string segment.  Return NULL if unsupported.  */
 static const char *
-get_sysdep_segment_value (name)
-     const char *name;
+get_sysdep_segment_value (const char *name)
 {
   /* Test for an ISO C 99 section 7.8.1 format string directive.
      Syntax:
@@ -757,9 +756,8 @@ get_sysdep_segment_value (name)
    message catalog do nothing.  */
 void
 internal_function
-_nl_load_domain (domain_file, domainbinding)
-     struct loaded_l10nfile *domain_file;
-     struct binding *domainbinding;
+_nl_load_domain (struct loaded_l10nfile *domain_file,
+		 struct binding *domainbinding)
 {
   __libc_lock_define_initialized_recursive (static, lock);
   int fd = -1;
@@ -1278,8 +1276,7 @@ _nl_load_domain (domain_file, domainbinding)
 #ifdef _LIBC
 void
 internal_function __libc_freeres_fn_section
-_nl_unload_domain (domain)
-     struct loaded_domain *domain;
+_nl_unload_domain (struct loaded_domain *domain)
 {
   size_t i;
 

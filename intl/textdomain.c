@@ -77,8 +77,7 @@ __libc_rwlock_define (extern, _nl_state_lock attribute_hidden)
    If DOMAINNAME is null, return the current default.
    If DOMAINNAME is "", reset to the default of "messages".  */
 char *
-TEXTDOMAIN (domainname)
-     const char *domainname;
+TEXTDOMAIN (const char *domainname)
 {
   char *new_domain;
   char *old_domain;

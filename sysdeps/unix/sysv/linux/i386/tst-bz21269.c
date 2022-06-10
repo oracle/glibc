@@ -26,8 +26,6 @@
    - Replicate only the test required to trigger the issue for the
      BZ#21269.  */
 
-#include <stdatomic.h>
-
 #include <asm/ldt.h>
 #include <linux/futex.h>
 
@@ -36,6 +34,7 @@
 #include <errno.h>
 #include <sys/syscall.h>
 #include <sys/mman.h>
+#include <string.h>
 
 #include <support/xunistd.h>
 #include <support/check.h>
@@ -44,7 +43,7 @@
 static int
 xset_thread_area (struct user_desc *u_info)
 {
-  long ret = syscall (SYS_set_thread_area, u_info);
+  long ret = syscall (__NR_set_thread_area, u_info);
   TEST_VERIFY_EXIT (ret == 0);
   return ret;
 }
@@ -52,20 +51,21 @@ xset_thread_area (struct user_desc *u_info)
 static void
 xmodify_ldt (int func, const void *ptr, unsigned long bytecount)
 {
-  TEST_VERIFY_EXIT (syscall (SYS_modify_ldt, 1, ptr, bytecount) == 0);
+  TEST_VERIFY_EXIT (syscall (__NR_modify_ldt, 1, ptr, bytecount) == 0);
 }
 
 static int
 futex (int *uaddr, int futex_op, int val, void *timeout, int *uaddr2,
 	int val3)
 {
-  return syscall (SYS_futex, uaddr, futex_op, val, timeout, uaddr2, val3);
+  return syscall (__NR_futex, uaddr, futex_op, val, timeout, uaddr2, val3);
 }
 
 static void
 xsethandler (int sig, void (*handler)(int, siginfo_t *, void *), int flags)
 {
-  struct sigaction sa = { 0 };
+  struct sigaction sa;
+  memset (&sa, 0, sizeof (sa));
   sa.sa_sigaction = handler;
   sa.sa_flags = SA_SIGINFO | flags;
   TEST_VERIFY_EXIT (sigemptyset (&sa.sa_mask) == 0);
@@ -128,7 +128,7 @@ setup_low_user_desc (void)
    1: thread armed.
    2: thread should clear LDT entry 0.
    3: thread should exit.  */
-static atomic_uint ftx;
+static unsigned int ftx;
 
 static void *
 threadproc (void *ctx)
@@ -136,9 +136,9 @@ threadproc (void *ctx)
   while (1)
     {
       futex ((int *) &ftx, FUTEX_WAIT, 1, NULL, NULL, 0);
-      while (atomic_load (&ftx) != 2)
+      while (__atomic_load_n (&ftx, __ATOMIC_SEQ_CST) != 2)
 	{
-	  if (atomic_load (&ftx) >= 3)
+	  if (__atomic_load_n (&ftx, __ATOMIC_SEQ_CST) >= 3)
 	    return NULL;
 	}
 
@@ -147,7 +147,7 @@ threadproc (void *ctx)
       xmodify_ldt (1, &desc, sizeof (desc));
 
       /* If ftx == 2, set it to zero,  If ftx == 100, quit.  */
-      if (atomic_fetch_add (&ftx, -2) != 2)
+      if (__atomic_fetch_add (&ftx, -2, __ATOMIC_SEQ_CST) != 2)
 	return NULL;
     }
 }
@@ -190,7 +190,7 @@ do_test (void)
 	continue;
 
       /* Make sure the thread is ready after the last test. */
-      while (atomic_load (&ftx) != 0)
+      while (__atomic_load_n (&ftx, __ATOMIC_SEQ_CST) != 0)
 	;
 
       struct user_desc desc = {
@@ -214,9 +214,9 @@ do_test (void)
       asm volatile ("mov %0, %%ss" : : "r" (0x7));
 
       /* Fire up thread modify_ldt call.  */
-      atomic_store (&ftx, 2);
+      __atomic_store_n (&ftx, 2, __ATOMIC_SEQ_CST);
 
-      while (atomic_load (&ftx) != 0)
+      while (__atomic_load_n (&ftx, __ATOMIC_SEQ_CST) != 0)
 	;
 
       /* On success, modify_ldt will segfault us synchronously and we will
@@ -224,7 +224,7 @@ do_test (void)
       support_record_failure ();
     }
 
-  atomic_store (&ftx, 100);
+  __atomic_store_n (&ftx, 100, __ATOMIC_SEQ_CST);
   futex ((int*) &ftx, FUTEX_WAKE, 0, NULL, NULL, 0);
 
   xpthread_join (thread);

@@ -2418,44 +2418,42 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
       old_heap = heap_for_ptr (old_top);
       old_heap_size = old_heap->size;
       if ((long) (MINSIZE + nb - old_size) > 0
-	  && grow_heap (old_heap, MINSIZE + nb - old_size) == 0)
-	{
-	  av->system_mem += old_heap->size - old_heap_size;
-	  arena_mem += old_heap->size - old_heap_size;
-	  set_head (old_top, (((char *) old_heap + old_heap->size) - (char *) old_top)
-		    | PREV_INUSE);
-	}
+          && grow_heap (old_heap, MINSIZE + nb - old_size) == 0)
+        {
+          av->system_mem += old_heap->size - old_heap_size;
+          set_head (old_top, (((char *) old_heap + old_heap->size) - (char *) old_top)
+                    | PREV_INUSE);
+        }
       else if ((heap = new_heap (nb + (MINSIZE + sizeof (*heap)), mp_.top_pad)))
-	{
-	  /* Use a newly allocated heap.  */
-	  heap->ar_ptr = av;
-	  heap->prev = old_heap;
-	  av->system_mem += heap->size;
-	  arena_mem += heap->size;
-	  /* Set up the new top.  */
-	  top (av) = chunk_at_offset (heap, sizeof (*heap));
-	  set_head (top (av), (heap->size - sizeof (*heap)) | PREV_INUSE);
+        {
+          /* Use a newly allocated heap.  */
+          heap->ar_ptr = av;
+          heap->prev = old_heap;
+          av->system_mem += heap->size;
+          /* Set up the new top.  */
+          top (av) = chunk_at_offset (heap, sizeof (*heap));
+          set_head (top (av), (heap->size - sizeof (*heap)) | PREV_INUSE);
 
-	  /* Setup fencepost and free the old top chunk with a multiple of
-	     MALLOC_ALIGNMENT in size. */
-	  /* The fencepost takes at least MINSIZE bytes, because it might
-	     become the top chunk again later.  Note that a footer is set
-	     up, too, although the chunk is marked in use. */
-	  old_size = (old_size - MINSIZE) & ~MALLOC_ALIGN_MASK;
-	  set_head (chunk_at_offset (old_top, old_size + 2 * SIZE_SZ), 0 | PREV_INUSE);
-	  if (old_size >= MINSIZE)
-	    {
-	      set_head (chunk_at_offset (old_top, old_size), (2 * SIZE_SZ) | PREV_INUSE);
-	      set_foot (chunk_at_offset (old_top, old_size), (2 * SIZE_SZ));
-	      set_head (old_top, old_size | PREV_INUSE | NON_MAIN_ARENA);
-	      _int_free (av, old_top, 1);
-	    }
-	  else
-	    {
-	      set_head (old_top, (old_size + 2 * SIZE_SZ) | PREV_INUSE);
-	      set_foot (old_top, (old_size + 2 * SIZE_SZ));
-	    }
-	}
+          /* Setup fencepost and free the old top chunk with a multiple of
+             MALLOC_ALIGNMENT in size. */
+          /* The fencepost takes at least MINSIZE bytes, because it might
+             become the top chunk again later.  Note that a footer is set
+             up, too, although the chunk is marked in use. */
+          old_size = (old_size - MINSIZE) & ~MALLOC_ALIGN_MASK;
+          set_head (chunk_at_offset (old_top, old_size + 2 * SIZE_SZ), 0 | PREV_INUSE);
+          if (old_size >= MINSIZE)
+            {
+              set_head (chunk_at_offset (old_top, old_size), (2 * SIZE_SZ) | PREV_INUSE);
+              set_foot (chunk_at_offset (old_top, old_size), (2 * SIZE_SZ));
+              set_head (old_top, old_size | PREV_INUSE | NON_MAIN_ARENA);
+              _int_free (av, old_top, 1);
+            }
+          else
+            {
+              set_head (old_top, (old_size + 2 * SIZE_SZ) | PREV_INUSE);
+              set_foot (old_top, (old_size + 2 * SIZE_SZ));
+            }
+        }
       else if (!tried_mmap)
 	/* We can at least try to use to mmap memory.  */
 	goto try_mmap;

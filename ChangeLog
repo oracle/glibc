@@ -1,3 +1,9 @@
+2016-02-19  Florian Weimer  <fweimer@redhat.com>
+
+	* malloc/malloc.c (sysmalloc): Do not update arena_max.
+	* malloc/arena.c (arena_max): Remove.
+	(heap_trim, _int_new_arena): Do not update arena_max.
+
 2015-11-24  Florian Weimer  <fweimer@redhat.com>
 
 	Replace MUTEX_INITIALIZER with _LIBC_LOCK_INITIALIZER in generic code.

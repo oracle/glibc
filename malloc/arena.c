@@ -213,8 +213,7 @@ void
 TUNABLE_CALLBACK (set_mallopt_check) (tunable_val_t *valp)
 {
   int32_t value = (int32_t) valp->numval;
-  do_set_mallopt_check (value);
-  if (check_action != 0)
+  if (value != 0)
     __malloc_check_init ();
 }
 
@@ -395,12 +394,8 @@ ptmalloc_init (void)
             }
         }
     }
-  if (s && s[0])
-    {
-      __libc_mallopt (M_CHECK_ACTION, (int) (s[0] - '0'));
-      if (check_action != 0)
-        __malloc_check_init ();
-    }
+  if (s && s[0] != '\0' && s[0] != '0')
+    __malloc_check_init ();
 #endif
 
   void (*hook) (void) = atomic_forced_read (__malloc_initialize_hook);

@@ -22,6 +22,11 @@
 #include <unistd.h>
 #include <errno.h>
 
+#ifndef TEST_FUNCTION
+static int do_test (void);
+# define TEST_FUNCTION do_test ()
+#endif
+#include "../test-skeleton.c"
 
 #ifndef ATTR
 pthread_mutexattr_t *attr;
@@ -58,18 +63,10 @@ do_test (void)
       return 1;
     }
 
-  /* Set an alarm for 1 second.  The wrapper will expect this.  */
-  alarm (1);
-
+  delayed_exit (1);
   /* This call should never return.  */
-  pthread_mutex_lock (&m);
+  xpthread_mutex_lock (&m);
 
   puts ("2nd mutex_lock returned");
   return 1;
 }
-
-#define EXPECTED_SIGNAL SIGALRM
-#ifndef TEST_FUNCTION
-# define TEST_FUNCTION do_test ()
-#endif
-#include "../test-skeleton.c"

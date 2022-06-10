@@ -1,3 +1,10 @@
+2016-05-23  Florian Weimer  <fweimer@redhat.com>
+
+	CVE-2016-4429
+	[BZ #20112]
+	* sunrpc/clnt_udp.c (clntudp_call): Use malloc/free for the error
+	payload.
+
 2013-02-11  Joseph Myers  <joseph@codesourcery.com>
 
 	* sysdeps/mips/include/sys/asm.h: New file.

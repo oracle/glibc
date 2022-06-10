@@ -47,8 +47,6 @@ void
 SECTION
 __mptan(double x, mp_no *mpy, int p) {
 
-  static const double MONE = -1.0;
-
   int n;
   mp_no mpw, mpc, mps;
 
@@ -56,7 +54,7 @@ __mptan(double x, mp_no *mpy, int p) {
   __c32(&mpw, &mpc, &mps, p);              /* computing sin(x) and cos(x) */
   if (n)                     /* second or fourth quarter of unit circle */
   { __dvd(&mpc,&mps,mpy,p);
-    mpy->d[0] *= MONE;
+    mpy->d[0] *= -1;
   }                          /* tan is negative in this area */
   else  __dvd(&mps,&mpc,mpy,p);
 

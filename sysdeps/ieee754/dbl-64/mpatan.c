@@ -69,8 +69,8 @@ __mpatan(mp_no *x, mp_no *y, int p) {
 	{if (dx>__atan_xm[m].d) break;}
     }
     mpone.e    = mptwo.e    = mptwoim1.e = 1;
-    mpone.d[0] = mpone.d[1] = mptwo.d[0] = mptwoim1.d[0] = ONE;
-    mptwo.d[1] = TWO;
+    mpone.d[0] = mpone.d[1] = mptwo.d[0] = mptwoim1.d[0] = 1;
+    mptwo.d[1] = 2;
 
 				 /* Reduce x m times */
     __mul(x,x,&mpsm,p);
@@ -92,7 +92,7 @@ __mpatan(mp_no *x, mp_no *y, int p) {
     n=__atan_np[p];    mptwoim1.d[1] = __atan_twonm1[p].d;
     __dvd(&mpsm,&mptwoim1,&mpt,p);
     for (i=n-1; i>1; i--) {
-      mptwoim1.d[1] -= TWO;
+      mptwoim1.d[1] -= 2;
       __dvd(&mpsm,&mptwoim1,&mpt1,p);
       __mul(&mpsm,&mpt,&mpt2,p);
       __sub(&mpt1,&mpt2,&mpt,p);

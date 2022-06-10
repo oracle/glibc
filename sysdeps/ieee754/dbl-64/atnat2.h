@@ -174,11 +174,4 @@
 #endif
 #endif
 
-#define  ZERO      zero.d
-#define  MZERO     mzero.d
-#define  ONE       one.d
-#define  TWO8      two8.d
-#define  TWO52     two52.d
-#define  TWOM1022  twom1022.d
-
 #endif

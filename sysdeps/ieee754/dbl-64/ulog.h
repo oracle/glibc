@@ -181,10 +181,6 @@
 #endif
 #endif
 
-#define  ZERO      zero.d
-#define  ONE       one.d
-#define  HALF      half.d
-#define  MHALF     mhalf.d
 #define  SQRT_2    sqrt_2.d
 #define  DEL_U     delu.d
 #define  DEL_V     delv.d

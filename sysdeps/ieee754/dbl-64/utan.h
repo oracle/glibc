@@ -270,10 +270,4 @@
 #endif
 #endif
 
-
-#define  ZERO      zero.d
-#define  ONE       one.d
-#define  MONE      mone.d
-#define  TWO8      two8.d
-
 #endif

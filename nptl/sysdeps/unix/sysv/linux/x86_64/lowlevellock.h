@@ -223,6 +223,20 @@ LLL_STUB_UNWIND_INFO_END
     __status;								      \
   })
 
+#define lll_futex_timed_wait_bitset(futexp, val, timespec, clockbit, private) \
+  ({									      \
+    INTERNAL_SYSCALL_DECL (__err);					      \
+    long int __ret;							      \
+    int __op = FUTEX_WAIT_BITSET | clockbit;				      \
+									      \
+    __ret = INTERNAL_SYSCALL (futex, __err, 6, (futexp),		      \
+			      __lll_private_flag (__op, private),	      \
+			      (val), (timespec), NULL /* Unused.  */, 	      \
+			      FUTEX_BITSET_MATCH_ANY);			      \
+    (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (__ret, __err))		      \
+	? -INTERNAL_SYSCALL_ERRNO (__ret, __err) : 0);			      \
+  })
+
 
 #define lll_futex_wake(futex, nr, private) \
   ({									      \

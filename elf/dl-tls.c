@@ -404,7 +404,7 @@ _dl_resize_dtv (dtv_t *dtv)
   size_t newsize = GL(dl_tls_max_dtv_idx) + DTV_SURPLUS;
   size_t oldsize = dtv[-1].counter;
 
-#if SHARED
+#ifdef SHARED
   if (dtv == GL(dl_initial_dtv))
     {
       /* This is the initial dtv that was either statically allocated in

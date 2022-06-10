@@ -106,7 +106,7 @@ static const char rcsid[] = "$BINDId: res_debug.c,v 8.34 2000/02/29 05:30:55 vix
 #include <errno.h>
 #include <math.h>
 #include <netdb.h>
-#include <resolv.h>
+#include <resolv/resolv-internal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -582,7 +582,7 @@ p_option(u_long option) {
 	case RES_DNSRCH:	return "dnsrch";
 	case RES_INSECURE1:	return "insecure1";
 	case RES_INSECURE2:	return "insecure2";
-	case RES_USE_INET6:	return "inet6";
+	case DEPRECATED_RES_USE_INET6:	return "inet6";
 	case RES_ROTATE:	return "rotate";
 	case RES_NOCHECKNAME:	return "no-check-names";
 	case RES_USEBSTRING:	return "ip6-bytstring";

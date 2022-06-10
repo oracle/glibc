@@ -345,7 +345,7 @@ _IO_str_finish (fp, dummy)
   _IO_default_finish (fp, 0);
 }
 
-const struct _IO_jump_t _IO_str_jumps =
+const struct _IO_jump_t _IO_str_jumps libio_vtable =
 {
   JUMP_INIT_DUMMY,
   JUMP_INIT(finish, _IO_str_finish),

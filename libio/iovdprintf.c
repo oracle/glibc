@@ -42,7 +42,7 @@ _IO_vdprintf (d, format, arg)
 #endif
   _IO_no_init (&tmpfil.file, _IO_USER_LOCK, 0, &wd, &_IO_wfile_jumps);
   _IO_JUMPS (&tmpfil) = &_IO_file_jumps;
-  _IO_file_init (&tmpfil);
+  _IO_new_file_init_internal (&tmpfil);
 #if  !_IO_UNIFIED_JUMPTABLES
   tmpfil.vtable = NULL;
 #endif

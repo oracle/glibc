@@ -34,7 +34,7 @@ _IO_str_chk_overflow (fp, c)
 }
 
 
-static const struct _IO_jump_t _IO_str_chk_jumps =
+static const struct _IO_jump_t _IO_str_chk_jumps libio_vtable =
 {
   JUMP_INIT_DUMMY,
   JUMP_INIT(finish, _IO_str_finish),

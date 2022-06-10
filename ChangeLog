@@ -1,3 +1,7 @@
+2018-01-12  Istvan Kurucsai  <pistukem@gmail.com>
+
+	* malloc/malloc.c (malloc_consolidate): Add size check.
+
 2017-11-30  Arjun Shankar  <arjun@redhat.com>
 
 	[BZ #22375]

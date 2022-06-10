@@ -724,7 +724,7 @@ heap_trim(heap_info *heap, size_t pad)
     return 0;
 
   top_area = top_size - MINSIZE - 1;
-  if (top_area <= pad)
+  if (top_area < 0 || (size_t) top_area <= pad)
     return 0;
 
   /* Release in pagesize units and round down to the nearest page.  */

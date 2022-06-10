@@ -16,6 +16,8 @@
    License along with the GNU C Library.  If not, see
    <http://www.gnu.org/licenses/>.  */
 
+#include <sysdep.h>
+
 /* This is the canonical entry point, usually the first thing in the text
    segment.
 
@@ -70,9 +72,9 @@ _start:
 	ldr     x4, [x4, #:got_lo12:__libc_csu_fini]
 #else
 	/* Set up the other arguments in registers */
-	ldr	x0, =main
-	ldr	x3, =__libc_csu_init
-	ldr	x4, =__libc_csu_fini
+	MOVL (0, main)
+	MOVL (3, __libc_csu_init)
+	MOVL (4, __libc_csu_fini)
 #endif
 
 	/* __libc_start_main (main, argc, argv, init, fini, rtld_fini,

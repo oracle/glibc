@@ -1,3 +1,8 @@
+2017-09-18  Wang Boshi  <wangboshi@huawei.com>  (tiny change)
+
+	* sysdeps/aarch64/start.S: Use MOVL instead of literal pools.
+	* sysdeps/aarch64/sysdep.h (MOVL): Add MOVL macro.
+
 2017-03-15  Steve Ellcey  <sellcey@caviumnetworks.com>
 	            Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 

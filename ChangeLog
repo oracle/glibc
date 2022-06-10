@@ -1,3 +1,9 @@
+2012-07-11  Adam Nemet  <anemet@caviumnetworks.com>
+
+	Bug #1591
+	* sysdeps/unix/sysv/linux/mips/mips64/pthread_spin_unlock.c:
+	New file.
+
 2012-07-11  Chandrakala Chavva  <cchavva@caviumnetworks.com>
 	    Andrew Pinski  <apinski@cavium.com>
 

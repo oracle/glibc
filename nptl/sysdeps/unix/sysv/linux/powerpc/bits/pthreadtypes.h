@@ -95,7 +95,6 @@ typedef union
     __pthread_list_t __list;
 # define __PTHREAD_MUTEX_HAVE_PREV	1
 # define __PTHREAD_SPINS             0, 0
-# define __PTHREAD_MUTEX_HAVE_ELISION	1
 #else
     unsigned int __nusers;
     __extension__ union
@@ -107,7 +106,6 @@ typedef union
 # define __spins __elision_data.__espins
 # define __elision __elision_data.__elision
 # define __PTHREAD_SPINS         { 0, 0 }
-# define __PTHREAD_MUTEX_HAVE_ELISION	2
       } __elision_data;
       __pthread_slist_t __list;
     };

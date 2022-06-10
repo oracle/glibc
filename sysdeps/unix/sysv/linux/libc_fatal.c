@@ -48,7 +48,7 @@ struct str_list
 
 /* Abort with an error message.  */
 void
-__libc_message (int do_abort, const char *fmt, ...)
+__libc_message (enum __libc_message_action action, const char *fmt, ...)
 {
   va_list ap;
   va_list ap_copy;
@@ -134,7 +134,7 @@ __libc_message (int do_abort, const char *fmt, ...)
       if (cnt == total)
 	written = true;
 
-      if (do_abort)
+      if ((action & do_abort))
 	{
 	  total = ((total + 1 + GLRO(dl_pagesize) - 1)
 		   & ~(GLRO(dl_pagesize) - 1));
@@ -167,9 +167,9 @@ __libc_message (int do_abort, const char *fmt, ...)
 
   va_end (ap_copy);
 
-  if (do_abort)
+  if ((action & do_abort))
     {
-      if (do_abort > 1 && written)
+      if ((action & do_backtrace) && written)
 	{
 	  void *addrs[64];
 #define naddrs (sizeof (addrs) / sizeof (addrs[0]))

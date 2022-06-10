@@ -1425,12 +1425,14 @@ typedef struct malloc_chunk* mbinptr;
 #define last(b)      ((b)->bk)
 
 /* Take a chunk off a bin list */
-#define unlink(P, BK, FD) {                                            \
+#define unlink(AV, P, BK, FD) {					       \
   FD = P->fd;                                                          \
   BK = P->bk;                                                          \
-  if (__builtin_expect (FD->bk != P || BK->fd != P, 0))                \
+  if (__builtin_expect (FD->bk != P || BK->fd != P, 0)) {	       \
+    mutex_unlock(&(AV)->mutex);					       \
     malloc_printerr (check_action, "corrupted double-linked list", P); \
-  else {                                                               \
+    mutex_lock(&(AV)->mutex);					       \
+  } else {							       \
     FD->bk = BK;                                                       \
     BK->fd = FD;                                                       \
     if (!in_smallbin_range (P->size)				       \
@@ -2512,7 +2514,9 @@ static void* sysmalloc(INTERNAL_SIZE_T nb, mstate av)
 
     else if (contiguous(av) && old_size && brk < old_end) {
       /* Oops!  Someone else killed our space..  Can't touch anything.  */
+      mutex_unlock(&av->mutex);
       malloc_printerr (3, "break adjusted to free malloc space", brk);
+      mutex_lock(&av->mutex);
     }
 
     /*
@@ -3293,7 +3297,9 @@ _int_malloc(mstate av, size_t bytes)
 	{
 	  errstr = "malloc(): memory corruption (fast)";
 	errout:
+	  mutex_unlock(&av->mutex);
 	  malloc_printerr (check_action, errstr, chunk2mem (victim));
+	  mutex_lock(&av->mutex);
 	  return NULL;
 	}
       check_remalloced_chunk(av, victim, nb);
@@ -3378,8 +3384,12 @@ _int_malloc(mstate av, size_t bytes)
       bck = victim->bk;
       if (__builtin_expect (victim->size <= 2 * SIZE_SZ, 0)
 	  || __builtin_expect (victim->size > av->system_mem, 0))
-	malloc_printerr (check_action, "malloc(): memory corruption",
-			 chunk2mem (victim));
+	{
+	  void *p = chunk2mem(victim);
+	  mutex_unlock(&av->mutex);
+	  malloc_printerr (check_action, "malloc(): memory corruption", p);
+	  mutex_lock(&av->mutex);
+	}
       size = chunksize(victim);
 
       /*
@@ -3520,7 +3530,7 @@ _int_malloc(mstate av, size_t bytes)
 	  victim = victim->fd;
 
 	remainder_size = size - nb;
-	unlink(victim, bck, fwd);
+	unlink(av, victim, bck, fwd);
 
 	/* Exhaust */
 	if (remainder_size < MINSIZE)  {
@@ -3618,7 +3628,7 @@ _int_malloc(mstate av, size_t bytes)
 	remainder_size = size - nb;
 
 	/* unlink */
-	unlink(victim, bck, fwd);
+	unlink(av, victim, bck, fwd);
 
 	/* Exhaust */
 	if (remainder_size < MINSIZE) {
@@ -3753,9 +3763,11 @@ _int_free(mstate av, mchunkptr p, int have_lock)
     {
       errstr = "free(): invalid pointer";
     errout:
-      if (! have_lock && locked)
+      if (have_lock || locked)
 	(void)mutex_unlock(&av->mutex);
       malloc_printerr (check_action, errstr, chunk2mem(p));
+      if (have_lock)
+	mutex_lock(&av->mutex);
       return;
     }
   /* We know that each chunk is at least MINSIZE bytes in size or a
@@ -3900,7 +3912,7 @@ _int_free(mstate av, mchunkptr p, int have_lock)
       prevsize = p->prev_size;
       size += prevsize;
       p = chunk_at_offset(p, -((long) prevsize));
-      unlink(p, bck, fwd);
+      unlink(av, p, bck, fwd);
     }
 
     if (nextchunk != av->top) {
@@ -3909,7 +3921,7 @@ _int_free(mstate av, mchunkptr p, int have_lock)
 
       /* consolidate forward */
       if (!nextinuse) {
-	unlink(nextchunk, bck, fwd);
+	unlink(av, nextchunk, bck, fwd);
 	size += nextsize;
       } else
 	clear_inuse_bit_at_offset(nextchunk, 0);
@@ -4070,7 +4082,7 @@ static void malloc_consolidate(mstate av)
 	    prevsize = p->prev_size;
 	    size += prevsize;
 	    p = chunk_at_offset(p, -((long) prevsize));
-	    unlink(p, bck, fwd);
+	    unlink(av, p, bck, fwd);
 	  }
 
 	  if (nextchunk != av->top) {
@@ -4078,7 +4090,7 @@ static void malloc_consolidate(mstate av)
 
 	    if (!nextinuse) {
 	      size += nextsize;
-	      unlink(nextchunk, bck, fwd);
+	      unlink(av, nextchunk, bck, fwd);
 	    } else
 	      clear_inuse_bit_at_offset(nextchunk, 0);
 
@@ -4147,7 +4159,9 @@ _int_realloc(mstate av, mchunkptr oldp, INTERNAL_SIZE_T oldsize,
     {
       errstr = "realloc(): invalid old size";
     errout:
+      mutex_unlock(&av->mutex);
       malloc_printerr (check_action, errstr, chunk2mem(oldp));
+      mutex_lock(&av->mutex);
       return NULL;
     }
 
@@ -4189,7 +4203,7 @@ _int_realloc(mstate av, mchunkptr oldp, INTERNAL_SIZE_T oldsize,
 	     (unsigned long)(newsize = oldsize + nextsize) >=
 	     (unsigned long)(nb)) {
       newp = oldp;
-      unlink(next, bck, fwd);
+      unlink(av, next, bck, fwd);
     }
 
     /* allocate, copy, free */

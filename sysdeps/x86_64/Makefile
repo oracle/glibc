@@ -37,6 +37,20 @@ tests-pie += $(quad-pie-test)
 
 $(objpfx)tst-quad1pie: $(objpfx)tst-quadmod1pie.o
 $(objpfx)tst-quad2pie: $(objpfx)tst-quadmod2pie.o
+
+tests += tst-audit10
+modules-names += tst-auditmod10a tst-auditmod10b
+
+$(objpfx)tst-audit10: $(objpfx)tst-auditmod10a.so
+$(objpfx)tst-audit10.out: $(objpfx)tst-auditmod10b.so
+tst-audit10-ENV = LD_AUDIT=$(objpfx)tst-auditmod10b.so
+
+ifeq (yes,$(config-cflags-avx512))
+AVX512-CFLAGS = -mavx512f
+CFLAGS-tst-audit10.c += $(AVX512-CFLAGS)
+CFLAGS-tst-auditmod10a.c += $(AVX512-CFLAGS)
+CFLAGS-tst-auditmod10b.c += $(AVX512-CFLAGS)
+endif
 endif
 
 ifeq ($(subdir),csu)

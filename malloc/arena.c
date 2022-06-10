@@ -193,6 +193,8 @@ __malloc_fork_unlock_child (void)
       __libc_lock_init (ar_ptr->mutex);
       if (ar_ptr != thread_arena)
         {
+	  /* This arena is no longer attached to any thread.  */
+	  ar_ptr->attached_threads = 0;
           ar_ptr->next_free = free_list;
           free_list = ar_ptr;
         }
@@ -595,7 +597,7 @@ heap_trim (heap_info *heap, size_t pad)
   unsigned long pagesz = GLRO (dl_pagesize);
   mchunkptr top_chunk = top (ar_ptr), p, bck, fwd;
   heap_info *prev_heap;
-  long new_size, top_size, extra, prev_size, misalign;
+  long new_size, top_size, top_area, extra, prev_size, misalign;
 
   /* Can this heap go away completely? */
   while (top_chunk == chunk_at_offset (heap, sizeof (*heap)))
@@ -630,9 +632,21 @@ heap_trim (heap_info *heap, size_t pad)
       set_head (top_chunk, new_size | PREV_INUSE);
       /*check_chunk(ar_ptr, top_chunk);*/
     }
+  /* Uses similar logic for per-thread arenas as the main arena with systrim
+     and _int_free by preserving the top pad and rounding down to the nearest
+     page.  */
   top_size = chunksize (top_chunk);
-  extra = (top_size - pad - MINSIZE - 1) & ~(pagesz - 1);
-  if (extra < (long) pagesz)
+  if ((unsigned long)(top_size) <
+      (unsigned long)(mp_.trim_threshold))
+    return 0;
+
+  top_area = top_size - MINSIZE - 1;
+  if (top_area < 0 || (size_t) top_area <= pad)
+    return 0;
+
+  /* Release in pagesize units and round down to the nearest page.  */
+  extra = ALIGN_DOWN(top_area - pad, pagesz);
+  if (extra == 0)
     return 0;
 
   /* Try to shrink. */
@@ -687,6 +701,7 @@ _int_new_arena (size_t size)
     }
   a = h->ar_ptr = (mstate) (h + 1);
   malloc_init_state (a);
+  a->attached_threads = 1;
   /*a->next = NULL;*/
   a->system_mem = a->max_system_mem = h->size;
 
@@ -825,6 +840,7 @@ reused_arena (mstate avoid_arena)
 out:
   /* Attach the arena to the current thread.  */
   {
+    /* Update the arena thread attachment counters.   */
     mstate replaced_arena = thread_arena;
     __libc_lock_lock (free_list_lock);
     detach_arena (replaced_arena);

@@ -49,6 +49,7 @@ tests += \
   tst-bug18665-tcp \
   tst-ns_name \
   tst-ns_name_compress \
+  tst-ns_name_pton \
   tst-res_hconf_reorder \
   tst-res_hnok \
   tst-res_use_inet6 \
@@ -183,6 +184,7 @@ $(objpfx)tst-resolv-canonname: \
 $(objpfx)tst-ns_name: $(objpfx)libresolv.so
 $(objpfx)tst-ns_name.out: tst-ns_name.data
 $(objpfx)tst-ns_name_compress: $(objpfx)libresolv.so
+$(objpfx)tst-ns_name_pton: $(objpfx)libresolv.so
 $(objpfx)tst-res_hnok: $(objpfx)libresolv.so
 
 

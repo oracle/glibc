@@ -32,11 +32,11 @@
 # include <memcopy.h>
 #endif
 
-#if HAVE_STDLIB_H || defined _LIBC
+#if defined _LIBC || HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
 
-#if HAVE_LIMITS_H || defined _LIBC
+#if defined _LIBC || HAVE_LIMITS_H
 # include <limits.h>
 #endif
 

@@ -1,5 +1,5 @@
 /* High precision, low overhead timing functions.  x86-64 version.
-   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2002-2015 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,24 +17,24 @@
    <http://www.gnu.org/licenses/>.  */
 
 #ifndef _HP_TIMING_H
+#define _HP_TIMING_H	1
 
-/* We can use some of the i686 implementation without changes.  */
-# include <sysdeps/i386/i686/hp-timing.h>
+/* We always assume having the timestamp register.  */
+#define HP_TIMING_AVAIL		(1)
+#define HP_SMALL_TIMING_AVAIL	(1)
+
+/* We indeed have inlined functions.  */
+#define HP_TIMING_INLINE	(1)
+
+/* We use 64bit values for the times.  */
+typedef unsigned long long int hp_timing_t;
 
 /* The "=A" constraint used in 32-bit mode does not work in 64-bit mode.  */
-# undef HP_TIMING_NOW
-# define HP_TIMING_NOW(Var) \
+#define HP_TIMING_NOW(Var) \
   ({ unsigned int _hi, _lo; \
      asm volatile ("rdtsc" : "=a" (_lo), "=d" (_hi)); \
      (Var) = ((unsigned long long int) _hi << 32) | _lo; })
 
-/* The funny business for 32-bit mode is not required here.  */
-# undef HP_TIMING_ACCUM
-# define HP_TIMING_ACCUM(Sum, Diff)					      \
-  do {									      \
-    hp_timing_t __diff = (Diff) - GLRO(dl_hp_timing_overhead);		      \
-    __asm__ __volatile__ ("lock; addq %1, %0"				      \
-			  : "=m" (Sum) : "r" (__diff), "m" (Sum));	      \
-  } while (0)
+#include <hp-timing-common.h>
 
 #endif /* hp-timing.h */

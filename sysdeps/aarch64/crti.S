@@ -40,6 +40,7 @@
    magic and cause the linker to emit DT_INIT and DT_FINI.  */
 
 #include <libc-symbols.h>
+#include <sysdep.h>
 
 #ifndef PREINIT_FUNCTION
 # define PREINIT_FUNCTION __gmon_start__

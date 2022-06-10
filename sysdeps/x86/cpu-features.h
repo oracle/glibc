@@ -184,11 +184,19 @@
 static bool __attribute__ ((unused))
 use_unaligned_strstr (void)
 {
+# if defined __x86_64__
   struct stat unaligned_strstr_etc_sysconfig_file;
+# else
+  struct stat64 unaligned_strstr_etc_sysconfig_file;
+# endif
 
   /* TLS may not have been set up yet, so avoid using stat since it tries to
      set errno.  */
+# if defined __x86_64__
   return INTERNAL_SYSCALL (stat, , 2,
+# else
+  return INTERNAL_SYSCALL (stat64, , 2,
+# endif
 			   ENABLE_STRSTR_UNALIGNED_PATHNAME,
 			   &unaligned_strstr_etc_sysconfig_file) == 0;
 }

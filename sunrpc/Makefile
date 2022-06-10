@@ -97,7 +97,7 @@ others += rpcgen
 all: # Make this the default target; it will be defined in Rules.
 
 tests = tst-xdrmem tst-xdrmem2 tst-udp-timeout \
-  tst-udp-nonblocking tst-bug22542
+  tst-udp-nonblocking tst-bug22542 tst-bug28768
 
 xtests := tst-getmyaddr
 

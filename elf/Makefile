@@ -444,7 +444,7 @@ CFLAGS-cache.c = $(SYSCONF-FLAGS)
 CFLAGS-rtld.c = $(SYSCONF-FLAGS)
 
 CPPFLAGS-.os += $(if $(filter $(@F),$(patsubst %,%.os,$(all-rtld-routines))),\
-		     -DNOT_IN_libc=1 -DIS_IN_rtld=1)
+		     -DNOT_IN_libc=1)
 
 # Disable any optimization which might result in function calls during early
 # dynamic loader startup. We disable -ftree-loop-distribute-patterns which

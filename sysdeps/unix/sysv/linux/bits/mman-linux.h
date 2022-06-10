@@ -1,5 +1,5 @@
-/* Definitions for POSIX memory map interface.  Linux/x86_64 version.
-   Copyright (C) 2001-2012 Free Software Foundation, Inc.
+/* Definitions for POSIX memory map interface.  Linux generic version.
+   Copyright (C) 2001-2018 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,7 +17,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #ifndef _SYS_MMAN_H
-# error "Never use <bits/mman.h> directly; include <sys/mman.h> instead."
+# error "Never use <bits/mman-linux.h> directly; include <sys/mman.h> instead."
 #endif
 
 /* The following definitions basically come from the kernel headers.
@@ -42,7 +42,7 @@
 #define MAP_SHARED	0x01		/* Share changes.  */
 #define MAP_PRIVATE	0x02		/* Changes are private.  */
 #ifdef __USE_MISC
-#define MAP_SHARED_VALIDATE	0x03	/* Share changes and validate
+# define MAP_SHARED_VALIDATE	0x03	/* Share changes and validate
 					   extension flags.  */
 # define MAP_TYPE	0x0f		/* Mask for type of mapping.  */
 #endif
@@ -51,33 +51,21 @@
 #define MAP_FIXED	0x10		/* Interpret addr exactly.  */
 #ifdef __USE_MISC
 # define MAP_FILE	0
-# define MAP_ANONYMOUS	0x20		/* Don't use a file.  */
+# ifdef __MAP_ANONYMOUS
+#  define MAP_ANONYMOUS	__MAP_ANONYMOUS	/* Don't use a file.  */
+# else
+#  define MAP_ANONYMOUS	0x20		/* Don't use a file.  */
+# endif
 # define MAP_ANON	MAP_ANONYMOUS
-# define MAP_32BIT	0x40		/* Only give out 32-bit addresses.  */
-#endif
-
-/* These are Linux-specific.  */
-#ifdef __USE_MISC
-# define MAP_GROWSDOWN	0x00100		/* Stack-like segment.  */
-# define MAP_DENYWRITE	0x00800		/* ETXTBSY */
-# define MAP_EXECUTABLE	0x01000		/* Mark it as an executable.  */
-# define MAP_LOCKED	0x02000		/* Lock the mapping.  */
-# define MAP_NORESERVE	0x04000		/* Don't check for reservations.  */
-# define MAP_POPULATE	0x08000		/* Populate (prefault) pagetables.  */
-# define MAP_NONBLOCK	0x10000		/* Do not block on IO.  */
-# define MAP_STACK	0x20000		/* Allocation is for a stack.  */
-# define MAP_HUGETLB	0x40000		/* Create huge page mapping.  */
+/* When MAP_HUGETLB is set bits [26:31] encode the log2 of the huge page size.  */
+# define MAP_HUGE_SHIFT	26
+# define MAP_HUGE_MASK	0x3f
 #endif
 
 /* Flags to `msync'.  */
 #define MS_ASYNC	1		/* Sync memory asynchronously.  */
 #define MS_SYNC		4		/* Synchronous memory sync.  */
 #define MS_INVALIDATE	2		/* Invalidate the caches.  */
-
-/* Flags for `mlockall'.  */
-#define MCL_CURRENT	1		/* Lock all currently mapped pages.  */
-#define MCL_FUTURE	2		/* Lock all additions to address
-					   space.  */
 
 /* Flags for `mremap'.  */
 #ifdef __USE_GNU
@@ -86,12 +74,13 @@
 #endif
 
 /* Advice to `madvise'.  */
-#ifdef __USE_BSD
+#ifdef __USE_MISC
 # define MADV_NORMAL	  0	/* No further special treatment.  */
 # define MADV_RANDOM	  1	/* Expect random page references.  */
 # define MADV_SEQUENTIAL  2	/* Expect sequential page references.  */
 # define MADV_WILLNEED	  3	/* Will need these pages.  */
 # define MADV_DONTNEED	  4	/* Don't need these pages.  */
+# define MADV_FREE	  8	/* Free pages only if memory pressure.  */
 # define MADV_REMOVE	  9	/* Remove these pages and resources.  */
 # define MADV_DONTFORK	  10	/* Do not inherit across fork.  */
 # define MADV_DOFORK	  11	/* Do inherit across fork.  */
@@ -102,6 +91,8 @@
 # define MADV_DONTDUMP	  16    /* Explicity exclude from the core dump,
                                    overrides the coredump filter bits.  */
 # define MADV_DODUMP	  17	/* Clear the MADV_DONTDUMP flag.  */
+# define MADV_WIPEONFORK  18	/* Zero memory on fork, child only.  */
+# define MADV_KEEPONFORK  19	/* Undo MADV_WIPEONFORK.  */
 # define MADV_HWPOISON	  100	/* Poison a page for testing.  */
 #endif
 
@@ -113,3 +104,14 @@
 # define POSIX_MADV_WILLNEED	3 /* Will need these pages.  */
 # define POSIX_MADV_DONTNEED	4 /* Don't need these pages.  */
 #endif
+
+/* Flags for `mlockall'.  */
+#ifndef MCL_CURRENT
+# define MCL_CURRENT	1		/* Lock all currently mapped pages.  */
+# define MCL_FUTURE	2		/* Lock all additions to address
+					   space.  */
+# define MCL_ONFAULT	4		/* Lock all pages that are
+					   faulted in.  */
+#endif
+
+#include <bits/mman-shared.h>

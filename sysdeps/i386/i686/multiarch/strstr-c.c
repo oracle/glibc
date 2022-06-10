@@ -24,7 +24,7 @@ extern __typeof (__redirect_strstr) __strstr_ia32 attribute_hidden;
    ifunc symbol properly.  */
 extern __typeof (__redirect_strstr) __libc_strstr;
 libc_ifunc (__libc_strstr,
-	    HAS_SSE4_2 && !use_unaligned_strstr () ?
+	    HAS_CPU_FEATURE (SSE4_2) && !use_unaligned_strstr () ?
 	    __strstr_sse42 : __strstr_ia32)
 
 #undef strstr

@@ -1,3 +1,7 @@
+2014-06-19  Richard Earnshaw  <rearnsha@arm.com>
+
+	* sysdeps/aarch64/strchr.S: New file.
+
 2014-05-29  Richard Henderson  <rth@twiddle.net>
 
 	* sysdeps/unix/sysv/linux/aarch64/sysdep.h (INTERNAL_VSYSCALL_NCS):

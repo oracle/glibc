@@ -1,3 +1,9 @@
+2012-07-11  Adam Nemet  <anemet@caviumnetworks.com>
+	    Chandrakala Chavva  <cchavva@caviumnetworks.com>
+
+	* elf/ldd.bash.in: Check for $BASH before invoking bash specific
+	commands.
+
 2019-01-29  Patrick McGehearty <patrick.mcgehearty@oracle.com>
 
 	* sysdeps/arm/dl-machine.h (ELF_MACHINE_NO_REL) Define.

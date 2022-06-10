@@ -110,7 +110,9 @@ fi
 # environments where the executed program might not have permissions
 # to write to the console/tty.  But only bash 3.x supports the pipefail
 # option, and we don't bother to handle the case for older bash versions.
-if set -o pipefail 2> /dev/null; then
+# Only do this for bash as for example ash which is part of busybox
+# exits upon the unknown pipefail option.
+if test -n "$BASH" && set -o pipefail 2> /dev/null; then
   try_trace() {
     eval $add_env '"$@"' | cat
   }

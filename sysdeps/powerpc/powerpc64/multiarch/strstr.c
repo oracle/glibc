@@ -17,7 +17,10 @@
    <http://www.gnu.org/licenses/>.  */
 
 /* Define multiple versions only for definition in libc.  */
-#if IS_IN (libc)
+/* RHEL 7-specific: Define multiple versions only for the definition in
+   libc.  Don't define multiple versions for strstr in static library
+   since we need strstr before initialization has happened.  */
+#if defined SHARED && IS_IN (libc)
 # include <string.h>
 # include <shlib-compat.h>
 # include "init-arch.h"
@@ -31,4 +34,6 @@ libc_ifunc (strstr,
             (hwcap & PPC_FEATURE_HAS_VSX)
             ? __strstr_power7
             : __strstr_ppc);
+#else
+#include "string/strstr.c"
 #endif

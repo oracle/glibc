@@ -253,6 +253,7 @@ L(medium_28t):
 END_GEN_TB (BP_SYM (memset),TB_TOCLESS)
 libc_hidden_builtin_def (memset)
 
+#ifndef NO_BZERO_IMPL
 /* Copied from bzero.S to prevent the linker from inserting a stub
    between bzero and memset.  */
 ENTRY (BP_SYM (__bzero))
@@ -272,3 +273,4 @@ ENTRY (BP_SYM (__bzero))
 END_GEN_TB (BP_SYM (__bzero),TB_TOCLESS)
 
 weak_alias (BP_SYM (__bzero), BP_SYM (bzero))
+#endif

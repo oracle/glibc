@@ -160,6 +160,12 @@ so that they can be invoked directly.
 @item --enable-lock-elision=yes
 Enable lock elision for pthread mutexes by default.
 
+@item --enable-bind-now
+Disable lazy binding for installed shared objects.  This provides
+additional security hardening because it enables full RELRO and a
+read-only global offset table (GOT), at the cost of slightly increased
+program load times.
+
 @pindex pt_chown
 @findex grantpt
 @item --enable-pt_chown

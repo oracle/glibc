@@ -145,7 +145,8 @@ $(objpfx)%.c.texi: examples/%.c
 	mv -f $@.new $@
 
 $(objpfx)%.info: %.texinfo
-	LANGUAGE=C LC_ALL=C $(MAKEINFO) -P $(objpfx) --output=$@ $<
+	LANGUAGE=C LC_ALL=C $(MAKEINFO) -P $(objpfx) --output=`basename $@` $<
+	mv `basename $@`* $(objpfx)
 
 $(objpfx)%.dvi: %.texinfo
 	cd $(objpfx);$(TEXI2DVI) -I $(shell cd $(<D) && pwd) --output=$@ \

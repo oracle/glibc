@@ -1,5 +1,20 @@
 2017-06-22  Siddhesh Poyarekar  <siddhesh@sourceware.org>
 
+	* benchtests/bench-memcpy-large.c: Include json-lib.h.
+	(do_one_test): Print json.
+	(do_test): Likewise.
+	(test_main): Likewise.
+	* benchtests/bench-memcpy-random.c: Include json-lib.h.
+	(do_one_test): Print json.
+	(do_test): Likewise.
+	(test_main): Likewise.
+	* benchtests/bench-memcpy.c: Include json-lib.h.
+	(do_one_test): Print json.
+	(do_test): Likewise.
+	(test_main): Likewise.
+
+2017-06-22  Siddhesh Poyarekar  <siddhesh@sourceware.org>
+
 	* benchtests/json-lib.h: Include inttypes.h.
 	(json_attr_int, json_attr_int, json_element_string,
 	json_element_int, json_element_uint): New functions.

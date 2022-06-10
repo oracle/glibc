@@ -21,9 +21,7 @@
 
 /* Find the first occurrence of WC in WCS.  */
 wchar_t *
-wcschr (wcs, wc)
-     const wchar_t *wcs;
-     const wchar_t wc;
+wcschr (const wchar_t *wcs, const wchar_t wc)
 {
   const wchar_t *wcs2 = wcs + 1;
 

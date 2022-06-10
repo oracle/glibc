@@ -1,5 +1,5 @@
-/* Optimized, inlined string functions.  m680x0 version, x >= 2.
-   Copyright (C) 1997 Free Software Foundation, Inc.
+/* Define _STRING_ARCH_unaligned.  m680x0 version, x >= 2.
+   Copyright (C) 2016 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -13,12 +13,9 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library.  If not, see
+   License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _STRING_H
-# error "Never use <bits/string.h> directly; include <string.h> instead."
-#endif
-
-/* Use the unaligned string inline ABI.  */
-#define _STRING_INLINE_unaligned 1
+/* Tell the generic inline macros that unaligned memory access is
+   possible.  */
+#define _STRING_ARCH_unaligned   1

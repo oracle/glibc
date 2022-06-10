@@ -1,3 +1,7 @@
+2015-08-24  Wilco Dijkstra  <wdijkstr@arm.com>
+
+	* sysdeps/aarch64/bzero.S (__bzero): Remove.
+
 2017-10-05  Siddhesh Poyarekar  <siddhesh@sourceware.org>
 
 	* sysdeps/aarch64/multiarch/Makefile (sysdep_routines): Add

@@ -1,6 +1,6 @@
-/* Copyright (C) 1996,97,99,2002 Free Software Foundation, Inc.
+/* Measure wmemset functions.
+   Copyright (C) 2015 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-   Contributed by Ulrich Drepper <drepper@gnu.org>, 1996.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -16,43 +16,5 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <wchar.h>
-
-#ifdef WMEMSET
-# define wmemset WMEMSET
-#endif
-
-wchar_t *
-wmemset (s, c, n)
-     wchar_t *s;
-     wchar_t c;
-     size_t n;
-{
-  register wchar_t *wp = s;
-
-  while (n >= 4)
-    {
-      wp[0] = c;
-      wp[1] = c;
-      wp[2] = c;
-      wp[3] = c;
-      wp += 4;
-      n -= 4;
-    }
-
-  if (n > 0)
-    {
-      wp[0] = c;
-
-      if (n > 1)
-	{
-	  wp[1] = c;
-
-	  if (n > 2)
-	    wp[2] = c;
-	}
-    }
-
-  return s;
-}
-libc_hidden_def (wmemset)
+#define WIDE 1
+#include "bench-memset.c"

@@ -23,6 +23,7 @@
 	.text
 ENTRY(__strcasecmp)
 	.type	__strcasecmp, @gnu_indirect_function
+	CHECK_STRCASECMP_CONFIG_FILE (__strcasecmp_nonascii, 2f)
 	LOAD_GOT_AND_RTLD_GLOBAL_RO
 	LOAD_FUNC_GOT_EAX (__strcasecmp_ia32)
 	HAS_CPU_FEATURE (SSSE3)

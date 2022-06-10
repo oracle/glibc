@@ -23,6 +23,7 @@
 	.text
 ENTRY(__strncasecmp)
 	.type	__strncasecmp, @gnu_indirect_function
+	CHECK_STRCASECMP_CONFIG_FILE (__strncasecmp_nonascii, 2f)
 	LOAD_GOT_AND_RTLD_GLOBAL_RO
 	LOAD_FUNC_GOT_EAX (__strncasecmp_ia32)
 	HAS_CPU_FEATURE (SSSE3)

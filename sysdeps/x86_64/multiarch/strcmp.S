@@ -76,6 +76,17 @@
 # endif
 #endif
 
+/* Performan an access system call to check whether the configuration
+  file exists.  If it does, load SYMBOL into %rax and jump to LABEL.  */
+#define CHECK_STRCASECMP_CONFIG_FILE(symbol, label) \
+	movl	$__NR_access, %eax; \
+	leaq	__sysconfig_strcasecmp_nonascii(%rip), %rdi; \
+	xor	%esi, %esi; \
+	syscall ; \
+	test	%eax, %eax; \
+	leaq 	symbol(%rip), %rax; \
+	jz	label
+
 /* Define multiple versions only for the definition in libc.  Don't
    define multiple versions for strncmp in static library since we
    need strncmp before the initialization happened.  */
@@ -83,6 +94,9 @@
 	.text
 ENTRY(STRCMP)
 	.type	STRCMP, @gnu_indirect_function
+# if defined (USE_AS_STRCASECMP_L) || defined (USE_AS_STRNCASECMP_L)
+	CHECK_STRCASECMP_CONFIG_FILE(STRCMP_NONASCII, 2f)
+# endif
 	LOAD_RTLD_GLOBAL_RO_RDX
 	leaq	STRCMP_SSE42(%rip), %rax
 	HAS_CPU_FEATURE (SSE4_2)
@@ -97,6 +111,7 @@ END(STRCMP)
 # ifdef USE_AS_STRCASECMP_L
 ENTRY(__strcasecmp)
 	.type	__strcasecmp, @gnu_indirect_function
+	CHECK_STRCASECMP_CONFIG_FILE(__strcasecmp_nonascii, 2f)
 	LOAD_RTLD_GLOBAL_RO_RDX
 #  ifdef HAVE_AVX_SUPPORT
 	leaq	__strcasecmp_avx(%rip), %rax
@@ -117,6 +132,7 @@ weak_alias (__strcasecmp, strcasecmp)
 # ifdef USE_AS_STRNCASECMP_L
 ENTRY(__strncasecmp)
 	.type	__strncasecmp, @gnu_indirect_function
+	CHECK_STRCASECMP_CONFIG_FILE(__strncasecmp_nonascii, 2f)
 	LOAD_RTLD_GLOBAL_RO_RDX
 #  ifdef HAVE_AVX_SUPPORT
 	leaq	__strncasecmp_avx(%rip), %rax

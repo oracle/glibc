@@ -14,7 +14,8 @@ tests += tst-mallocalign1
 endif
 
 ifeq ($(subdir),string)
-sysdep_routines += cacheinfo strcasecmp_l-nonascii strncase_l-nonascii
+sysdep_routines += cacheinfo strcasecmp_l-nonascii strncase_l-nonascii \
+  strcasecmp-nonascii strncase-nonascii
 gen-as-const-headers += locale-defines.sym
 endif
 

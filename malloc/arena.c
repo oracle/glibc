@@ -119,7 +119,7 @@ int __malloc_initialized = -1;
 
 #ifdef PER_THREAD
 # define arena_lock(ptr, size) do { \
-  if(ptr) \
+  if(ptr && !arena_is_corrupt (ptr)) \
     (void)mutex_lock(&ptr->mutex); \
   else \
     ptr = arena_get2(ptr, (size), NULL); \
@@ -808,7 +808,7 @@ reused_arena (mstate avoid_arena)
   result = next_to_use;
   do
     {
-      if (!mutex_trylock(&result->mutex))
+      if (!arena_is_corrupt (result) && !mutex_trylock(&result->mutex))
 	goto out;
 
       result = result->next;
@@ -820,7 +820,21 @@ reused_arena (mstate avoid_arena)
   if (result == avoid_arena)
     result = result->next;
 
-  /* No arena available.  Wait for the next in line.  */
+  /* Make sure that the arena we get is not corrupted.  */
+  mstate begin = result;
+  while (arena_is_corrupt (result) || result == avoid_arena)
+    {
+      result = result->next;
+      if (result == begin)
+	break;
+    }
+
+  /* We could not find any arena that was either not corrupted or not the one
+     we wanted to avoid.  */
+  if (result == begin || result == avoid_arena)
+    return NULL;
+
+  /* No arena available without contention.  Wait for the next in line.  */
   LIBC_PROBE (memory_arena_reuse_wait, 3, &result->mutex, result, avoid_arena);
   (void)mutex_lock(&result->mutex);
 

@@ -155,19 +155,7 @@ static __always_inline int
 isnanl_or_pseudo (long double in)
 {
 #if defined __x86_64__ || defined __i386__
-  union
-    {
-      long double f;
-      struct
-	{
-	  uint64_t low;
-	  uint64_t high;
-	} u;
-    } ldouble;
-
-  ldouble.f = in;
-
-  return __isnanl (in) || (ldouble.u.low & 0x8000000000000000) == 0;
+  return __isnanl_pseudo (in);
 #else
   return __isnanl (in);
 #endif

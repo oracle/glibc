@@ -6,6 +6,11 @@
 /* Now define the internal interfaces.  */
 extern int __matherr (struct exception *__exc);
 
+# if IS_IN (libc)
+extern int __isnanl_pseudo (long double);
+hidden_proto (__isnanl_pseudo)
+#endif
+
 # if IS_IN (libc) || IS_IN (libm)
 hidden_proto (__finite)
 hidden_proto (__isinf)

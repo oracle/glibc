@@ -2859,7 +2859,7 @@ __libc_malloc (size_t bytes)
     return 0;
 
   victim = _int_malloc (ar_ptr, bytes);
-  if (!victim)
+  if (!victim && ar_ptr != NULL)
     {
       LIBC_PROBE (memory_malloc_retry, 1, bytes);
       ar_ptr = arena_get_retry (ar_ptr, bytes);
@@ -2869,8 +2869,10 @@ __libc_malloc (size_t bytes)
           (void) mutex_unlock (&ar_ptr->mutex);
         }
     }
-  else
-    (void) mutex_unlock (&ar_ptr->mutex);
+
+  if (ar_ptr != NULL)
+    __libc_lock_unlock (ar_ptr->mutex);
+
   assert (!victim || chunk_is_mmapped (mem2chunk (victim)) ||
           ar_ptr == arena_for_chunk (mem2chunk (victim)));
   return victim;
@@ -3010,13 +3012,11 @@ __libc_realloc (void *oldmem, size_t bytes)
       return newmem;
     }
 
-  ar_ptr = arena_for_chunk (oldp);
-  (void) mutex_lock (&ar_ptr->mutex);
-
+  __libc_lock_lock (ar_ptr->mutex);
 
   newp = _int_realloc (ar_ptr, oldp, oldsize, nb);
 
-  (void) mutex_unlock (&ar_ptr->mutex);
+  __libc_lock_unlock (ar_ptr->mutex);
   assert (!newp || chunk_is_mmapped (mem2chunk (newp)) ||
           ar_ptr == arena_for_chunk (mem2chunk (newp)));
 
@@ -3094,8 +3094,10 @@ _mid_memalign (size_t alignment, size_t bytes, void *address)
           (void) mutex_unlock (&ar_ptr->mutex);
         }
     }
-  else
-    (void) mutex_unlock (&ar_ptr->mutex);
+
+  if (ar_ptr != NULL)
+    __libc_lock_unlock (ar_ptr->mutex);
+
   assert (!p || chunk_is_mmapped (mem2chunk (p)) ||
           ar_ptr == arena_for_chunk (mem2chunk (p)));
   return p;
@@ -3213,8 +3215,14 @@ __libc_calloc (size_t n, size_t elem_size)
       if (mem == 0)
         return 0;
     }
-  else
-    (void) mutex_unlock (&av->mutex);
+
+  if (av != NULL)
+    __libc_lock_unlock (av->mutex);
+
+  /* Allocation failed even after a retry.  */
+  if (mem == 0)
+    return 0;
+
   p = mem2chunk (mem);
 
   /* Two optional cases in which clearing not necessary */
@@ -3825,7 +3833,7 @@ _int_free (mstate av, mchunkptr p, int have_lock)
       errstr = "free(): invalid pointer";
     errout:
       if (!have_lock && locked)
-        (void) mutex_unlock (&av->mutex);
+        __libc_lock_unlock (av->mutex);
       malloc_printerr (check_action, errstr, chunk2mem (p));
       return;
     }
@@ -3864,7 +3872,7 @@ _int_free (mstate av, mchunkptr p, int have_lock)
 	   after getting the lock.  */
 	if (have_lock
 	    || ({ assert (locked == 0);
-		  mutex_lock(&av->mutex);
+		  __libc_lock_lock (av->mutex);
 		  locked = 1;
 		  chunk_at_offset (p, size)->size <= 2 * SIZE_SZ
 		    || chunksize (chunk_at_offset (p, size)) >= av->system_mem;
@@ -3875,7 +3883,7 @@ _int_free (mstate av, mchunkptr p, int have_lock)
 	  }
 	if (! have_lock)
 	  {
-	    (void)mutex_unlock(&av->mutex);
+	    __libc_lock_unlock (av->mutex);
 	    locked = 0;
 	  }
       }
@@ -3921,7 +3929,7 @@ _int_free (mstate av, mchunkptr p, int have_lock)
 
   else if (!chunk_is_mmapped(p)) {
     if (! have_lock) {
-      (void)mutex_lock(&av->mutex);
+      __libc_lock_lock (av->mutex);
       locked = 1;
     }
 
@@ -4054,7 +4062,7 @@ _int_free (mstate av, mchunkptr p, int have_lock)
 
     if (! have_lock) {
       assert (locked);
-      (void)mutex_unlock(&av->mutex);
+      __libc_lock_unlock (av->mutex);
     }
   }
   /*
@@ -4500,9 +4508,9 @@ __malloc_trim (size_t s)
   mstate ar_ptr = &main_arena;
   do
     {
-      (void) mutex_lock (&ar_ptr->mutex);
+      __libc_lock_lock (ar_ptr->mutex);
       result |= mtrim (ar_ptr, s);
-      (void) mutex_unlock (&ar_ptr->mutex);
+      __libc_lock_unlock (ar_ptr->mutex);
 
       ar_ptr = ar_ptr->next;
     }
@@ -4631,9 +4639,9 @@ __libc_mallinfo (void)
   ar_ptr = &main_arena;
   do
     {
-      (void) mutex_lock (&ar_ptr->mutex);
+      __libc_lock_lock (ar_ptr->mutex);
       int_mallinfo (ar_ptr, &m);
-      (void) mutex_unlock (&ar_ptr->mutex);
+      __libc_lock_unlock (ar_ptr->mutex);
 
       ar_ptr = ar_ptr->next;
     }
@@ -4663,7 +4671,7 @@ __malloc_stats (void)
       struct mallinfo mi;
 
       memset (&mi, 0, sizeof (mi));
-      (void) mutex_lock (&ar_ptr->mutex);
+      __libc_lock_lock (ar_ptr->mutex);
       int_mallinfo (ar_ptr, &mi);
       fprintf (stderr, "Arena %d:\n", i);
       fprintf (stderr, "system bytes     = %10u\n", (unsigned int) mi.arena);
@@ -4674,7 +4682,7 @@ __malloc_stats (void)
 #endif
       system_b += mi.arena;
       in_use_b += mi.uordblks;
-      (void) mutex_unlock (&ar_ptr->mutex);
+      __libc_lock_unlock (ar_ptr->mutex);
       ar_ptr = ar_ptr->next;
       if (ar_ptr == &main_arena)
         break;
@@ -4787,7 +4795,7 @@ __libc_mallopt (int param_number, int value)
 
   if (__malloc_initialized < 0)
     ptmalloc_init ();
-  (void) mutex_lock (&av->mutex);
+  __libc_lock_lock (av->mutex);
   /* Ensure initialization/consolidation */
   malloc_consolidate (av);
 
@@ -4839,7 +4847,7 @@ __libc_mallopt (int param_number, int value)
 	do_set_arena_test (value);
       break;
     }
-  (void) mutex_unlock (&av->mutex);
+  __libc_lock_unlock (av->mutex);
   return res;
 }
 libc_hidden_def (__libc_mallopt)

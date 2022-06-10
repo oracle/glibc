@@ -384,6 +384,9 @@ LDFLAGS.so += $(hashstyle-LDFLAGS)
 LDFLAGS-rtld += $(hashstyle-LDFLAGS)
 endif
 
+# Additional libraries to link into every test.
+link-extra-libs-tests = $(libsupport)
+
 # Command for linking PIE programs with the C library.
 ifndef +link-pie
 +link-pie = $(CC) -pie -Wl,-O1 -nostdlib -nostartfiles -o $@ \
@@ -464,7 +467,7 @@ link-libc-before-gnulib = -Wl,-rpath-link=$(rpath-link) \
 link-libc = $(link-libc-before-gnulib) $(gnulib)
 link-libc-tests = $(link-libc-before-gnulib) $(gnulib-tests)
 # This is how to find at build-time things that will be installed there.
-rpath-dirs = math elf dlfcn nss nis rt resolv crypt
+rpath-dirs = math elf dlfcn nss nis rt resolv crypt support
 rpath-link = \
 $(common-objdir):$(subst $(empty) ,:,$(patsubst ../$(subdir),.,$(rpath-dirs:%=$(common-objpfx)%)))
 else
@@ -732,7 +735,7 @@ libio-include = -I$(..)libio
 # List of non-library modules that we build.
 built-modules = iconvprogs iconvdata ldconfig lddlibc4 libmemusage \
 		libSegFault libpcprofile librpcsvc locale-programs \
-		memusagestat nonlib nscd extramodules libnldbl
+		memusagestat nonlib nscd extramodules libnldbl libsupport
 
 in-module = $(subst -,_,$(firstword $(libof-$(basename $(@F))) \
 				    $(libof-$(<F)) \
@@ -1022,6 +1025,12 @@ else
 libm = $(common-objpfx)math/libm.a
 endif
 
+ifeq ($(build-shared),yes)
+libsupport = $(common-objpfx)support/libsupport_nonshared.a
+else
+libsupport = $(common-objpfx)support/libsupport.a
+endif
+
 # These are the subdirectories containing the library source.  The order
 # is more or less arbitrary.  The sorting step will take care of the
 # dependencies.
@@ -1029,7 +1038,7 @@ all-subdirs = csu assert ctype locale intl catgets math setjmp signal	    \
 	      stdlib stdio-common libio malloc string wcsmbs time dirent    \
 	      grp pwd posix io termios resource misc socket sysvipc gmon    \
 	      gnulib iconv iconvdata wctype manual shadow gshadow po argp   \
-	      crypt nss localedata timezone rt conform debug		    \
+	      crypt nss localedata timezone rt conform debug support	    \
 	      $(add-on-subdirs) dlfcn elf
 
 ifndef avoid-generated

@@ -53,8 +53,7 @@ strong_alias (__sigsuspend, __libc_sigsuspend)
 
 #ifndef NO_CANCELLATION
 int
-__sigsuspend_nocancel (set)
-     const sigset_t *set;
+__sigsuspend_nocancel (const sigset_t *set)
 {
   return do_sigsuspend (set);
 }

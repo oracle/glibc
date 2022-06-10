@@ -1,3 +1,8 @@
+2018-01-12  Szabolcs Nagy  <szabolcs.nagy@arm.com>
+
+	* aarch64/start.S (_start): Use __wrap_main.
+	(__wrap_main): New local symbol.
+
 2017-11-03  Szabolcs Nagy  <szabolcs.nagy@arm.com>
 
 	* sysdeps/aarch64/dl-tlsdesc.S (_dl_tlsdesc_dynamic): Optimize.

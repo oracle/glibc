@@ -35,12 +35,17 @@ init (void)
   void *resume, *personality;
   void *handle;
 
-  handle = __libc_dlopen (LIBGCC_S_SO);
+  /* Use RTLD_NOW here for consistency with pthread_cancel_init.
+     RTLD_NOW will rarely make a difference here because unwinding is
+     already in progress, so libgcc_s.so has already been loaded if
+     its unwinder is used.  */
+  handle = __libc_dlopen_mode (LIBGCC_S_SO, RTLD_NOW | __RTLD_DLOPEN);
 
   if (handle == NULL
       || (resume = __libc_dlsym (handle, "_Unwind_Resume")) == NULL
       || (personality = __libc_dlsym (handle, "__gcc_personality_v0")) == NULL)
-    __libc_fatal (LIBGCC_S_SO " must be installed for pthread_cancel to work\n");
+    __libc_fatal (LIBGCC_S_SO
+		  " must be installed for unwinding to work\n");
 
   libgcc_s_resume = resume;
   libgcc_s_personality = personality;

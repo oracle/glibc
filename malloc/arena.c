@@ -135,8 +135,6 @@ int __malloc_initialized = -1;
 
 /**************************************************************************/
 
-#ifndef NO_THREADS
-
 /* atfork support.  */
 
 static void *(*save_malloc_hook)(size_t __size, const void *);
@@ -309,8 +307,6 @@ __malloc_fork_unlock_child (void)
   mutex_init (&list_lock);
   atfork_recursive_cntr = 0;
 }
-
-#endif  /* !NO_THREADS */
 
 #if HAVE_TUNABLES
 static inline int do_set_mallopt_check (int32_t value);

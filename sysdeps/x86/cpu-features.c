@@ -192,6 +192,24 @@ init_cpu_features (struct cpu_features *cpu_features)
 		   cpu_features->cpuid[COMMON_CPUID_INDEX_7].ecx,
 		   cpu_features->cpuid[COMMON_CPUID_INDEX_7].edx);
 
+#if !HAS_CPUID
+no_cpuid:
+#endif
+
+  cpu_features->family = family;
+  cpu_features->model = model;
+  cpu_features->kind = kind;
+
+#if IS_IN (rtld)
+  /* Reuse dl_platform, dl_hwcap and dl_hwcap_mask for x86.  */
+  GLRO(dl_platform) = NULL;
+  GLRO(dl_hwcap) = 0;
+#if !HAVE_TUNABLES
+  /* The glibc.tune.hwcap_mask tunable is initialized already, so no need to do
+     this.  */
+  GLRO(dl_hwcap_mask) = HWCAP_IMPORTANT;
+#endif
+
   /* Can we call xgetbv?  */
   if (HAS_CPU_FEATURE (OSXSAVE))
     {

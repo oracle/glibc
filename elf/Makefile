@@ -151,7 +151,8 @@ tests += loadtest restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-audit1 tst-audit2 tst-audit8 tst-audit9 \
 	 tst-stackguard1 tst-addr1 tst-thrlock \
 	 tst-unique1 tst-unique2 tst-unique3 tst-unique4 \
-	 tst-initorder tst-initorder2 tst-relsort1 tst-ptrguard1
+	 tst-initorder tst-initorder2 tst-relsort1 tst-ptrguard1 \
+	 tst-big-note
 #	 reldep9
 test-srcs = tst-pathopt
 selinux-enabled := $(shell cat /selinux/enforce 2> /dev/null)
@@ -223,7 +224,9 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-relsort1mod1 tst-relsort1mod2 tst-array2dep \
 		tst-array5dep \
 		tst-audit11mod1 tst-audit11mod2 tst-auditmod11 \
-		tst-audit12mod1 tst-audit12mod2 tst-audit12mod3 tst-auditmod12
+		tst-audit12mod1 tst-audit12mod2 tst-audit12mod3 tst-auditmod12 \
+		tst-big-note-lib
+
 ifeq (yesyes,$(have-fpie)$(build-shared))
 modules-names += tst-piemod1
 tests += tst-pie1
@@ -1234,3 +1237,5 @@ $(objpfx)tst-audit12: $(libdl)
 tst-audit12-ENV = LD_AUDIT=$(objpfx)tst-auditmod12.so
 $(objpfx)tst-audit12mod1.so: $(objpfx)tst-audit12mod2.so
 LDFLAGS-tst-audit12mod2.so = -Wl,--version-script=tst-audit12mod2.map
+
+$(objpfx)tst-big-note: $(objpfx)tst-big-note-lib.so

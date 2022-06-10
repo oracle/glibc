@@ -85,7 +85,7 @@ __lll_timedlock_wait (lll_lock_t *futex, const struct timespec *abstime, int pri
 
 
 /* These don't get included in libc.so  */
-#ifdef IS_IN_libpthread
+#if IS_IN (libpthread)
 int
 lll_unlock_wake_cb (lll_lock_t *futex)
 {

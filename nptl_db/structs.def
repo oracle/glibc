@@ -31,7 +31,7 @@
 #endif
 
 #ifndef DB_RTLD_GLOBAL_FIELD
-# if !defined IS_IN_libpthread
+# if !IS_IN (libpthread)
 #  define DB_RTLD_GLOBAL_FIELD(field)		\
   DB_STRUCT_FIELD (rtld_global, _##field)	\
   DB_MAIN_VARIABLE (_##field)
@@ -98,11 +98,11 @@ DB_STRUCT_ARRAY_FIELD (dtv, dtv)
 #define pointer_val pointer.val /* Field of anonymous struct in dtv_t.  */
 DB_STRUCT_FIELD (dtv_t, pointer_val)
 DB_STRUCT_FIELD (dtv_t, counter)
-#if !defined IS_IN_libpthread || TLS_TCB_AT_TP
+#if !IS_IN (libpthread) || TLS_TCB_AT_TP
 DB_STRUCT_FIELD (pthread, dtvp)
 #endif
 
-#if !(defined IS_IN_libpthread && !defined SHARED)
+#if !(IS_IN (libpthread) && !defined SHARED)
 DB_STRUCT (rtld_global)
 DB_RTLD_VARIABLE (_rtld_global)
 #endif

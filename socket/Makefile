@@ -26,7 +26,11 @@ headers	:= sys/socket.h sys/un.h bits/sockaddr.h bits/socket.h \
 routines := accept bind connect getpeername getsockname getsockopt	\
 	    listen recv recvfrom recvmsg send sendmsg sendto		\
 	    setsockopt shutdown socket socketpair isfdtype opensock	\
-	    sockatmark accept4 recvmmsg sendmmsg
+	    sockatmark accept4 recvmmsg sendmmsg sockaddr_un_set
+
+tests-internal := \
+  tst-sockaddr_un_set \
+  # tests-internal
 
 aux	 := have_sock_cloexec
 

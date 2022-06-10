@@ -1,4 +1,4 @@
-/* Copyright (C) 1996-2012 Free Software Foundation, Inc.
+/* Copyright (C) 1996-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1996.
 
@@ -25,11 +25,8 @@
 #ifdef USE_NSCD
 # include <nscd/nscd_proto.h>
 #endif
-#ifdef NEED__RES_HCONF
-# include <resolv/res_hconf.h>
-#endif
 #ifdef NEED__RES
-# include <resolv.h>
+# include <resolv/resolv_context.h>
 #endif
 /*******************************************************************\
 |* Here we assume several symbols to be defined:		   *|
@@ -56,8 +53,7 @@
 |* NEED_H_ERRNO  - an extra parameter will be passed to point to   *|
 |*		   the global `h_errno' variable.		   *|
 |*								   *|
-|* NEED__RES     - the global _res variable might be used so we	   *|
-|*		   will have to initialize it if necessary	   *|
+|* NEED__RES     - obtain a struct resolv_context resolver context *|
 |*								   *|
 |* PREPROCESS    - code run before anything else		   *|
 |*								   *|
@@ -216,6 +212,18 @@ INTERNAL (REENTRANT_NAME) (ADD_PARAMS, LOOKUP_TYPE *resbuf, char *buffer,
   bool any_service = false;
 #endif
 
+#ifdef NEED__RES
+  /* The HANDLE_DIGITS_DOTS case below already needs the resolver
+     configuration, so this has to happen early.  */
+  struct resolv_context *res_ctx = __resolv_context_get ();
+  if (res_ctx == NULL)
+    {
+      *h_errnop = NETDB_INTERNAL;
+      *result = NULL;
+      return errno;
+    }
+#endif /* NEED__RES */
+
 #ifdef PREPROCESS
   PREPROCESS;
 #endif
@@ -226,6 +234,9 @@ INTERNAL (REENTRANT_NAME) (ADD_PARAMS, LOOKUP_TYPE *resbuf, char *buffer,
 				      H_ERRNO_VAR_P))
     {
     case -1:
+# ifdef NEED__RES
+      __resolv_context_put (res_ctx);
+# endif
       return errno;
     case 1:
 #ifdef NEED_H_ERRNO
@@ -245,7 +256,12 @@ INTERNAL (REENTRANT_NAME) (ADD_PARAMS, LOOKUP_TYPE *resbuf, char *buffer,
       nscd_status = NSCD_NAME (ADD_VARIABLES, resbuf, buffer, buflen, result
 			       H_ERRNO_VAR);
       if (nscd_status >= 0)
-	return nscd_status;
+	{
+# ifdef NEED__RES
+	  __resolv_context_put (res_ctx);
+# endif
+	  return nscd_status;
+	}
     }
 #endif
 
@@ -263,21 +279,6 @@ INTERNAL (REENTRANT_NAME) (ADD_PARAMS, LOOKUP_TYPE *resbuf, char *buffer,
 	}
       else
 	{
-#ifdef NEED__RES
-	  /* The resolver code will really be used so we have to
-	     initialize it.  */
-	  if (__res_maybe_init (&_res, 0) == -1)
-	    {
-	      *h_errnop = NETDB_INTERNAL;
-	      *result = NULL;
-	      return errno;
-	    }
-#endif /* need _res */
-#ifdef NEED__RES_HCONF
-	  if (!_res_hconf.initialized)
-	    _res_hconf_init ();
-#endif /* need _res_hconf */
-
 	  void *tmp_ptr = fct.l;
 #ifdef PTR_MANGLE
 	  PTR_MANGLE (tmp_ptr);
@@ -405,6 +406,12 @@ done:
 #ifdef POSTPROCESS
   POSTPROCESS;
 #endif
+
+#ifdef NEED__RES
+  /* This has to happen late because the POSTPROCESS stage above might
+     need the resolver context.  */
+  __resolv_context_put (res_ctx);
+#endif /* NEED__RES */
 
   int res;
   if (status == NSS_STATUS_SUCCESS || status == NSS_STATUS_NOTFOUND)

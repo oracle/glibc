@@ -1,3 +1,21 @@
+/* Creation of DNS query packets.
+   Copyright (C) 1995-2017 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
+
 /*
  * Copyright (c) 1985, 1993
  *    The Regents of the University of California.  All rights reserved.
@@ -64,202 +82,222 @@
  * SOFTWARE.
  */
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static const char sccsid[] = "@(#)res_mkquery.c	8.1 (Berkeley) 6/4/93";
-static const char rcsid[] = "$BINDId: res_mkquery.c,v 8.12 1999/10/13 16:39:40 vixie Exp $";
-#endif /* LIBC_SCCS and not lint */
-
 #include <sys/types.h>
 #include <sys/param.h>
 #include <netinet/in.h>
 #include <arpa/nameser.h>
 #include <netdb.h>
-#include <resolv.h>
-#include <stdio.h>
+#include <resolv/resolv-internal.h>
+#include <resolv/resolv_context.h>
 #include <string.h>
+#include <sys/time.h>
+#include <shlib-compat.h>
 
-/* Options.  Leave them on. */
-/* #define DEBUG */
-
-#ifdef _LIBC
-# include <hp-timing.h>
-# if HP_TIMING_AVAIL
-#  define RANDOM_BITS(Var) { uint64_t v64; HP_TIMING_NOW (v64); Var = v64; }
-# endif
+#include <hp-timing.h>
+#include <stdint.h>
+#if HP_TIMING_AVAIL
+# define RANDOM_BITS(Var) { uint64_t v64; HP_TIMING_NOW (v64); Var = v64; }
 #endif
 
-/*
- * Form all types of queries.
- * Returns the size of the result or -1.
- */
 int
-res_nmkquery(res_state statp,
-	     int op,			/* opcode of query */
-	     const char *dname,		/* domain name */
-	     int class, int type,	/* class and type of query */
-	     const u_char *data,	/* resource record data */
-	     int datalen,		/* length of data */
-	     const u_char *newrr_in,	/* new rr for modify or append */
-	     u_char *buf,		/* buffer to put query */
-	     int buflen)		/* size of buffer */
+__res_context_mkquery (struct resolv_context *ctx, int op, const char *dname,
+                       int class, int type, const unsigned char *data,
+                       unsigned char *buf, int buflen)
 {
-	register HEADER *hp;
-	register u_char *cp;
-	register int n;
-	u_char *dnptrs[20], **dpp, **lastdnptr;
+  HEADER *hp;
+  unsigned char *cp;
+  int n;
+  unsigned char *dnptrs[20], **dpp, **lastdnptr;
 
-#ifdef DEBUG
-	if (statp->options & RES_DEBUG)
-		printf(";; res_nmkquery(%s, %s, %s, %s)\n",
-		       _res_opcodes[op], dname, p_class(class), p_type(type));
-#endif
-	/*
-	 * Initialize header fields.
-	 */
-	if ((buf == NULL) || (buflen < HFIXEDSZ))
-		return (-1);
-	memset(buf, 0, HFIXEDSZ);
-	hp = (HEADER *) buf;
-	/* We randomize the IDs every time.  The old code just
-	   incremented by one after the initial randomization which
-	   still predictable if the application does multiple
-	   requests.  */
-	int randombits;
-	do
-	  {
+  if (class < 0 || class > 65535 || type < 0 || type > 65535)
+    return -1;
+
+  /* Initialize header fields.  */
+  if ((buf == NULL) || (buflen < HFIXEDSZ))
+    return -1;
+  memset (buf, 0, HFIXEDSZ);
+  hp = (HEADER *) buf;
+  /* We randomize the IDs every time.  The old code just incremented
+     by one after the initial randomization which still predictable if
+     the application does multiple requests.  */
+  int randombits;
 #ifdef RANDOM_BITS
-	    RANDOM_BITS (randombits);
+  RANDOM_BITS (randombits);
 #else
-	    struct timeval tv;
-	    __gettimeofday (&tv, NULL);
-	    randombits = (tv.tv_sec << 8) ^ tv.tv_usec;
+  struct timeval tv;
+  __gettimeofday (&tv, NULL);
+  randombits = (tv.tv_sec << 8) ^ tv.tv_usec;
 #endif
-	  }
-	while ((randombits & 0xffff) == 0);
-	statp->id = (statp->id + randombits) & 0xffff;
-	hp->id = statp->id;
-	hp->opcode = op;
-	hp->rd = (statp->options & RES_RECURSE) != 0;
-	hp->rcode = NOERROR;
-	cp = buf + HFIXEDSZ;
-	buflen -= HFIXEDSZ;
-	dpp = dnptrs;
-	*dpp++ = buf;
-	*dpp++ = NULL;
-	lastdnptr = dnptrs + sizeof dnptrs / sizeof dnptrs[0];
-	/*
-	 * perform opcode specific processing
-	 */
-	switch (op) {
-	case NS_NOTIFY_OP:
-		if ((buflen -= QFIXEDSZ + (data == NULL ? 0 : RRFIXEDSZ)) < 0)
-			return (-1);
-		goto compose;
 
-	case QUERY:
-		if ((buflen -= QFIXEDSZ) < 0)
-			return (-1);
-	compose:
-		n = ns_name_compress(dname, cp, buflen,
-				     (const u_char **) dnptrs,
-				     (const u_char **) lastdnptr);
-		if (n < 0)
-			return (-1);
-		cp += n;
-		buflen -= n;
-		NS_PUT16 (type, cp);
-		NS_PUT16 (class, cp);
-		hp->qdcount = htons(1);
-		if (op == QUERY || data == NULL)
-			break;
-		/*
-		 * Make an additional record for completion domain.
-		 */
-		n = ns_name_compress((char *)data, cp, buflen,
-				     (const u_char **) dnptrs,
-				     (const u_char **) lastdnptr);
-		if (__builtin_expect (n < 0, 0))
-			return (-1);
-		cp += n;
-		buflen -= n;
-		NS_PUT16 (T_NULL, cp);
-		NS_PUT16 (class, cp);
-		NS_PUT32 (0, cp);
-		NS_PUT16 (0, cp);
-		hp->arcount = htons(1);
-		break;
+  hp->id = randombits;
+  hp->opcode = op;
+  hp->rd = (ctx->resp->options & RES_RECURSE) != 0;
+  hp->rcode = NOERROR;
+  cp = buf + HFIXEDSZ;
+  buflen -= HFIXEDSZ;
+  dpp = dnptrs;
+  *dpp++ = buf;
+  *dpp++ = NULL;
+  lastdnptr = dnptrs + sizeof dnptrs / sizeof dnptrs[0];
 
-	case IQUERY:
-		/*
-		 * Initialize answer section
-		 */
-		if (__builtin_expect (buflen < 1 + RRFIXEDSZ + datalen, 0))
-			return (-1);
-		*cp++ = '\0';	/* no domain name */
-		NS_PUT16 (type, cp);
-		NS_PUT16 (class, cp);
-		NS_PUT32 (0, cp);
-		NS_PUT16 (datalen, cp);
-		if (datalen) {
-			memcpy(cp, data, datalen);
-			cp += datalen;
-		}
-		hp->ancount = htons(1);
-		break;
+  /* Perform opcode specific processing.  */
+  switch (op)
+    {
+    case NS_NOTIFY_OP:
+      if ((buflen -= QFIXEDSZ + (data == NULL ? 0 : RRFIXEDSZ)) < 0)
+        return -1;
+      goto compose;
 
-	default:
-		return (-1);
-	}
-	return (cp - buf);
+    case QUERY:
+      if ((buflen -= QFIXEDSZ) < 0)
+        return -1;
+    compose:
+      n = ns_name_compress (dname, cp, buflen,
+                            (const unsigned char **) dnptrs,
+                            (const unsigned char **) lastdnptr);
+      if (n < 0)
+        return -1;
+      cp += n;
+      buflen -= n;
+      NS_PUT16 (type, cp);
+      NS_PUT16 (class, cp);
+      hp->qdcount = htons (1);
+      if (op == QUERY || data == NULL)
+        break;
+
+      /* Make an additional record for completion domain.  */
+      n = ns_name_compress ((char *)data, cp, buflen,
+                            (const unsigned char **) dnptrs,
+                            (const unsigned char **) lastdnptr);
+      if (__glibc_unlikely (n < 0))
+        return -1;
+      cp += n;
+      buflen -= n;
+      NS_PUT16 (T_NULL, cp);
+      NS_PUT16 (class, cp);
+      NS_PUT32 (0, cp);
+      NS_PUT16 (0, cp);
+      hp->arcount = htons (1);
+      break;
+
+    default:
+      return -1;
+    }
+  return cp - buf;
 }
-libresolv_hidden_def (res_nmkquery)
 
+/* Common part of res_nmkquery and res_mkquery.  */
+static int
+context_mkquery_common (struct resolv_context *ctx,
+                        int op, const char *dname, int class, int type,
+                        const unsigned char *data,
+                        unsigned char *buf, int buflen)
+{
+  if (ctx == NULL)
+    return -1;
+  int result = __res_context_mkquery
+    (ctx, op, dname, class, type, data, buf, buflen);
+  if (result >= 2)
+    memcpy (&ctx->resp->id, buf, 2);
+  __resolv_context_put (ctx);
+  return result;
+}
 
-/* attach OPT pseudo-RR, as documented in RFC2671 (EDNS0). */
-#ifndef T_OPT
-#define T_OPT   41
-#endif
+/* Form all types of queries.  Returns the size of the result or -1 on
+   error.
+
+   STATP points to an initialized resolver state.  OP is the opcode of
+   the query.  DNAME is the domain.  CLASS and TYPE are the DNS query
+   class and type.  DATA can be NULL; otherwise, it is a pointer to a
+   domain name which is included in the generated packet (if op ==
+   NS_NOTIFY_OP).  BUF must point to the out buffer of BUFLEN bytes.
+
+   DATALEN and NEWRR_IN are currently ignored.  */
+int
+res_nmkquery (res_state statp, int op, const char *dname,
+              int class, int type,
+              const unsigned char *data, int datalen,
+              const unsigned char *newrr_in,
+              unsigned char *buf, int buflen)
+{
+  return context_mkquery_common
+    (__resolv_context_get_override (statp),
+     op, dname, class, type, data, buf, buflen);
+}
 
 int
-__res_nopt(res_state statp,
-	   int n0,                /* current offset in buffer */
-	   u_char *buf,           /* buffer to put query */
-	   int buflen,            /* size of buffer */
-	   int anslen)            /* UDP answer buffer size */
+res_mkquery (int op, const char *dname, int class, int type,
+             const unsigned char *data, int datalen,
+             const unsigned char *newrr_in,
+             unsigned char *buf, int buflen)
 {
-	u_int16_t flags = 0;
-
-#ifdef DEBUG
-	if ((statp->options & RES_DEBUG) != 0U)
-		printf(";; res_nopt()\n");
-#endif
-
-	HEADER *hp = (HEADER *) buf;
-	u_char *cp = buf + n0;
-	u_char *ep = buf + buflen;
-
-	if ((ep - cp) < 1 + RRFIXEDSZ)
-		return -1;
-
-	*cp++ = 0;	/* "." */
-
-	NS_PUT16(T_OPT, cp);	/* TYPE */
-	NS_PUT16(MIN(anslen, 0xffff), cp);	/* CLASS = UDP payload size */
-	*cp++ = NOERROR;	/* extended RCODE */
-	*cp++ = 0;		/* EDNS version */
-
-	if (statp->options & RES_USE_DNSSEC) {
-#ifdef DEBUG
-		if (statp->options & RES_DEBUG)
-			printf(";; res_opt()... ENDS0 DNSSEC\n");
-#endif
-		flags |= NS_OPT_DNSSEC_OK;
-	}
-
-	NS_PUT16(flags, cp);
-	NS_PUT16(0, cp);	/* RDLEN */
-	hp->arcount = htons(ntohs(hp->arcount) + 1);
-
-	return cp - buf;
+  return context_mkquery_common
+    (__resolv_context_get_preinit (),
+     op, dname, class, type, data, buf, buflen);
 }
-libresolv_hidden_def (__res_nopt)
+
+/* Create an OPT resource record.  Return the length of the final
+   packet, or -1 on error.
+
+   STATP must be an initialized resolver state.  N0 is the current
+   number of bytes of the packet (already written to BUF by the
+   aller).  BUF is the packet being constructed.  The array it
+   pointers to must be BUFLEN bytes long.  ANSLEN is the advertised
+   EDNS buffer size (to be included in the OPT resource record).  */
+int
+__res_nopt (struct resolv_context *ctx,
+            int n0, unsigned char *buf, int buflen, int anslen)
+{
+  uint16_t flags = 0;
+  HEADER *hp = (HEADER *) buf;
+  unsigned char *cp = buf + n0;
+  unsigned char *ep = buf + buflen;
+
+  if ((ep - cp) < 1 + RRFIXEDSZ)
+    return -1;
+
+  /* Add the root label.  */
+  *cp++ = 0;
+
+  NS_PUT16 (T_OPT, cp);         /* Record type.  */
+
+  /* Lowering the advertised buffer size based on the actual
+     answer buffer size is desirable because the server will
+     minimize the reply to fit into the UDP packet (and A
+     non-minimal response might not fit the buffer).
+
+     The RESOLV_EDNS_BUFFER_SIZE limit could still result in TCP
+     fallback and a non-minimal response which has to be
+     hard-truncated in the stub resolver, but this is price to
+     pay for avoiding fragmentation.  (This issue does not
+     affect the nss_dns functions because they use the stub
+     resolver in such a way that it allocates a properly sized
+     response buffer.)  */
+  {
+    uint16_t buffer_size;
+    if (anslen < 512)
+      buffer_size = 512;
+    else if (anslen > RESOLV_EDNS_BUFFER_SIZE)
+      buffer_size = RESOLV_EDNS_BUFFER_SIZE;
+    else
+      buffer_size = anslen;
+    NS_PUT16 (buffer_size, cp);
+  }
+
+  *cp++ = NOERROR;              /* Extended RCODE.  */
+  *cp++ = 0;                    /* EDNS version.  */
+
+  if (ctx->resp->options & RES_USE_DNSSEC)
+    flags |= NS_OPT_DNSSEC_OK;
+
+  NS_PUT16 (flags, cp);
+  NS_PUT16 (0, cp);       /* RDATA length (no options are preent).  */
+  hp->arcount = htons (ntohs (hp->arcount) + 1);
+
+  return cp - buf;
+}
+
+#if SHLIB_COMPAT (libresolv, GLIBC_2_0, GLIBC_2_2)
+# undef res_mkquery
+weak_alias (__res_mkquery, res_mkquery);
+#endif

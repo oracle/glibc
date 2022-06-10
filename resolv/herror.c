@@ -44,11 +44,6 @@
  * SOFTWARE.
  */
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static const char sccsid[] = "@(#)herror.c	8.1 (Berkeley) 6/4/93";
-static const char rcsid[] = "$BINDId: herror.c,v 8.11 1999/10/13 16:39:39 vixie Exp $";
-#endif /* LIBC_SCCS and not lint */
-
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/uio.h>
@@ -85,14 +80,14 @@ herror(const char *s) {
 		v->iov_base = (/*noconst*/ char *)s;
 		v->iov_len = strlen(s);
 		v++;
-		v->iov_base = ": ";
+		v->iov_base = (char *) ": ";
 		v->iov_len = 2;
 		v++;
 	}
 	v->iov_base = (char *)hstrerror(h_errno);
 	v->iov_len = strlen(v->iov_base);
 	v++;
-	v->iov_base = "\n";
+	v->iov_base = (char *) "\n";
 	v->iov_len = 1;
 	writev_not_cancel_no_status(STDERR_FILENO, iov, (v - iov) + 1);
 }

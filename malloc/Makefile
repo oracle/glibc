@@ -32,13 +32,16 @@ tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 	 tst-interpose-nothread \
 	 tst-interpose-thread \
 	 tst-malloc_info \
-	 tst-malloc-usable-tunables
 
 tests-static := \
 	 tst-interpose-static-nothread \
 	 tst-interpose-static-thread \
 	 tst-malloc-usable-static \
-	 tst-malloc-usable-static-tunables
+
+ifneq (no,$(have-tunables))
+tests += tst-malloc-usable-tunables
+tests-static += tst-malloc-usable-static-tunables
+endif
 
 test-srcs = tst-mtrace
 

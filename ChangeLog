@@ -1,3 +1,12 @@
+2017-06-22  Siddhesh Poyarekar  <siddhesh@sourceware.org>
+
+	* benchtests/json-lib.h: Include inttypes.h.
+	(json_attr_int, json_attr_int, json_element_string,
+	json_element_int, json_element_uint): New functions.
+	* benchtests/json-lib.c: (json_attr_int, json_attr_int,
+	json_element_string, json_element_int, json_element_uint): New
+	functions.
+
 2017-07-17  Szabolcs Nagy  <szabolcs.nagy@arm.com>
 
 	* sysdeps/unix/sysv/linux/aarch64/bits/hwcap.h (HWCAP_FCMA): New macro.

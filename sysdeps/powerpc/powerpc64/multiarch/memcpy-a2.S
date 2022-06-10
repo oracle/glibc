@@ -25,7 +25,8 @@
   .align ALIGNARG(alignt);					\
   EALIGN_W_##words;						\
   BODY_LABEL(__memcpy_a2):					\
-  cfi_startproc;
+  cfi_startproc;						\
+  LOCALENTRY(__memcpy_a2)
 
 #undef END_GEN_TB
 #define END_GEN_TB(name, mask)					\

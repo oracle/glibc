@@ -25,7 +25,8 @@
   .align ALIGNARG(alignt);					\
   EALIGN_W_##words;						\
   BODY_LABEL(__memcmp_power4):					\
-  cfi_startproc;
+  cfi_startproc;						\
+  LOCALENTRY(__memcmp_power4)
 
 #undef END
 #define END(name)						\

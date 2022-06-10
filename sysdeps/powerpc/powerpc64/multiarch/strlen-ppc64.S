@@ -25,7 +25,8 @@
   ENTRY_2(__strlen_ppc)						\
   .align ALIGNARG(2);						\
   BODY_LABEL(__strlen_ppc):					\
-  cfi_startproc;
+  cfi_startproc;						\
+  LOCALENTRY(__strlen_ppc)
 
 # undef END
 # define END(name)						\

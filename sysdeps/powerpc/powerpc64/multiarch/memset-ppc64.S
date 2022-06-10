@@ -37,7 +37,8 @@ END_GEN_TB (__bzero_ppc,TB_TOCLESS)
   .align ALIGNARG(alignt);					\
   EALIGN_W_##words;						\
   BODY_LABEL(__memset_ppc):					\
-  cfi_startproc;
+  cfi_startproc;						\
+  LOCALENTRY(__memset_ppc)
 
 # undef END_GEN_TB
 # define END_GEN_TB(name, mask)					\

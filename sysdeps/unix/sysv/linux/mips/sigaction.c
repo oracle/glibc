@@ -32,13 +32,13 @@
    translate it here.  */
 #include <kernel_sigaction.h>
 
-#if _MIPS_SIM != _ABIO32
+#ifdef HAVE_SA_RESTORER
 
 # ifdef __NR_rt_sigreturn
-static void restore_rt (void) asm ("__restore_rt");
+extern void restore_rt (void) asm ("__restore_rt") attribute_hidden;
 # endif
 # ifdef __NR_sigreturn
-static void restore (void) asm ("__restore");
+extern void restore (void) asm ("__restore") attribute_hidden;
 # endif
 #endif
 
@@ -108,6 +108,7 @@ weak_alias (__libc_sigaction, sigaction)
 #define RESTORE2(name, syscall) \
 asm						\
   (						\
+   ".text\n"                                    \
    ".align 4\n"					\
    "__" #name ":\n"				\
    "	li $2, " #syscall "\n"			\
@@ -115,7 +116,7 @@ asm						\
    );
 
 /* The return code for realtime-signals.  */
-#if _MIPS_SIM != _ABIO32
+#ifdef HAVE_SA_RESTORER
 # ifdef __NR_rt_sigreturn
 RESTORE (restore_rt, __NR_rt_sigreturn)
 # endif

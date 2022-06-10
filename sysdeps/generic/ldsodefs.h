@@ -384,8 +384,18 @@ struct rtld_global
    have to iterate beyond the first element in the slotinfo list.  */
 #define TLS_SLOTINFO_SURPLUS (62)
 
-/* Number of additional slots in the dtv allocated.  */
-#define DTV_SURPLUS	(14)
+/* Number of additional allocated dtv slots.  This was initially
+   14, but problems with python, MESA, and X11's uses of static TLS meant
+   that most distributions were very close to this limit when they loaded
+   dynamically interpreted languages that used graphics. The simplest
+   solution was to roughly double the number of slots. The actual static
+   image space usage was relatively small, for example in MESA you
+   had only two dispatch pointers for a total of 16 bytes.  If we hit up
+   against this limit again we should start a campaign with the
+   distributions to coordinate the usage of static TLS.  Any user of this
+   resource is effectively coordinating a global resource since this
+   surplus is allocated for each thread at startup.  */
+#define DTV_SURPLUS	(32)
 
   /* Initial dtv of the main thread, not allocated with normal malloc.  */
   EXTERN void *_dl_initial_dtv;

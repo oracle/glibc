@@ -586,6 +586,7 @@ new_heap(size_t size, size_t top_pad)
   h->size = size;
   h->mprotect_size = size;
   THREAD_STAT(stat_n_heaps++);
+  LIBC_PROBE (memory_heap_new, 2, h, h->size);
   return h;
 }
 
@@ -611,6 +612,7 @@ grow_heap(heap_info *h, long diff)
   }
 
   h->size = new_size;
+  LIBC_PROBE (memory_heap_more, 2, h, h->size);
   return 0;
 }
 
@@ -638,6 +640,7 @@ shrink_heap(heap_info *h, long diff)
   /*fprintf(stderr, "shrink %p %08lx\n", h, new_size);*/
 
   h->size = new_size;
+  LIBC_PROBE (memory_heap_less, 2, h, h->size);
   return 0;
 }
 
@@ -679,6 +682,7 @@ heap_trim(heap_info *heap, size_t pad)
       break;
     ar_ptr->system_mem -= heap->size;
     arena_mem -= heap->size;
+    LIBC_PROBE (memory_heap_free, 2, heap, heap->size);
     delete_heap(heap);
     heap = prev_heap;
     if(!prev_inuse(p)) { /* consolidate backward */
@@ -741,6 +745,7 @@ _int_new_arena(size_t size)
   top(a) = (mchunkptr)ptr;
   set_head(top(a), (((char*)h + h->size) - ptr) | PREV_INUSE);
 
+  LIBC_PROBE (memory_arena_new, 2, a, size);
   tsd_setspecific(arena_key, (void *)a);
   mutex_init(&a->mutex);
   (void)mutex_lock(&a->mutex);
@@ -779,6 +784,7 @@ get_free_list (void)
 
       if (result != NULL)
 	{
+	  LIBC_PROBE (memory_arena_reuse_free_list, 1, result);
 	  (void)mutex_lock(&result->mutex);
 	  tsd_setspecific(arena_key, (void *)result);
 	  THREAD_STAT(++(result->stat_lock_loop));
@@ -815,9 +821,11 @@ reused_arena (mstate avoid_arena)
     result = result->next;
 
   /* No arena available.  Wait for the next in line.  */
+  LIBC_PROBE (memory_arena_reuse_wait, 3, &result->mutex, result, avoid_arena);
   (void)mutex_lock(&result->mutex);
 
  out:
+  LIBC_PROBE (memory_arena_reuse, 2, result, avoid_arena);
   tsd_setspecific(arena_key, (void *)result);
   THREAD_STAT(++(result->stat_lock_loop));
   next_to_use = result->next;
@@ -896,6 +904,7 @@ arena_get2(mstate a_tsd, size_t size, mstate avoid_arena)
       if (retried)
 	(void)mutex_unlock(&list_lock);
       THREAD_STAT(++(a->stat_lock_loop));
+      LIBC_PROBE (memory_arena_reuse, 2, a, a_tsd);
       tsd_setspecific(arena_key, (void *)a);
       return a;
     }
@@ -908,6 +917,7 @@ arena_get2(mstate a_tsd, size_t size, mstate avoid_arena)
      locks. */
   if(!retried && mutex_trylock(&list_lock)) {
     /* We will block to not run in a busy loop.  */
+    LIBC_PROBE (memory_arena_reuse_wait, 3, &list_lock, NULL, a_tsd);
     (void)mutex_lock(&list_lock);
 
     /* Since we blocked there might be an arena available now.  */
@@ -931,6 +941,7 @@ arena_get2(mstate a_tsd, size_t size, mstate avoid_arena)
 static mstate
 arena_get_retry (mstate ar_ptr, size_t bytes)
 {
+  LIBC_PROBE (memory_arena_retry, 2, bytes, ar_ptr);
   if(ar_ptr != &main_arena) {
     (void)mutex_unlock(&ar_ptr->mutex);
     ar_ptr = &main_arena;

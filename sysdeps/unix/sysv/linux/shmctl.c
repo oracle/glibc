@@ -72,7 +72,7 @@ compat_symbol (libc, __old_shmctl, shmctl, GLIBC_2_0);
 int
 __new_shmctl (int shmid, int cmd, struct shmid_ds *buf)
 {
-#if __ASSUME_IPC64 > 0
+#ifdef __ASSUME_IPC64
   return INLINE_SYSCALL (ipc, 5, IPCOP_shmctl, shmid, cmd | __IPC_64, 0,
 			 buf);
 #else

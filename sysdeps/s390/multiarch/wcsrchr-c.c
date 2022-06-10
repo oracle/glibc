@@ -1,4 +1,5 @@
-/* Copyright (C) 1991, 1995, 1996, 1997, 2003 Free Software Foundation, Inc.
+/* Default wcsrchr implementation for S/390.
+   Copyright (C) 2015 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,39 +16,10 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <string.h>
+#if defined HAVE_S390_VX_ASM_SUPPORT && !defined NOT_IN_libc
+# define WCSRCHR  __wcsrchr_c
 
-#undef strrchr
-
-#ifndef STRRCHR
-# define STRRCHR strrchr
+# include <wchar.h>
+extern __typeof (wcsrchr) __wcsrchr_c;
+# include <wcsmbs/wcsrchr.c>
 #endif
-
-/* Find the last occurrence of C in S.  */
-char *
-STRRCHR (const char *s, int c)
-{
-  register const char *found, *p;
-
-  c = (unsigned char) c;
-
-  /* Since strchr is fast, we use it rather than the obvious loop.  */
-
-  if (c == '\0')
-    return strchr (s, '\0');
-
-  found = NULL;
-  while ((p = strchr (s, c)) != NULL)
-    {
-      found = p;
-      s = p + 1;
-    }
-
-  return (char *) found;
-}
-
-#ifdef weak_alias
-#undef rindex
-weak_alias (strrchr, rindex)
-#endif
-libc_hidden_builtin_def (strrchr)

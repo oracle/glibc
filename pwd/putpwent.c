@@ -24,9 +24,7 @@
 /* Write an entry to the given stream.
    This must know the format of the password file.  */
 int
-putpwent (p, stream)
-     const struct passwd *p;
-     FILE *stream;
+putpwent (const struct passwd *p, FILE *stream)
 {
   if (p == NULL || stream == NULL)
     {

@@ -28,7 +28,16 @@ tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 	 tst-mallocstate tst-mcheck tst-mallocfork tst-trim1 \
 	 tst-malloc-usable \
 	 tst-malloc-backtrace tst-malloc-thread-exit \
-	 tst-malloc-thread-fail tst-malloc-fork-deadlock
+	 tst-malloc-thread-fail tst-malloc-fork-deadlock \
+	 tst-interpose-nothread \
+	 tst-interpose-thread \
+	 tst-interpose-static-nothread \
+	 tst-interpose-static-thread \
+
+tests-static := \
+	 tst-interpose-static-nothread \
+	 tst-interpose-static-thread \
+
 test-srcs = tst-mtrace
 
 routines = malloc morecore mcheck mtrace obstack
@@ -39,6 +48,15 @@ non-lib.a := libmcheck.a
 # Additional library.
 extra-libs = libmemusage
 extra-libs-others = $(extra-libs)
+
+# Helper objects for some tests.
+extra-tests-objs += \
+  tst-interpose-aux-nothread.o \
+  tst-interpose-aux-thread.o \
+
+test-extras = \
+  tst-interpose-aux-nothread \
+  tst-interpose-aux-thread \
 
 libmemusage-routines = memusage
 libmemusage-inhibit-o = $(filter-out .os,$(object-suffixes))
@@ -156,6 +174,13 @@ $(objpfx)libmemusage.so: $(common-objpfx)dlfcn/libdl.so
 
 # Extra dependencies
 $(foreach o,$(all-object-suffixes),$(objpfx)malloc$(o)): arena.c hooks.c
+
+$(objpfx)tst-interpose-nothread: $(objpfx)tst-interpose-aux-nothread.o
+$(objpfx)tst-interpose-thread: \
+  $(objpfx)tst-interpose-aux-thread.o $(shared-thread-library)
+$(objpfx)tst-interpose-static-nothread: $(objpfx)tst-interpose-aux-nothread.o
+$(objpfx)tst-interpose-static-thread: \
+  $(objpfx)tst-interpose-aux-thread.o $(static-thread-library)
 
 # Compile the tests with a flag which suppresses the mallopt call in
 # the test skeleton.

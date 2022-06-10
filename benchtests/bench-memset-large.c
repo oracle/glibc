@@ -1,5 +1,5 @@
-/* Measure memset functions.
-   Copyright (C) 2013-2015 Free Software Foundation, Inc.
+/* Measure memset functions with large data sizes.
+   Copyright (C) 2016-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,16 +17,14 @@
    <http://www.gnu.org/licenses/>.  */
 
 #define TEST_MAIN
-#ifdef TEST_BZERO
-# define TEST_NAME "bzero"
+#ifndef WIDE
+# define TEST_NAME "memset"
 #else
-# ifndef WIDE
-#  define TEST_NAME "memset"
-# else
-#  define TEST_NAME "wmemset"
-# endif /* WIDE */
-#endif /* !TEST_BZERO */
-#define MIN_PAGE_SIZE 131072
+# define TEST_NAME "wmemset"
+#endif /* WIDE */
+#define START_SIZE (128 * 1024)
+#define MIN_PAGE_SIZE (getpagesize () + 64 * 1024 * 1024)
+#define TIMEOUT (20 * 60)
 #include "bench-string.h"
 
 #ifndef WIDE
@@ -42,46 +40,11 @@
 # define MEMCMP wmemcmp
 #endif /* WIDE */
 
-CHAR *SIMPLE_MEMSET (CHAR *, int, size_t);
+#include <assert.h>
 
-#ifdef TEST_BZERO
-typedef void (*proto_t) (char *, size_t);
-void simple_bzero (char *, size_t);
-void builtin_bzero (char *, size_t);
-
-IMPL (simple_bzero, 0)
-IMPL (builtin_bzero, 0)
-IMPL (bzero, 1)
-
-void
-simple_bzero (char *s, size_t n)
-{
-  SIMPLE_MEMSET (s, 0, n);
-}
-
-void
-builtin_bzero (char *s, size_t n)
-{
-  __builtin_bzero (s, n);
-}
-#else
-typedef CHAR *(*proto_t) (CHAR *, int, size_t);
-
-IMPL (SIMPLE_MEMSET, 0)
-# ifndef WIDE
-char *builtin_memset (char *, int, size_t);
-IMPL (builtin_memset, 0)
-# endif /* !WIDE */
 IMPL (MEMSET, 1)
 
-# ifndef WIDE
-char *
-builtin_memset (char *s, int c, size_t n)
-{
-  return __builtin_memset (s, c, n);
-}
-# endif /* !WIDE */
-#endif /* !TEST_BZERO */
+typedef CHAR *(*proto_t) (CHAR *, int, size_t);
 
 CHAR *
 inhibit_loop_to_libcall
@@ -96,17 +59,13 @@ SIMPLE_MEMSET (CHAR *s, int c, size_t n)
 static void
 do_one_test (impl_t *impl, CHAR *s, int c __attribute ((unused)), size_t n)
 {
-  size_t i, iters = INNER_LOOP_ITERS;
+  size_t i, iters = 16;
   timing_t start, stop, cur;
 
   TIMING_NOW (start);
   for (i = 0; i < iters; ++i)
     {
-#ifdef TEST_BZERO
-      CALL (impl, s, n);
-#else
       CALL (impl, s, c, n);
-#endif /* !TEST_BZERO */
     }
   TIMING_NOW (stop);
 
@@ -118,7 +77,7 @@ do_one_test (impl_t *impl, CHAR *s, int c __attribute ((unused)), size_t n)
 static void
 do_test (size_t align, int c, size_t len)
 {
-  align &= 7;
+  align &= 63;
   if ((align + len) * sizeof (CHAR) > page_size)
     return;
 
@@ -134,7 +93,7 @@ int
 test_main (void)
 {
   size_t i;
-  int c = 0;
+  int c;
 
   test_init ();
 
@@ -143,30 +102,14 @@ test_main (void)
     printf ("\t%s", impl->name);
   putchar ('\n');
 
-#ifndef TEST_BZERO
-  for (c = -65; c <= 130; c += 65)
-#endif
+  c = 65;
+  for (i = START_SIZE; i <= MIN_PAGE_SIZE; i <<= 1)
     {
-      for (i = 0; i < 18; ++i)
-	do_test (0, c, 1 << i);
-      for (i = 1; i < 32; ++i)
-	{
-	  do_test (i, c, i);
-	  if (i & (i - 1))
-	    do_test (0, c, i);
-	}
-      for (i = 32; i < 512; i+=32)
-	{
-	  do_test (0, c, i);
-	  do_test (i, c, i);
-	}
-      do_test (1, c, 14);
-      do_test (3, c, 1024);
-      do_test (4, c, 64);
-      do_test (2, c, 25);
+      do_test (0, c, i);
+      do_test (3, c, i);
     }
 
   return ret;
 }
 
-#include "../test-skeleton.c"
+#include <support/test-driver.c>

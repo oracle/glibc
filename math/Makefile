@@ -189,14 +189,8 @@ $(objpfx)libieee.a: $(objpfx)ieee-math.o
 	$(patsubst %/,cd % &&,$(objpfx)) \
 	$(LN_S) $(<F) $(@F)
 
-ifeq ($(build-shared),yes)
-$(addprefix $(objpfx),$(tests)): $(objpfx)libm.so$(libm.so-version)
-else
-$(addprefix $(objpfx),$(tests)): $(objpfx)libm.a
-endif
-ifeq ($(build-bounded),yes)
-$(tests:%=$(objpfx)%-bp): $(objpfx)libm_b.a
-endif
+$(addprefix $(objpfx),$(filter-out $(tests-static),$(tests))): $(libm)
+$(addprefix $(objpfx),$(tests-static)): $(objpfx)libm.a
 
 gmp-objs = $(patsubst %,$(common-objpfx)stdlib/%.o,\
 		      add_n sub_n cmp addmul_1 mul_1 mul_n divmod_1 \

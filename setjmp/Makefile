@@ -30,3 +30,5 @@ tests		:= tst-setjmp jmpbug bug269-setjmp \
 
 
 include ../Rules
+
+$(objpfx)tst-setjmp-fp: $(libm)

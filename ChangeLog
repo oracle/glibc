@@ -1,3 +1,15 @@
+2017-01-04  Joseph Myers  <joseph@codesourcery.com>
+
+	* malloc/tst-malloc.c: Include <libc-internal.h>.
+	(do_test): Disable -Walloc-size-larger-than= around tests of
+	malloc with negative sizes.
+	* malloc/tst-mcheck.c: Include <libc-internal.h>.
+	(do_test): Disable -Walloc-size-larger-than= around tests of
+	malloc and realloc with negative sizes.
+	* malloc/tst-realloc.c: Include <libc-internal.h>.
+	(do_test): Disable -Walloc-size-larger-than= around tests of
+	realloc with negative sizes.
+
 2016-10-28  Florian Weimer  <fweimer@redhat.com>
 
 	* malloc/malloc.c: Update chunk layout comments.

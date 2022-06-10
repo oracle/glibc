@@ -11818,6 +11818,10 @@ d2009-10-30  Ulrich Drepper  <drepper@redhat.com>
 	[BZ #4368]
 	* stdlib/stdlib.h: Remove obsolete part of comment for realpath.
 
+2007-04-16  Jakub Jelinek  <jakub@redhat.com>
+
+	* locale/programs/locarchive.c (add_alias, insert_name): Remove static.
+
 2007-04-16  Ulrich Drepper  <drepper@redhat.com>
 
 	[BZ #4364]

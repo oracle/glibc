@@ -25,20 +25,13 @@
 #ifdef USE_WIDE_CHAR
 # define STRTOF		wcstold_l
 # define __STRTOF	__wcstold_l
+# define STRTOF_NAN	__wcstold_nan
 #else
 # define STRTOF		strtold_l
 # define __STRTOF	__strtold_l
+# define STRTOF_NAN	__strtold_nan
 #endif
 #define MPN2FLOAT	__mpn_construct_long_double
 #define FLOAT_HUGE_VAL	HUGE_VALL
-#define SET_MANTISSA(flt, mant) \
-  do { union ieee854_long_double u;					      \
-       u.d = (flt);							      \
-       u.ieee.mantissa0 = 0x8000;					      \
-       u.ieee.mantissa1 = 0;						      \
-       u.ieee.mantissa2 = ((mant) >> 32);	      			      \
-       u.ieee.mantissa3 = (mant) & 0xffffffff;				      \
-       (flt) = u.d;							      \
-  } while (0)
 
 #include <strtod_l.c>

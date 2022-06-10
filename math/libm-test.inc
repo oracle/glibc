@@ -5691,6 +5691,15 @@ frexp_test (void)
   TEST_fI_f1 (frexp, 12.8L, 0.8L, 4);
   TEST_fI_f1 (frexp, -27.34L, -0.854375L, 5);
 
+#if defined TEST_LDOUBLE && LDBL_MANT_DIG >= 106
+  TEST_fI_f1 (frexp, 1.0L-0x1p-106L, 1.0L-0x1p-106L, 0),
+  TEST_fI_f1 (frexp, 1.0L, 0.5L, 1),
+  TEST_fI_f1 (frexp, 1.0L+0x1p-105L, 0.5L+0x1p-106L, 1),
+  TEST_fI_f1 (frexp, -1.0L+0x1p-106L, -1.0L+0x1p-106L, 0),
+  TEST_fI_f1 (frexp, -1.0L, -0.5L, 1),
+  TEST_fI_f1 (frexp, -1.0L-0x1p-105L, -0.5L-0x1p-106L, 1),
+#endif
+
   END (frexp);
 }
 

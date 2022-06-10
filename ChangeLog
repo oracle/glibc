@@ -1,3 +1,8 @@
+2014-05-05  Andrew Pinski  <apinski@cavium.com>
+
+	* sysdeps/mips/strcmp.c: Copy the one from newlib and use that one
+	as it performes better than the MIPS provided one.
+
 2014-04-22  Yufeng Zhang  <yufeng.zhang@arm.com>
 
 	* stdlib/longlong.h (count_leading_zeros, count_trailing_zeros)

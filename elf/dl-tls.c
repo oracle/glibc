@@ -105,6 +105,28 @@ _dl_next_tls_modid (void)
 }
 
 
+size_t
+internal_function
+_dl_count_modids (void)
+{
+  if (! __builtin_expect (GL(dl_tls_dtv_gaps), true))
+    return GL(dl_tls_max_dtv_idx);
+
+  size_t n = 0;
+  struct dtv_slotinfo_list *runp = GL(dl_tls_dtv_slotinfo_list);
+  while (runp != NULL)
+    {
+      for (size_t i = 0; i < runp->len; ++i)
+	if (runp->slotinfo[i].map != NULL)
+	  ++n;
+
+      runp = runp->next;
+    }
+
+  return n;
+}
+
+
 #ifdef SHARED
 void
 internal_function
@@ -407,6 +429,7 @@ _dl_allocate_tls_init (void *result)
 
 	  /* Keep track of the maximum generation number.  This might
 	     not be the generation counter.  */
+	  assert (listp->slotinfo[cnt].gen <= GL(dl_tls_generation));
 	  maxgen = MAX (maxgen, listp->slotinfo[cnt].gen);
 
 	  if (map->l_tls_offset == NO_TLS_OFFSET

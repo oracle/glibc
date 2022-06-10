@@ -1562,6 +1562,10 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 	}
     }
 
+  /* Keep track of the currently loaded modules to count how many
+     non-audit modules which use TLS are loaded.  */
+  size_t count_modids = _dl_count_modids ();
+
   /* Set up debugging before the debugger is notified for the first time.  */
 #ifdef ELF_MACHINE_DEBUG_SETUP
   /* Some machines (e.g. MIPS) don't use DT_DEBUG in this way.  */
@@ -2220,7 +2224,8 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 # define NONTLS_INIT_TP do { } while (0)
 #endif
 
-  if (!was_tls_init_tp_called && GL(dl_tls_max_dtv_idx) > 0)
+  if ((!was_tls_init_tp_called && GL(dl_tls_max_dtv_idx) > 0)
+      || count_modids != _dl_count_modids ())
     ++GL(dl_tls_generation);
 
   /* Now that we have completed relocation, the initializer data

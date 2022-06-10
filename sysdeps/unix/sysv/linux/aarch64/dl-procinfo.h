@@ -25,7 +25,28 @@
 #include <sysdep.h>
 
 /* We cannot provide a general printing function.  */
-#define _dl_procinfo(type, word) -1
+static inline int
+__attribute__ ((unused))
+_dl_procinfo (unsigned int type, unsigned long int word)
+{
+  /* This table should match the information from arch/arm64/kernel/cpuinfo.c
+     in the kernel sources.  */
+  int i;
+
+  /* Fallback to unknown output mechanism.  */
+  if (type == AT_HWCAP2)
+    return -1;
+
+  _dl_printf ("AT_HWCAP:   ");
+
+  for (i = 0; i < 32; ++i)
+    if (word & (1 << i))
+      _dl_printf (" %s", GLRO(dl_aarch64_cap_flags)[i]);
+
+  _dl_printf ("\n");
+
+  return 0;
+}
 
 /* HWCAP_CPUID should be available by default to influence IFUNC as well as
    library search.  */

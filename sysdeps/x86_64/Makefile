@@ -21,6 +21,11 @@ endif
 ifeq ($(subdir),elf)
 sysdep-dl-routines += tlsdesc dl-tlsdesc
 
+tests += ifuncmain8
+modules-names += ifuncmod8
+
+$(objpfx)ifuncmain8: $(objpfx)ifuncmod8.so
+
 tests += tst-quad1 tst-quad2
 modules-names += tst-quadmod1 tst-quadmod2
 
@@ -34,18 +39,32 @@ tests-pie += $(quad-pie-test)
 $(objpfx)tst-quad1pie: $(objpfx)tst-quadmod1pie.o
 $(objpfx)tst-quad2pie: $(objpfx)tst-quadmod2pie.o
 
+tests += tst-sse tst-avx tst-avx512
+test-extras += tst-avx-aux tst-avx512-aux
+extra-test-objs += tst-avx-aux.o tst-avx512-aux.o
+
 tests += tst-audit10
-modules-names += tst-auditmod10a tst-auditmod10b
+modules-names += tst-auditmod10a tst-auditmod10b \
+		 tst-ssemod tst-avxmod tst-avx512mod
 
 $(objpfx)tst-audit10: $(objpfx)tst-auditmod10a.so
 $(objpfx)tst-audit10.out: $(objpfx)tst-auditmod10b.so
 tst-audit10-ENV = LD_AUDIT=$(objpfx)tst-auditmod10b.so
+
+$(objpfx)tst-sse: $(objpfx)tst-ssemod.so
+$(objpfx)tst-avx: $(objpfx)tst-avx-aux.o $(objpfx)tst-avxmod.so
+$(objpfx)tst-avx512: $(objpfx)tst-avx512-aux.o $(objpfx)tst-avx512mod.so
+
+CFLAGS-tst-avx-aux.c += $(AVX-CFLAGS)
+CFLAGS-tst-avxmod.c += $(AVX-CFLAGS)
 
 ifeq (yes,$(config-cflags-avx512))
 AVX512-CFLAGS = -mavx512f
 CFLAGS-tst-audit10.c += $(AVX512-CFLAGS)
 CFLAGS-tst-auditmod10a.c += $(AVX512-CFLAGS)
 CFLAGS-tst-auditmod10b.c += $(AVX512-CFLAGS)
+CFLAGS-tst-avx512-aux.c += $(AVX512-CFLAGS)
+CFLAGS-tst-avx512mod.c += $(AVX512-CFLAGS)
 endif
 endif
 

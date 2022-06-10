@@ -1,3 +1,10 @@
+2014-04-17  Will Newton  <will.newton@linaro.org>
+
+	[BZ #16629]
+	* stdlib/tst-setcontext.c: Include signal.h.
+	(main): Check that the signal stack before and
+	after swapcontext is the same.
+
 2014-04-18  Andrew Pinski  <apinski@cavium.com>
 
 	* sysdeps/aarch64/jmpbuf-unwind.h (_JMPBUF_CFA_UNWINDS_ADJ): Add cast to

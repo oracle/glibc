@@ -22,3 +22,7 @@ endif
 ifeq ($(subdir),math)
 tests += tst-ldbl-nonnormal-printf
 endif # $(subdir) == math
+
+ifeq ($(subdir),stdio-common)
+sysdep_routines += isnanl-pseudo
+endif

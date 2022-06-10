@@ -7,8 +7,7 @@
 extern int __matherr (struct exception *__exc);
 
 # if IS_IN (libc)
-extern int __isnanl_pseudo (long double);
-hidden_proto (__isnanl_pseudo)
+extern int __isnanl_pseudo (long double) attribute_hidden;
 #endif
 
 # if IS_IN (libc) || IS_IN (libm)

@@ -27,6 +27,10 @@
 # define CAT(str1,str2) __CAT(str1,str2)
 #endif
 
+/* Redefined as nonempty in the internal header.  */
+#define __mips_cfi_startproc /* Empty.  */
+#define __mips_cfi_endproc /* Empty.  */
+
 /*
  * Macros to handle different pointer/register sizes for 32/64-bit code
  *
@@ -148,7 +152,8 @@ l:							\
 		.align	2;                              \
 		.type	symbol,@function;               \
 		.ent	symbol,0;                       \
-symbol:		.frame	sp,0,ra
+symbol:		.frame	sp,0,ra;			\
+		__mips_cfi_startproc
 
 /*
  * NESTED - declare nested routine entry point
@@ -158,13 +163,15 @@ symbol:		.frame	sp,0,ra
 		.align	2;                              \
 		.type	symbol,@function;               \
 		.ent	symbol,0;                       \
-symbol:		.frame	sp, framesize, rpc
+symbol:		.frame	sp, framesize, rpc;		\
+		__mips_cfi_startproc
 
 /*
  * END - mark end of function
  */
 #ifndef END
 # define END(function)                                   \
+		__mips_cfi_endproc;			\
 		.end	function;		        \
 		.size	function,.-function
 #endif
@@ -174,7 +181,7 @@ symbol:		.frame	sp, framesize, rpc
  */
 #define	EXPORT(symbol)                                  \
 		.globl	symbol;                         \
-symbol:
+symbol:		__mips_cfi_startproc
 
 /*
  * ABS - export absolute symbol

@@ -1,5 +1,10 @@
 2014-04-18  Andrew Pinski  <apinski@cavium.com>
 
+	* sysdeps/aarch64/jmpbuf-unwind.h (_JMPBUF_CFA_UNWINDS_ADJ): Add cast to
+	_Unwind_Ptr before casting to void*.
+
+2014-04-18  Andrew Pinski  <apinski@cavium.com>
+
 	* sysdeps/unix/sysv/linux/aarch64/sigcontextinfo.h (GET_PC): Add a
 	cast to uintptr_t before casting to void* to avoid warning with ILP32.
 

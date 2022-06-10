@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <ldsodefs.h>
 #include <_itoa.h>
+#include <malloc/malloc-internal.h>
 
 #include <assert.h>
 
@@ -91,7 +92,7 @@ __libc_memalign (size_t align, size_t n)
 void * weak_function
 malloc (size_t n)
 {
-  return __libc_memalign (sizeof (double), n);
+  return __libc_memalign (MALLOC_ALIGNMENT, n);
 }
 
 /* We use this function occasionally since the real implementation may

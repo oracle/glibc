@@ -35,8 +35,6 @@ __libc_lock_define (typedef, mutex_t)
 /* This is defined by newer gcc version unique for each module.  */
 extern void *__dso_handle __attribute__ ((__weak__));
 
-#include <fork.h>
-
 #define ATFORK_MEM static struct fork_handler atfork_mem
 
 #ifdef SHARED

@@ -19,9 +19,6 @@
 
 #include <stdbool.h>
 
-/* Get the implementation for check_may_shrink_heap.  */
-#include <malloc-sysdep.h>
-
 #if HAVE_TUNABLES
 # define TUNABLE_NAMESPACE malloc
 #endif

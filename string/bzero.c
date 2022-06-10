@@ -23,9 +23,7 @@
 
 /* Set N bytes of S to 0.  */
 void
-__bzero (s, len)
-     void *s;
-     size_t len;
+__bzero (void *s, size_t len)
 {
   long int dstp = (long int) s;
   const op_t zero = 0;

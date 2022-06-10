@@ -1,3 +1,8 @@
+2014-03-11  Andrew Pinski  <apinski@cavium.com>
+
+	* sysdeps/unix/sysv/linux/aarch64/bits/typesizes.h (__OFF_T_TYPE):
+	Define to be __SYSCALL_SLONG_TYPE.
+
 2014-02-24  Andrew Pinski  <apinski@cavium.com>
 
 	* sysdeps/unix/sysv/linux/aarch64/bits/typesizes.h (__SSIZE_T_TYPE):

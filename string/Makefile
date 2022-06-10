@@ -61,6 +61,8 @@ tests		:= tester inl-tester noinl-tester testcopy test-ffs	\
 tests-ifunc := $(strop-tests:%=test-%-ifunc)
 tests += $(tests-ifunc)
 
+xtests = tst-strcoll-overflow
+
 include ../Rules
 
 tester-ENV = LANGUAGE=C

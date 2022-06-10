@@ -8,7 +8,7 @@ esac
 case "$machine" in
 aarch64*)
 	# Parameters to allow auto-detection of -z relro.
-	libc_commonpagesize=0x1000
+	libc_commonpagesize=0x10000
 	libc_relro_required=yes
 	;;
 esac

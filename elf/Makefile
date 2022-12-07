@@ -218,6 +218,7 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-rtld-run-static \
 	 tst-dlmopen-dlerror \
 	 tst-dlmopen-gethostbyname \
+	 tst-audit17 \
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
@@ -1527,6 +1528,16 @@ $(objpfx)tst-auditlogmod-3.so: $(libsupport)
 $(objpfx)tst-audit16.out: \
   $(objpfx)tst-auditlogmod-1.so $(objpfx)tst-auditlogmod-2.so \
   $(objpfx)tst-auditlogmod-3.so
+$(objpfx)tst-audit17.out: $(objpfx)tst-auditmod17.so
+# The test check if a audit library without libc.so on DT_NEEDED works as
+# intended, so it uses an explicit link rule.
+$(objpfx)tst-auditmod17.so: $(objpfx)tst-auditmod17.os
+	$(CC) -nostdlib -nostartfiles -shared -o $@.new \
+	$(filter-out $(map-file),$^)
+	$(call after-link,$@.new)
+	mv -f $@.new $@
+CFLAGS-.os += $(call elide-stack-protector,.os,tst-auditmod17)
+tst-audit17-ENV = LD_AUDIT=$(objpfx)tst-auditmod17.so
 
 # tst-sonamemove links against an older implementation of the library.
 LDFLAGS-tst-sonamemove-linkmod1.so = \

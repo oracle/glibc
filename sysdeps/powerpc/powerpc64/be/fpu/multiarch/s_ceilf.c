@@ -1,4 +1,4 @@
-/* ceilf function.  PowerPC32 default version.
+/* Multiple versions of ceilf.
    Copyright (C) 2013-2018 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,12 +16,16 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
-#include <math_ldbl_opt.h>
+#include <math.h>
+#include <libm-alias-float.h>
+#include "init-arch.h"
 
-#undef weak_alias
-#define weak_alias(a,b)
+extern __typeof (__ceilf) __ceilf_ppc64 attribute_hidden;
+extern __typeof (__ceilf) __ceilf_power5plus attribute_hidden;
 
-#define __ceilf __ceilf_ppc32
+libc_ifunc (__ceilf,
+	    (hwcap & PPC_FEATURE_POWER5_PLUS)
+	    ? __ceilf_power5plus
+            : __ceilf_ppc64);
 
-#include <sysdeps/powerpc/powerpc32/fpu/s_ceilf.S>
+libm_alias_float (__ceil, ceil)

@@ -1,4 +1,4 @@
-/* Multiple versions of ceilf.
+/* Multiple versions of ceil.
    Copyright (C) 2013-2018 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -17,17 +17,15 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <math.h>
-#include <math_ldbl_opt.h>
-#include <shlib-compat.h>
+#include <libm-alias-double.h>
 #include "init-arch.h"
-#include <libm-alias-float.h>
 
-extern __typeof (__ceilf) __ceilf_ppc64 attribute_hidden;
-extern __typeof (__ceilf) __ceilf_power5plus attribute_hidden;
+extern __typeof (__ceil) __ceil_ppc64 attribute_hidden;
+extern __typeof (__ceil) __ceil_power5plus attribute_hidden;
 
-libc_ifunc (__ceilf,
+libc_ifunc (__ceil,
 	    (hwcap & PPC_FEATURE_POWER5_PLUS)
-	    ? __ceilf_power5plus
-            : __ceilf_ppc64);
+	    ? __ceil_power5plus
+            : __ceil_ppc64);
 
-libm_alias_float (__ceil, ceil)
+libm_alias_double (__ceil, ceil)

@@ -29,6 +29,20 @@
 int
 __new_msgctl (int msqid, int cmd, struct msqid_ds *buf)
 {
+  switch (cmd)
+    {
+    case IPC_RMID:
+    case IPC_SET:
+    case IPC_STAT:
+    case MSG_STAT:
+    case MSG_STAT_ANY:
+    case IPC_INFO:
+    case MSG_INFO:
+      break;
+    default:
+      __set_errno (EINVAL);
+      return -1;
+    }
 #ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
   return INLINE_SYSCALL_CALL (msgctl, msqid, cmd | __IPC_64, buf);
 #else

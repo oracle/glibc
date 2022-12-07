@@ -55,6 +55,7 @@ __pthread_attr_setaffinity_new (pthread_attr_t *attr, size_t cpusetsize,
 
   return 0;
 }
+strong_alias (__pthread_attr_setaffinity_new, __pthread_attr_setaffinity_np)
 versioned_symbol (libpthread, __pthread_attr_setaffinity_new,
 		  pthread_attr_setaffinity_np, GLIBC_2_3_4);
 

@@ -5050,16 +5050,11 @@ static inline int
 __always_inline
 do_set_mmap_threshold (size_t value)
 {
-  /* Forbid setting the threshold too high.  */
-  if (value <= HEAP_MAX_SIZE / 2)
-    {
-      LIBC_PROBE (memory_mallopt_mmap_threshold, 3, value, mp_.mmap_threshold,
-		  mp_.no_dyn_threshold);
-      mp_.mmap_threshold = value;
-      mp_.no_dyn_threshold = 1;
-      return 1;
-    }
-  return 0;
+  LIBC_PROBE (memory_mallopt_mmap_threshold, 3, value, mp_.mmap_threshold,
+	      mp_.no_dyn_threshold);
+  mp_.mmap_threshold = value;
+  mp_.no_dyn_threshold = 1;
+  return 1;
 }
 
 static inline int

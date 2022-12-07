@@ -216,6 +216,7 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-glibc-hwcaps tst-glibc-hwcaps-prepend tst-glibc-hwcaps-mask \
 	 tst-tls20 tst-tls21 \
 	 tst-rtld-run-static \
+	 tst-dlmopen-dlerror \
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
@@ -349,6 +350,7 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		libmarkermod4-1 libmarkermod4-2 libmarkermod4-3 libmarkermod4-4 \
 		libmarkermod5-1 libmarkermod5-2 libmarkermod5-3 libmarkermod5-4 \
 		libmarkermod5-5 tst-tls20mod-bad tst-tls21mod \
+		tst-dlmopen-dlerror-mod \
 
 # Most modules build with _ISOMAC defined, but those filtered out
 # depend on internal headers.
@@ -1545,6 +1547,10 @@ $(objpfx)tst-sonamemove-dlopen: $(libdl)
 $(objpfx)tst-sonamemove-dlopen.out: \
   $(objpfx)tst-sonamemove-runmod1.so \
   $(objpfx)tst-sonamemove-runmod2.so
+
+$(objpfx)tst-dlmopen-dlerror: $(libdl)
+$(objpfx)tst-dlmopen-dlerror-mod.so: $(libdl) $(libsupport)
+$(objpfx)tst-dlmopen-dlerror.out: $(objpfx)tst-dlmopen-dlerror-mod.so
 
 # Override -z defs, so that we can reference an undefined symbol.
 # Force lazy binding for the same reason.

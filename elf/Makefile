@@ -217,6 +217,7 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-tls20 tst-tls21 \
 	 tst-rtld-run-static \
 	 tst-dlmopen-dlerror \
+	 tst-dlmopen-gethostbyname \
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
@@ -351,6 +352,7 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		libmarkermod5-1 libmarkermod5-2 libmarkermod5-3 libmarkermod5-4 \
 		libmarkermod5-5 tst-tls20mod-bad tst-tls21mod \
 		tst-dlmopen-dlerror-mod \
+		tst-dlmopen-gethostbyname-mod \
 
 # Most modules build with _ISOMAC defined, but those filtered out
 # depend on internal headers.
@@ -1935,3 +1937,5 @@ $(objpfx)tst-tls21.out: $(objpfx)tst-tls21mod.so
 $(objpfx)tst-tls21mod.so: $(tst-tls-many-dynamic-modules:%=$(objpfx)%.so)
 
 $(objpfx)tst-rtld-run-static.out: $(objpfx)/ldconfig
+$(objpfx)tst-dlmopen-gethostbyname: $(libdl)
+$(objpfx)tst-dlmopen-gethostbyname.out: $(objpfx)tst-dlmopen-gethostbyname-mod.so

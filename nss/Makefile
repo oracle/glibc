@@ -92,9 +92,19 @@ extra-libs-others	= $(extra-libs)
 subdir-dirs = $(services:%=nss_%)
 vpath %.c $(subdir-dirs) ../locale/programs ../intl
 
-
+# In RHEL we add nss_readline, nss_parse_line_result, and
+# nss_files_fopen to the libnss_files-routines in order to avoid the
+# case where a long running process (having never used NSS) attemps to
+# load an NSS module for the first time and that NSS module needs a
+# newer GLIBC_PRIVATE interface.  In effect we must make the NSS modules
+# self-sufficient and not rely on a GLIBC_PRIVATE interface.
+# See: https://bugzilla.redhat.com/show_bug.cgi?id=1927040
+# Note: We must recompile the objects to get the correct global symbol
+#       references, which is why we have the *_int.c wrappers.
 libnss_files-routines	:= $(addprefix files-,$(databases)) \
-			   files-initgroups files-init
+			   files-initgroups files-init \
+			   nss_readline_int nss_parse_line_result_int \
+			   nss_files_fopen_int
 
 libnss_db-dbs		:= $(addprefix db-,\
 				       $(filter-out hosts network key alias,\
@@ -104,8 +114,10 @@ libnss_db-routines	:= $(libnss_db-dbs) db-open db-init hash-string
 generated		+= $(filter-out db-alias.c db-netgrp.c, \
 					$(addsuffix .c,$(libnss_db-dbs)))
 
+# See note above regarding nss_files_fopen.
 libnss_compat-routines	:= $(addprefix compat-,grp pwd spwd initgroups) \
-			   nisdomain
+			   nisdomain \
+			   nss_files_fopen_int
 
 install-others		+= $(inst_vardbdir)/Makefile
 

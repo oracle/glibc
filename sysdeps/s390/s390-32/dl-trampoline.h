@@ -207,7 +207,7 @@ _dl_runtime_profile:
 	basr   %r1,0
 5:	l      %r14,7f-5b(%r1)
 	la     %r5,40(%r12)		# pointer to struct La_s390_32_retval
-	bas    %r14,0(%r14,%r1)		# call _dl_call_pltexit
+	bas    %r14,0(%r14,%r1)		# call _dl_audit_pltexit
 
 	lr     %r15,%r12		# remove stack frame
 	cfi_def_cfa_register (15)
@@ -224,7 +224,7 @@ _dl_runtime_profile:
 	br     %r14
 
 6:	.long  _dl_profile_fixup - 0b
-7:	.long  _dl_call_pltexit - 5b
+7:	.long  _dl_audit_pltexit - 5b
 	cfi_endproc
 	.size _dl_runtime_profile, .-_dl_runtime_profile
 #endif

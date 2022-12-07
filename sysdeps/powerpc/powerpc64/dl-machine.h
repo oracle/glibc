@@ -297,6 +297,7 @@ BODY_PREFIX "_dl_start_user:\n"						\
 /* The PowerPC never uses REL relocations.  */
 #define ELF_MACHINE_NO_REL 1
 #define ELF_MACHINE_NO_RELA 0
+#define PLTREL ElfW(Rela)
 
 /* We define an initialization function to initialize HWCAP/HWCAP2 and
    platform data so it can be copied into the TCB later.  This is called

@@ -191,7 +191,7 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-nodelete2 tst-audit11 tst-audit12 tst-dlsym-error tst-noload \
 	 tst-latepthread tst-tls-manydynamic tst-nodelete-dlclose \
 	 tst-debug1 tst-main1 tst-absolute-sym tst-absolute-zero tst-big-note \
-	 tst-sonamemove-link tst-sonamemove-dlopen
+	 tst-sonamemove-link tst-sonamemove-dlopen tst-initfinilazyfail
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
@@ -281,7 +281,8 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-main1mod tst-libc_dlvsym-dso tst-absolute-sym-lib \
 		tst-absolute-zero-lib tst-big-note-lib \
 		tst-sonamemove-linkmod1 \
-		tst-sonamemove-runmod1 tst-sonamemove-runmod2
+		tst-sonamemove-runmod1 tst-sonamemove-runmod2 \
+		tst-initlazyfailmod tst-finilazyfailmod
 
 ifeq (yes,$(have-mtls-dialect-gnu2))
 tests += tst-gnu2-tls1
@@ -1526,3 +1527,13 @@ tst-libc_dlvsym-static-ENV = \
 $(objpfx)tst-libc_dlvsym-static.out: $(objpfx)tst-libc_dlvsym-dso.so
 
 $(objpfx)tst-big-note: $(objpfx)tst-big-note-lib.so
+
+$(objpfx)tst-initfinilazyfail: $(libdl)
+$(objpfx)tst-initfinilazyfail.out: \
+  $(objpfx)tst-initlazyfailmod.so $(objpfx)tst-finilazyfailmod.so
+# Override -z defs, so that we can reference an undefined symbol.
+# Force lazy binding for the same reason.
+LDFLAGS-tst-initlazyfailmod.so = \
+  -Wl,-z,lazy -Wl,--unresolved-symbols=ignore-all
+LDFLAGS-tst-finilazyfailmod.so = \
+  -Wl,-z,lazy -Wl,--unresolved-symbols=ignore-all

@@ -878,7 +878,8 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
 
   /* Get file information.  */
   struct r_file_id id;
-  if (__glibc_unlikely (!_dl_get_file_id (fd, &id)))
+  struct stat64 st;
+  if (__glibc_unlikely (!_dl_get_file_id (fd, &id, &st)))
     {
       errstring = N_("cannot stat shared object");
     call_lose_errno:
@@ -1077,6 +1078,16 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
 	    {
 	      errstring
 		= N_("ELF load command address/offset not properly aligned");
+	      goto call_lose;
+	    }
+	  if (__glibc_unlikely (ph->p_offset + ph->p_filesz > st.st_size))
+	    {
+	      /* If the segment requires zeroing of part of its last
+		 page, we'll crash when accessing the unmapped page.
+		 There's still a possibility of a race, if the shared
+		 object is truncated between the fxstat above and the
+		 memset below.  */
+	      errstring = N_("ELF load command past end of file");
 	      goto call_lose;
 	    }
 

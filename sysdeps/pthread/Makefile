@@ -35,7 +35,7 @@ tst-create1mod.so-no-z-defs = yes
 
 tests += tst-once1 tst-once2 tst-once3 tst-once4
 
-tests += tst-oncex3 tst-oncex4
+tests += tst-oncex3 tst-oncex4 tst-oncey3 tst-oncey4
 
 ifeq ($(build-shared),yes)
 # Build all the modules even when not actually running test programs.
@@ -44,6 +44,8 @@ endif
 
 CFLAGS-tst-oncex3.c += -fexceptions
 CFLAGS-tst-oncex4.c += -fexceptions
+CFLAGS-tst-oncey3.c += -fno-exceptions -fno-asynchronous-unwind-tables
+CFLAGS-tst-oncey4.c += -fno-exceptions -fno-asynchronous-unwind-tables
 
 modules-names += tst-create1mod
 test-modules = $(addprefix $(objpfx),$(addsuffix .so,$(modules-names)))

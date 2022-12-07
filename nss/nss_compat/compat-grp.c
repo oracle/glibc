@@ -26,6 +26,7 @@
 #include <string.h>
 #include <libc-lock.h>
 #include <kernel-features.h>
+#include <nss_files.h>
 
 static service_user *ni;
 static enum nss_status (*nss_setgrent) (int stayopen);
@@ -106,13 +107,10 @@ internal_setgrent (ent_t *ent, int stayopen, int needent)
 
   if (ent->stream == NULL)
     {
-      ent->stream = fopen ("/etc/group", "rme");
+      ent->stream = __nss_files_fopen ("/etc/group");
 
       if (ent->stream == NULL)
 	status = errno == EAGAIN ? NSS_STATUS_TRYAGAIN : NSS_STATUS_UNAVAIL;
-      else
-	/* We take care of locking ourself.  */
-	__fsetlocking (ent->stream, FSETLOCKING_BYCALLER);
     }
   else
     rewind (ent->stream);

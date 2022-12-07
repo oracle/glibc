@@ -122,6 +122,7 @@ extern const char *alias_file;
 
 /* Prototypes for a few program-wide used functions.  */
 #include <programs/xmalloc.h>
+#include <programs/xasprintf.h>
 
 
 /* Mark given locale as to be read.  */

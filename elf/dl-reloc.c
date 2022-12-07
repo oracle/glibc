@@ -250,7 +250,7 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
     const char *strtab = (const void *) D_PTR (l, l_info[DT_STRTAB]);
 
     /* This macro is used as a callback from the ELF_DYNAMIC_RELOCATE code.  */
-#define RESOLVE_MAP(ref, version, r_type) \
+#define RESOLVE_MAP(l, scope, ref, version, r_type) \
     ((ELFW(ST_BIND) ((*ref)->st_info) != STB_LOCAL			      \
       && __glibc_likely (!dl_symbol_visibility_binds_local_p (*ref)))	      \
      ? ((__builtin_expect ((*ref) == l->l_lookup_cache.sym, 0)		      \
@@ -275,7 +275,7 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
 
 #include "dynamic-link.h"
 
-    ELF_DYNAMIC_RELOCATE (l, lazy, consider_profiling, skip_ifunc);
+    ELF_DYNAMIC_RELOCATE (l, scope, lazy, consider_profiling, skip_ifunc);
 
 #ifndef PROF
     if (__glibc_unlikely (consider_profiling)

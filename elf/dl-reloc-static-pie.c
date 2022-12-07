@@ -30,7 +30,7 @@ _dl_relocate_static_pie (void)
 
 # define STATIC_PIE_BOOTSTRAP
 # define BOOTSTRAP_MAP (main_map)
-# define RESOLVE_MAP(sym, version, flags) BOOTSTRAP_MAP
+# define RESOLVE_MAP(map, scope, sym, version, flags) BOOTSTRAP_MAP
 # include "dynamic-link.h"
 
   /* Figure out the run-time load address of static PIE.  */
@@ -46,7 +46,7 @@ _dl_relocate_static_pie (void)
 
   /* Relocate ourselves so we can do normal function calls and
      data access using the global offset table.  */
-  ELF_DYNAMIC_RELOCATE (main_map, 0, 0, 0);
+  ELF_DYNAMIC_RELOCATE (main_map, NULL, 0, 0, 0);
   main_map->l_relocated = 1;
 
   /* Initialize _r_debug.  */

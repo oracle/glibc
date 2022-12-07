@@ -40,7 +40,7 @@ _dl_resolve_conflicts (struct link_map *l, ElfW(Rela) *conflict,
        data.  */
 
     /* This macro is used as a callback from the ELF_DYNAMIC_RELOCATE code.  */
-#define RESOLVE_MAP(ref, version, flags) (*ref = NULL, NULL)
+#define RESOLVE_MAP(map, scope, ref, version, flags) (*ref = NULL, NULL)
 #define RESOLVE(ref, version, flags) (*ref = NULL, 0)
 #define RESOLVE_CONFLICT_FIND_MAP(map, r_offset) \
   do {									      \
@@ -67,8 +67,8 @@ _dl_resolve_conflicts (struct link_map *l, ElfW(Rela) *conflict,
     GL(dl_num_cache_relocations) += conflictend - conflict;
 
     for (; conflict < conflictend; ++conflict)
-      elf_machine_rela (l, conflict, NULL, NULL, (void *) conflict->r_offset,
-			0);
+      elf_machine_rela (l, NULL, conflict, NULL, NULL,
+			(void *) conflict->r_offset, 0);
   }
 #endif
 }

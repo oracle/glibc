@@ -1,7 +1,6 @@
 /* Data for s390 version of processor capability information.
-   Copyright (C) 2006-2018 Free Software Foundation, Inc.
+   Copyright (C) 2006-2022 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-   Contributed by Martin Schwidefsky <schwidefsky@de.ibm.com>, 2006.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -15,12 +14,19 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
-   <http://www.gnu.org/licenses/>.  */
+   <https://www.gnu.org/licenses/>.  */
 
-/* The hwcap and platform strings are now in
-   sysdeps/s390/dl-procinfo-s390.c.  */
+#include <dl-procinfo.h>
 
-/* Needed by sysdeps/unix/sysv/linux/dl-vdso-setup.c (as included from
-   sysdeps/generic/ldsodefs.h).  */
-#undef PROCINFO_DECL
-#undef PROCINFO_CLASS
+const char _dl_s390_cap_flags[_DL_HWCAP_COUNT][9] =
+  {
+    "esan3", "zarch", "stfle", "msa", "ldisp", "eimm", "dfp", "edat", "etf3eh",
+    "highgprs", "te", "vx", "vxd", "vxe", "gs", "vxe2", "vxp", "sort", "dflt",
+    "vxp2", "nnpa", "pcimio", "sie"
+  };
+
+const char _dl_s390_platforms[_DL_PLATFORMS_COUNT][7] =
+  {
+    "g5", "z900", "z990", "z9-109", "z10", "z196", "zEC12", "z13", "z14", "z15",
+    "z16"
+  };

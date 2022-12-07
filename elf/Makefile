@@ -197,7 +197,8 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-auditmany tst-initfinilazyfail \
 	 tst-dlopenfail tst-dlopenfail-2 \
 	 tst-filterobj tst-filterobj-dlopen tst-auxobj tst-auxobj-dlopen \
-	 tst-audit14 tst-audit15 tst-audit16
+	 tst-audit14 tst-audit15 tst-audit16 \
+	 tst-tls-ie tst-tls-ie-dlmopen
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
@@ -313,7 +314,10 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-dlopenfailmod1 tst-dlopenfaillinkmod tst-dlopenfailmod2 \
 		tst-dlopenfailmod3 \
 		tst-filterobj-flt tst-filterobj-aux tst-filterobj-filtee \
-		tst-auditlogmod-1 tst-auditlogmod-2 tst-auditlogmod-3
+		tst-auditlogmod-1 tst-auditlogmod-2 tst-auditlogmod-3 \
+		tst-tls-ie-mod0 tst-tls-ie-mod1 tst-tls-ie-mod2 \
+		tst-tls-ie-mod3 tst-tls-ie-mod4 tst-tls-ie-mod5 \
+		tst-tls-ie-mod6
 
 # Most modules build with _ISOMAC defined, but those filtered out
 # depend on internal headers.
@@ -1690,3 +1694,23 @@ $(objpfx)tst-auxobj: $(objpfx)tst-filterobj-aux.so
 $(objpfx)tst-auxobj-dlopen: $(libdl)
 $(objpfx)tst-auxobj.out: $(objpfx)tst-filterobj-filtee.so
 $(objpfx)tst-auxobj-dlopen.out: $(objpfx)tst-filterobj-filtee.so
+
+$(objpfx)tst-tls-ie: $(libdl) $(shared-thread-library)
+$(objpfx)tst-tls-ie.out: \
+  $(objpfx)tst-tls-ie-mod0.so \
+  $(objpfx)tst-tls-ie-mod1.so \
+  $(objpfx)tst-tls-ie-mod2.so \
+  $(objpfx)tst-tls-ie-mod3.so \
+  $(objpfx)tst-tls-ie-mod4.so \
+  $(objpfx)tst-tls-ie-mod5.so \
+  $(objpfx)tst-tls-ie-mod6.so
+
+$(objpfx)tst-tls-ie-dlmopen: $(libdl) $(shared-thread-library)
+$(objpfx)tst-tls-ie-dlmopen.out: \
+  $(objpfx)tst-tls-ie-mod0.so \
+  $(objpfx)tst-tls-ie-mod1.so \
+  $(objpfx)tst-tls-ie-mod2.so \
+  $(objpfx)tst-tls-ie-mod3.so \
+  $(objpfx)tst-tls-ie-mod4.so \
+  $(objpfx)tst-tls-ie-mod5.so \
+  $(objpfx)tst-tls-ie-mod6.so

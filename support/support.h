@@ -25,6 +25,10 @@
 
 #include <stddef.h>
 #include <sys/cdefs.h>
+/* For mode_t.  */
+#include <sys/stat.h>
+/* For ssize_t and off64_t.  */
+#include <sys/types.h>
 
 __BEGIN_DECLS
 
@@ -65,6 +69,12 @@ void support_write_file_string (const char *path, const char *contents);
    the result).  */
 char *support_quote_blob (const void *blob, size_t length);
 
+/* Returns non-zero if the file descriptor is a regular file on a file
+   system which supports holes (that is, seeking and writing does not
+   allocate storage for the range of zeros).  FD must refer to a
+   regular file open for writing, and initially empty.  */
+int support_descriptor_supports_holes (int fd);
+
 /* Error-checking wrapper functions which terminate the process on
    error.  */
 
@@ -75,6 +85,23 @@ char *xasprintf (const char *format, ...)
   __attribute__ ((format (printf, 1, 2), malloc));
 char *xstrdup (const char *);
 char *xstrndup (const char *, size_t);
+
+/* These point to the TOP of the source/build tree, not your (or
+   support's) subdirectory.  */
+extern const char support_srcdir_root[];
+extern const char support_objdir_root[];
+
+/* Corresponds to the path to the runtime linker used by the testsuite,
+   e.g. OBJDIR_PATH/elf/ld-linux-x86-64.so.2  */
+extern const char support_objdir_elf_ldso[];
+
+/* Corresponds to the --prefix= passed to configure.  */
+extern const char support_install_prefix[];
+/* Corresponds to the install's lib/ or lib64/ directory.  */
+extern const char support_libdir_prefix[];
+
+extern ssize_t support_copy_file_range (int, off64_t *, int, off64_t *,
+					size_t, unsigned int);
 
 __END_DECLS
 

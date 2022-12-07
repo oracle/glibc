@@ -20,6 +20,12 @@
 /* The hwcap and platform strings are now in
    sysdeps/s390/dl-procinfo-s390.c.  */
 
+/* Dummy entries to preserve ABI. */
+#if defined SHARED && defined PROCINFO_DECL
+const char _dl_s390_cap_flags_unused[23][9];
+const char _dl_s390_platforms_unused[10][7];
+#endif
+
 /* Needed by sysdeps/unix/sysv/linux/dl-vdso-setup.c (as included from
    sysdeps/generic/ldsodefs.h).  */
 #undef PROCINFO_DECL

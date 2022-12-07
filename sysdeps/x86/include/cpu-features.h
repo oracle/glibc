@@ -107,6 +107,8 @@ enum
 # define bit_XTILECFG_state	(1u << 17)
 # define bit_XTILEDATA_state	(1u << 18)
 
+/* NB: When adding new fields, update sysdeps/x86/dl-diagnostics-cpu.c
+   to print them.  */
 struct cpu_features
 {
   struct cpu_features_basic basic;

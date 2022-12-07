@@ -29,6 +29,7 @@
 #include <kernel-features.h>
 
 #include "nsswitch.h"
+#include <nss_files.h>
 
 /* Locks the static variables in this file.  */
 __libc_lock_define_initialized (static, lock)
@@ -47,7 +48,7 @@ internal_setent (FILE **stream)
 
   if (*stream == NULL)
     {
-      *stream = fopen ("/etc/aliases", "rce");
+      *stream = __nss_files_fopen ("/etc/aliases");
 
       if (*stream == NULL)
 	status = errno == EAGAIN ? NSS_STATUS_TRYAGAIN : NSS_STATUS_UNAVAIL;
@@ -213,7 +214,7 @@ get_next_alias (FILE *stream, const char *match, struct aliasent *result,
 
 		      first_unused = cp;
 
-		      listfile = fopen (&cp[9], "rce");
+		      listfile = __nss_files_fopen (&cp[9]);
 		      /* If the file does not exist we simply ignore
 			 the statement.  */
 		      if (listfile != NULL

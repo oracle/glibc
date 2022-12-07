@@ -192,7 +192,8 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-latepthread tst-tls-manydynamic tst-nodelete-dlclose \
 	 tst-debug1 tst-main1 tst-absolute-sym tst-absolute-zero tst-big-note \
 	 tst-audit13 \
-	 tst-sonamemove-link tst-sonamemove-dlopen tst-initfinilazyfail \
+	 tst-sonamemove-link tst-sonamemove-dlopen \
+	 tst-auditmany tst-initfinilazyfail \
 	 tst-dlopenfail tst-dlopenfail-2 \
 	 tst-filterobj tst-filterobj-dlopen tst-auxobj tst-auxobj-dlopen
 #	 reldep9
@@ -303,6 +304,9 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-absolute-zero-lib tst-big-note-lib \
 		tst-audit13mod1 tst-sonamemove-linkmod1 \
 		tst-sonamemove-runmod1 tst-sonamemove-runmod2 \
+		tst-auditmanymod1 tst-auditmanymod2 tst-auditmanymod3 \
+		tst-auditmanymod4 tst-auditmanymod5 tst-auditmanymod6 \
+		tst-auditmanymod7 tst-auditmanymod8 tst-auditmanymod9 \
 		tst-initlazyfailmod tst-finilazyfailmod \
 		tst-dlopenfailmod1 tst-dlopenfaillinkmod tst-dlopenfailmod2 \
 		tst-dlopenfailmod3 \
@@ -1432,6 +1436,14 @@ LDFLAGS-tst-audit12mod2.so = -Wl,--version-script=tst-audit12mod2.map
 $(objpfx)tst-audit13.out: $(objpfx)tst-audit13mod1.so
 LDFLAGS-tst-audit13mod1.so = -Wl,-z,lazy
 tst-audit13-ENV = LD_AUDIT=$(objpfx)tst-audit13mod1.so
+
+$(objpfx)tst-auditmany.out: $(objpfx)tst-auditmanymod1.so \
+  $(objpfx)tst-auditmanymod2.so $(objpfx)tst-auditmanymod3.so \
+  $(objpfx)tst-auditmanymod4.so $(objpfx)tst-auditmanymod5.so \
+  $(objpfx)tst-auditmanymod6.so $(objpfx)tst-auditmanymod7.so \
+  $(objpfx)tst-auditmanymod8.so	$(objpfx)tst-auditmanymod9.so
+tst-auditmany-ENV = \
+  LD_AUDIT=tst-auditmanymod1.so:tst-auditmanymod2.so:tst-auditmanymod3.so:tst-auditmanymod4.so:tst-auditmanymod5.so:tst-auditmanymod6.so:tst-auditmanymod7.so:tst-auditmanymod8.so:tst-auditmanymod9.so
 
 # tst-sonamemove links against an older implementation of the library.
 LDFLAGS-tst-sonamemove-linkmod1.so = \

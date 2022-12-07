@@ -22,4 +22,6 @@
   uint64_t __attribute__((unused)) midr =				      \
     GLRO(dl_aarch64_cpu_features).midr_el1;				      \
   unsigned __attribute__((unused)) zva_size =				      \
-    GLRO(dl_aarch64_cpu_features).zva_size;
+    GLRO(dl_aarch64_cpu_features).zva_size;				      \
+  bool __attribute__((unused)) sve =					      \
+    GLRO(dl_aarch64_cpu_features).sve;

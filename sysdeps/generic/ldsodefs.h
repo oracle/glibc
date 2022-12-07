@@ -648,6 +648,15 @@ struct rtld_global_ro
   void *(*_dl_open) (const char *file, int mode, const void *caller_dlopen,
 		     Lmid_t nsid, int argc, char *argv[], char *env[]);
   void (*_dl_close) (void *map);
+  void *(*_dl_tls_get_addr_soft) (struct link_map *);
+#ifdef HAVE_DL_DISCOVER_OSVERSION
+  int (*_dl_discover_osversion) (void);
+#endif
+
+  /* List of auditing interfaces.  */
+  struct audit_ifaces *_dl_audit;
+  unsigned int _dl_naudit;
+
   /* libdl in a secondary namespace (after dlopen) must use
      _dl_catch_error from the main namespace, so it has to be
      exported in some way.  */
@@ -657,14 +666,6 @@ struct rtld_global_ro
   /* libdl in a secondary namespace must use free from the base
      namespace.  */
   void (*_dl_error_free) (void *);
-  void *(*_dl_tls_get_addr_soft) (struct link_map *);
-#ifdef HAVE_DL_DISCOVER_OSVERSION
-  int (*_dl_discover_osversion) (void);
-#endif
-
-  /* List of auditing interfaces.  */
-  struct audit_ifaces *_dl_audit;
-  unsigned int _dl_naudit;
 };
 # define __rtld_global_attribute__
 # if IS_IN (rtld)

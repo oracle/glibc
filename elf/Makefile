@@ -198,7 +198,8 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
 	 tst-tls3 tst-tls6 tst-tls7 tst-tls8 tst-dlmopen2 \
-	 tst-ptrguard1 tst-stackguard1 tst-libc_dlvsym
+	 tst-ptrguard1 tst-stackguard1 tst-libc_dlvsym \
+	 tst-create_format1
 tests-container += tst-pldd
 ifeq ($(build-hardcoded-path-in-tests),yes)
 tests += tst-dlopen-aout

@@ -33,10 +33,17 @@ endif
 
 tst-create1mod.so-no-z-defs = yes
 
+tests += tst-once1 tst-once2 tst-once3 tst-once4
+
+tests += tst-oncex3 tst-oncex4
+
 ifeq ($(build-shared),yes)
 # Build all the modules even when not actually running test programs.
 tests: $(test-modules)
 endif
+
+CFLAGS-tst-oncex3.c += -fexceptions
+CFLAGS-tst-oncex4.c += -fexceptions
 
 modules-names += tst-create1mod
 test-modules = $(addprefix $(objpfx),$(addsuffix .so,$(modules-names)))

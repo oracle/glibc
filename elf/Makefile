@@ -353,8 +353,7 @@ tests += \
   tst-audit24d \
   tst-audit25a \
   tst-audit25b \
-  tst-audit8 \
-  tst-audit9 \
+  tst-audit26 \
   tst-auditmany \
   tst-auxobj \
   tst-auxobj-dlopen \
@@ -659,6 +658,7 @@ modules-names = \
   tst-auditmod24c \
   tst-auditmod24d \
   tst-auditmod25 \
+  tst-auditmod26 \
   tst-big-note-lib \
   tst-deep1mod1 \
   tst-deep1mod2 \
@@ -2144,6 +2144,11 @@ $(objpfx)tst-audit25b: $(objpfx)tst-audit25mod1.so \
 		       $(objpfx)tst-audit25mod4.so
 LDFLAGS-tst-audit25b = -Wl,-z,now
 tst-audit25b-ARGS = -- $(host-test-program-cmd)
+
+$(objpfx)tst-audit26: $(libdl)
+$(objpfx)tst-audit26.out: $(objpfx)tst-auditmod26.so
+$(objpfx)tst-auditmod26.so: $(libsupport) $(libdl)
+tst-audit26-ENV = LD_AUDIT=$(objpfx)tst-auditmod26.so
 
 # tst-sonamemove links against an older implementation of the library.
 LDFLAGS-tst-sonamemove-linkmod1.so = \

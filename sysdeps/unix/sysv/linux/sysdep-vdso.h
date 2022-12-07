@@ -26,7 +26,7 @@
      funcptr (args)
 #endif
 
-#ifdef SHARED
+#ifdef USE_VSYSCALL
 
 # ifdef HAVE_VSYSCALL
 
@@ -86,7 +86,7 @@
     INTERNAL_SYSCALL (name, err, nr, ##args)
 # endif /* HAVE_VSYSCALL  */
 
-# else /* SHARED  */
+# else /* USE_VSYSCALL  */
 
 #  define INLINE_VSYSCALL(name, nr, args...) \
     INLINE_SYSCALL (name, nr, ##args)

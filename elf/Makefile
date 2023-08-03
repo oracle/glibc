@@ -215,7 +215,7 @@ tests-internal += loadtest unload unload2 circleload1 \
 	 tst-tls3 tst-tls6 tst-tls7 tst-tls8 tst-dlmopen2 \
 	 tst-ptrguard1 tst-stackguard1 tst-libc_dlvsym \
 	 tst-create_format1 tst-tls-surplus tst-dl-hwcaps_split
-tests-container += tst-pldd
+tests-container += tst-pldd tst-preload-pthread-libc
 ifeq ($(build-hardcoded-path-in-tests),yes)
 tests += tst-dlopen-aout
 tst-dlopen-aout-no-pie = yes

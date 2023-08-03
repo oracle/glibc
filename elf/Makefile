@@ -227,6 +227,7 @@ tests += \
   tst-audit12 \
   tst-audit13 \
   tst-audit14 \
+  tst-audit14a \
   tst-audit15 \
   tst-audit16 \
   tst-audit17 \
@@ -1788,9 +1789,11 @@ $(objpfx)tst-auditmany.out: $(objpfx)tst-auditmanymod1.so \
 tst-auditmany-ENV = \
   LD_AUDIT=tst-auditmanymod1.so:tst-auditmanymod2.so:tst-auditmanymod3.so:tst-auditmanymod4.so:tst-auditmanymod5.so:tst-auditmanymod6.so:tst-auditmanymod7.so:tst-auditmanymod8.so:tst-auditmanymod9.so
 
-LDFLAGS-tst-audit14 = -Wl,--audit=tst-auditlogmod-1.so
+LDFLAGS-tst-audit14 = -Wl,--audit=tst-auditlogmod-1.so,--disable-new-dtags
 $(objpfx)tst-auditlogmod-1.so: $(libsupport)
 $(objpfx)tst-audit14.out: $(objpfx)tst-auditlogmod-1.so
+LDFLAGS-tst-audit14a = -Wl,--audit=tst-auditlogmod-1.so,--enable-new-dtags
+$(objpfx)tst-audit14a.out: $(objpfx)tst-auditlogmod-1.so
 LDFLAGS-tst-audit15 = \
   -Wl,--audit=tst-auditlogmod-1.so,--depaudit=tst-auditlogmod-2.so
 $(objpfx)tst-auditlogmod-2.so: $(libsupport)

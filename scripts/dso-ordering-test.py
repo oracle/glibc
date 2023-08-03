@@ -657,6 +657,8 @@ def process_testcase(t):
                                  % (test_name + "-" + dep + ".FAKE.so",
                                     ("$(objpfx)" + test_subdir + "/"
                                      + test_name + "-" + dep + ".so")))
+                            makefile.write(
+                                "LDLIBS-%s += -Wl,--as-needed -ldl -Wl,--no-as-needed\n" % dso)
                             rule = ("$(objpfx)" + test_subdir + "/"
                                     + test_name + "-" + dep + ".FAKE.os: "
                                     "$(objpfx)" + test_srcdir
@@ -685,6 +687,8 @@ def process_testcase(t):
                           + test_descr.soname_map[o] + ".so")
                 ldflags += (" -Wl,-soname=" + soname)
             makefile.write("LDFLAGS-%s = %s\n" % (dso, ldflags))
+            makefile.write(
+                "LDLIBS-%s += -Wl,--as-needed -ldl -Wl,--no-as-needed\n" % dso)
             if o in test_descr.callrefs:
                 makefile.write("%s-no-z-defs = yes\n" % (dso))
 
@@ -702,6 +706,8 @@ def process_testcase(t):
                       + test_descr.soname_map['#'] + ".so")
             ldflags += (" -Wl,-soname=" + soname)
         makefile.write("LDFLAGS-%s = %s\n" % (test_name, ldflags))
+        makefile.write(
+            "LDLIBS-%s += -Wl,--as-needed -ldl -Wl,--no-as-needed\n" % test_name)
         rule = ("$(objpfx)" + test_subdir + "/" + test_name + ".o: "
                 "$(objpfx)" + test_srcdir + test_name + ".c\n"
                 "\t$(compile.c) $(OUTPUT_OPTION)\n")

@@ -214,7 +214,8 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-tls-ie tst-tls-ie-dlmopen \
 	 argv0test \
 	 tst-glibc-hwcaps tst-glibc-hwcaps-prepend tst-glibc-hwcaps-mask \
-	 tst-tls20 tst-tls21
+	 tst-tls20 tst-tls21 \
+	 tst-rtld-run-static \
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
@@ -1917,3 +1918,5 @@ $(objpfx)tst-tls20.out: $(objpfx)tst-tls20mod-bad.so \
 $(objpfx)tst-tls21: $(libdl) $(shared-thread-library)
 $(objpfx)tst-tls21.out: $(objpfx)tst-tls21mod.so
 $(objpfx)tst-tls21mod.so: $(tst-tls-many-dynamic-modules:%=$(objpfx)%.so)
+
+$(objpfx)tst-rtld-run-static.out: $(objpfx)/ldconfig

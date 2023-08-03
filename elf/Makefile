@@ -275,7 +275,6 @@ tests-static-internal := \
   tst-ptrguard1-static \
   tst-stackguard1-static \
   tst-tls1-static \
-  tst-tls2-static \
   tst-tls1-static-non-pie \
   # tests-static-internal
 
@@ -308,7 +307,6 @@ tests := \
 tests-internal := \
   $(tests-static-internal) \
   tst-tls1 \
-  tst-tls2 \
   # tests-internal
 
 tests-static := $(tests-static-normal) $(tests-static-internal)

@@ -23,3 +23,6 @@
 
 # Tunables added in RHEL 8.8.0
 @order glibc.rtld.dynamic_sort
+
+# Tunables added in OL 8
+@order glibc.pthread.mutex_spin_count

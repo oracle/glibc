@@ -33,22 +33,6 @@
 int
 __new_shmctl (int shmid, int cmd, struct shmid_ds *buf)
 {
-  switch (cmd)
-    {
-    case IPC_RMID:
-    case SHM_LOCK:
-    case SHM_UNLOCK:
-    case IPC_SET:
-    case IPC_STAT:
-    case SHM_STAT:
-    case SHM_STAT_ANY:
-    case IPC_INFO:
-    case SHM_INFO:
-      break;
-    default:
-      __set_errno (EINVAL);
-      break;
-    }
 #ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
   return INLINE_SYSCALL_CALL (shmctl, shmid, cmd | __IPC_64, buf);
 #else

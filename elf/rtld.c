@@ -216,7 +216,6 @@ audit_list_iter_next (struct audit_list_iter *iter)
   return iter->previous->name;
 }
 
-#ifndef HAVE_INLINED_SYSCALLS
 /* Set nonzero during loading and initialization of executable and
    libraries, cleared before the executable's entry point runs.  This
    must not be initialized to nonzero, because the unused dynamic
@@ -226,7 +225,6 @@ audit_list_iter_next (struct audit_list_iter *iter)
    never be called.  */
 int _dl_starting_up = 0;
 rtld_hidden_def (_dl_starting_up)
-#endif
 
 /* This is the structure which defines all variables global to ld.so
    (except those which cannot be added for some reason).  */
@@ -900,10 +898,8 @@ dl_main (const ElfW(Phdr) *phdr,
   /* Process the environment variable which control the behaviour.  */
   process_envvars (&mode);
 
-#ifndef HAVE_INLINED_SYSCALLS
   /* Set up a flag which tells we are just starting.  */
   _dl_starting_up = 1;
-#endif
 
   if (*user_entry == (ElfW(Addr)) ENTRY_POINT)
     {

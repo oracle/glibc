@@ -106,6 +106,14 @@ if 'CFLAGS' is specified it must enable optimization.  For example:
      particular case and potentially change debugging information and
      metadata only).
 
+'--with-rtld-early-cflags=CFLAGS'
+     Use additional compiler flags CFLAGS to build the early startup
+     code of the dynamic linker.  These flags can be used to enable
+     early dynamic linker diagnostics to run on CPUs which are not
+     compatible with the rest of the GNU C Library, for example, due to
+     compiler flags which target a later instruction set architecture
+     (ISA).
+
 '--disable-shared'
      Don't build shared libraries even if it is possible.  Not all
      systems support shared libraries; you need ELF support and

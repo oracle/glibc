@@ -256,6 +256,7 @@
 /* For tcache double-free check.  */
 #include <random-bits.h>
 #include <sys/random.h>
+#include <not-cancel.h>
 
 /*
   Debugging:
@@ -3025,7 +3026,7 @@ static uintptr_t tcache_key;
 static void
 tcache_key_initialize (void)
 {
-  if (__getrandom (&tcache_key, sizeof(tcache_key), GRND_NONBLOCK)
+  if (__getrandom_nocancel (&tcache_key, sizeof(tcache_key), GRND_NONBLOCK)
       != sizeof (tcache_key))
     {
       tcache_key = random_bits ();

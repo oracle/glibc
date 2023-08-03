@@ -17,6 +17,10 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+/* This file uses deprecated declarations from libselinux.  */
+#include <libc-diag.h>
+DIAG_IGNORE_NEEDS_COMMENT (4.9, "-Wdeprecated-declarations");
+
 #include <argp.h>
 #include <assert.h>
 #include <ctype.h>

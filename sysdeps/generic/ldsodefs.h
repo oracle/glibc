@@ -240,6 +240,13 @@ enum allowmask
   };
 
 
+/* DSO sort algorithm to use (check dl-sort-maps.c).  */
+enum dso_sort_algorithm
+  {
+    dso_sort_algorithm_original,
+    dso_sort_algorithm_dfs
+  };
+
 struct audit_ifaces
 {
   void (*activity) (uintptr_t *, unsigned int);
@@ -632,6 +639,8 @@ struct rtld_global_ro
   /* Mask for more hardware capabilities that are available on some
      platforms.  */
   EXTERN uint64_t _dl_hwcap2;
+
+  EXTERN enum dso_sort_algorithm _dl_dso_sort_algo;
 
 #ifdef SHARED
   /* We add a function table to _rtld_global which is then used to
@@ -1049,7 +1058,7 @@ extern void _dl_fini (void) attribute_hidden;
 
 /* Sort array MAPS according to dependencies of the contained objects.  */
 extern void _dl_sort_maps (struct link_map **maps, unsigned int nmaps,
-			   char *used, bool for_fini) attribute_hidden;
+			   unsigned int skip, bool for_fini) attribute_hidden;
 
 /* The dynamic linker calls this function before and having changing
    any shared object mappings.  The `r_state' member of `struct r_debug'
@@ -1166,6 +1175,9 @@ extern struct link_map * _dl_get_dl_main_map (void)
 #  define _dl_relocate_static_pie()
 # endif
 #endif
+
+/* Initialize the DSO sort algorithm to use.  */
+extern void _dl_sort_maps_init (void) attribute_hidden;
 
 /* Initialization of libpthread for statically linked applications.
    If libpthread is not linked in, this is an empty function.  */

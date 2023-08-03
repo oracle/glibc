@@ -155,6 +155,8 @@ size_t _dl_phnum;
 uint64_t _dl_hwcap __attribute__ ((nocommon));
 uint64_t _dl_hwcap2 __attribute__ ((nocommon));
 
+enum dso_sort_algorithm _dl_dso_sort_algo;
+
 /* The value of the FPU control word the kernel will preset in hardware.  */
 fpu_control_t _dl_fpu_control = _FPU_DEFAULT;
 

@@ -286,6 +286,10 @@ extern struct dl_open_hook *_dl_open_hook;
 libc_hidden_proto (_dl_open_hook);
 #endif
 
+#if USE_TCACHE
+static void tcache_key_initialize (void);
+#endif
+
 static void
 ptmalloc_init (void)
 {
@@ -293,6 +297,10 @@ ptmalloc_init (void)
     return;
 
   __malloc_initialized = 0;
+
+#if USE_TCACHE
+  tcache_key_initialize ();
+#endif
 
 #ifdef SHARED
   /* In case this libc copy is in a non-default namespace, never use brk.

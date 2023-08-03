@@ -75,15 +75,17 @@ def check_basic():
     if repr(glibcelf.Pt(17609)) != 'Pt(17609)':
         error('repr(Pt(17609))')
 
-    if glibcelf.Pt('PT_AARCH64_MEMTAG_MTE') \
-       is not glibcelf.Pt.PT_AARCH64_MEMTAG_MTE:
-        error('PT_AARCH64_MEMTAG_MTE identity')
-    if glibcelf.Pt(0x70000002) is glibcelf.Pt.PT_AARCH64_MEMTAG_MTE:
+    # Note: Upstream uses PT_AARCH64_MEMTAG_MTE instead of PT_MIPS_OPTIONS.
+    # PT_AARCH64_MEMTAG_MTE is not yet available downstream.
+    if glibcelf.Pt('PT_MIPS_OPTIONS') \
+       is not glibcelf.Pt.PT_MIPS_OPTIONS:
+        error('PT_MIPS_OPTIONS identity')
+    if glibcelf.Pt(0x70000002) is glibcelf.Pt.PT_MIPS_OPTIONS:
         error('Pt(0x70000002) identity')
-    if glibcelf.PtAARCH64(0x70000002) is not glibcelf.Pt.PT_AARCH64_MEMTAG_MTE:
-        error('PtAARCH64(0x70000002) identity')
-    if glibcelf.Pt.PT_AARCH64_MEMTAG_MTE.short_name != 'AARCH64_MEMTAG_MTE':
-        error('PT_AARCH64_MEMTAG_MTE short name')
+    if glibcelf.PtMIPS(0x70000002) is not glibcelf.Pt.PT_MIPS_OPTIONS:
+        error('PtMIPS(0x70000002) identity')
+    if glibcelf.Pt.PT_MIPS_OPTIONS.short_name != 'MIPS_OPTIONS':
+        error('PT_MIPS_OPTIONS short name')
 
     # Special cases for int-like Shn.
     if glibcelf.Shn(32) == glibcelf.Shn.SHN_XINDEX:

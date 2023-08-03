@@ -2167,7 +2167,7 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 
 	  /* Add object to slot information data if necessasy.  */
 	  if (l->l_tls_blocksize != 0 && tls_init_tp_called)
-	    _dl_add_to_slotinfo (l);
+	    _dl_add_to_slotinfo (l, true);
 	}
     }
   else
@@ -2215,7 +2215,7 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 
 	  /* Add object to slot information data if necessasy.  */
 	  if (l->l_tls_blocksize != 0 && tls_init_tp_called)
-	    _dl_add_to_slotinfo (l);
+	    _dl_add_to_slotinfo (l, true);
 	}
       HP_TIMING_NOW (stop);
 

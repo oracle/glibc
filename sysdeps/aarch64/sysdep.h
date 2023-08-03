@@ -32,6 +32,8 @@
 # define PTR_LOG_SIZE		2
 # define DELOUSE(n)		mov     w##n, w##n
 #endif
+#define PTR_ARG(n) DELOUSE(n)
+#define SIZE_ARG(n) DELOUSE(n)
 
 #define PTR_SIZE	(1<<PTR_LOG_SIZE)
 

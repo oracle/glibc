@@ -33,3 +33,4 @@
 @order glibc.rtld.optional_static_tls
 @order glibc.malloc.tcache_max
 @order glibc.malloc.check
+@order glibc.pthread.stack_hugetlb

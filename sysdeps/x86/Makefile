@@ -84,21 +84,21 @@ LDFLAGS-tst-cet-legacy-mod-6c.so = -Wl,--enable-new-dtags,-z,nodelete
 ifneq (no,$(have-tunables))
 $(objpfx)tst-cet-legacy-4a: $(libdl)
 $(objpfx)tst-cet-legacy-4a.out: $(objpfx)tst-cet-legacy-mod-4.so
-tst-cet-legacy-4a-ENV = GLIBC_TUNABLES=glibc.tune.x86_shstk=permissive
+tst-cet-legacy-4a-ENV = GLIBC_TUNABLES=glibc.cpu.x86_shstk=permissive
 $(objpfx)tst-cet-legacy-4b: $(libdl)
 $(objpfx)tst-cet-legacy-4b.out: $(objpfx)tst-cet-legacy-mod-4.so
-tst-cet-legacy-4b-ENV = GLIBC_TUNABLES=glibc.tune.x86_shstk=on
+tst-cet-legacy-4b-ENV = GLIBC_TUNABLES=glibc.cpu.x86_shstk=on
 $(objpfx)tst-cet-legacy-4c: $(libdl)
 $(objpfx)tst-cet-legacy-4c.out: $(objpfx)tst-cet-legacy-mod-4.so
-tst-cet-legacy-4c-ENV = GLIBC_TUNABLES=glibc.tune.x86_shstk=off
+tst-cet-legacy-4c-ENV = GLIBC_TUNABLES=glibc.cpu.x86_shstk=off
 $(objpfx)tst-cet-legacy-5b: $(libdl)
 $(objpfx)tst-cet-legacy-5b.out: $(objpfx)tst-cet-legacy-mod-5a.so \
 				$(objpfx)tst-cet-legacy-mod-5b.so
-tst-cet-legacy-5b-ENV = GLIBC_TUNABLES=glibc.tune.x86_ibt=off:glibc.tune.x86_shstk=off
+tst-cet-legacy-5b-ENV = GLIBC_TUNABLES=glibc.cpu.x86_ibt=off:glibc.cpu.x86_shstk=off
 $(objpfx)tst-cet-legacy-6b: $(libdl)
 $(objpfx)tst-cet-legacy-6b.out: $(objpfx)tst-cet-legacy-mod-6a.so \
 				$(objpfx)tst-cet-legacy-mod-6b.so
-tst-cet-legacy-6b-ENV = GLIBC_TUNABLES=glibc.tune.x86_ibt=off:glibc.tune.x86_shstk=off
+tst-cet-legacy-6b-ENV = GLIBC_TUNABLES=glibc.cpu.x86_ibt=off:glibc.cpu.x86_shstk=off
 endif
 endif
 

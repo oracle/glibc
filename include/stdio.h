@@ -9,6 +9,13 @@
 
 /* Now define the internal interfaces.  */
 
+/* Set the error indicator on FP.  */
+static inline void
+fseterr_unlocked (FILE *fp)
+{
+  fp->_flags |= _IO_ERR_SEEN;
+}
+
 extern int __fcloseall (void) attribute_hidden;
 extern int __snprintf (char *__restrict __s, size_t __maxlen,
 		       const char *__restrict __format, ...)

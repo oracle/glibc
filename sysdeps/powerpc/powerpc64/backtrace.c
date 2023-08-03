@@ -68,8 +68,9 @@ static inline bool
 is_sigtramp_address (void *nip)
 {
 #ifdef HAVE_SIGTRAMP_RT64
-  if (nip == GLRO (dl_vdso_sigtramp_rt64) ||
-      nip == GLRO (dl_vdso_sigtramp_rt64) + 4)
+  if ((nip == GLRO (dl_vdso_sigtramp_rt64) ||
+       nip == GLRO (dl_vdso_sigtramp_rt64) + 4)
+      && nip != NULL)
     return true;
 #endif
   return false;

@@ -192,7 +192,7 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-latepthread tst-tls-manydynamic tst-nodelete-dlclose \
 	 tst-debug1 tst-main1 tst-absolute-sym tst-absolute-zero tst-big-note \
 	 tst-sonamemove-link tst-sonamemove-dlopen tst-initfinilazyfail \
-	 tst-dlopenfail
+	 tst-dlopenfail tst-dlopenfail-2
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
@@ -301,7 +301,8 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-sonamemove-linkmod1 \
 		tst-sonamemove-runmod1 tst-sonamemove-runmod2 \
 		tst-initlazyfailmod tst-finilazyfailmod \
-		tst-dlopenfailmod1 tst-dlopenfaillinkmod tst-dlopenfailmod2
+		tst-dlopenfailmod1 tst-dlopenfaillinkmod tst-dlopenfailmod2 \
+		tst-dlopenfailmod3
 
 ifeq (yes,$(have-mtls-dialect-gnu2))
 tests += tst-gnu2-tls1
@@ -1569,6 +1570,10 @@ $(objpfx)tst-dlopenfailmod1.so: \
   $(shared-thread-library) $(objpfx)tst-dlopenfaillinkmod.so
 LDFLAGS-tst-dlopenfaillinkmod.so = -Wl,-soname,tst-dlopenfail-missingmod.so
 $(objpfx)tst-dlopenfailmod2.so: $(shared-thread-library)
+$(objpfx)tst-dlopenfail-2: $(libdl)
+$(objpfx)tst-dlopenfail.out: \
+  $(objpfx)tst-dlopenfailmod1.so $(objpfx)tst-dlopenfailmod2.so \
+  $(objpfx)tst-dlopenfailmod3.so
 
 $(objpfx)tst-dlopen-nodelete-reloc: $(libdl)
 $(objpfx)tst-dlopen-nodelete-reloc.out: \

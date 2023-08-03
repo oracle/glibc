@@ -57,6 +57,7 @@ tests += \
   tst-resolv-binary \
   tst-resolv-edns \
   tst-resolv-network \
+  tst-resolv-noaaaa \
   tst-resolv-nondecimal \
   tst-resolv-res_init-multi \
   tst-resolv-search \
@@ -110,7 +111,7 @@ libresolv-routines := res_comp res_debug \
 		      res_data res_mkquery res_query res_send		\
 		      inet_net_ntop inet_net_pton inet_neta base64	\
 		      ns_parse ns_name ns_netint ns_ttl ns_print	\
-		      ns_samedomain ns_date res_enable_icmp \
+		      ns_samedomain ns_date res_enable_icmp res-noaaaa  \
 		      compat-hooks compat-gethnamaddr
 
 libanl-routines := gai_cancel gai_error gai_misc gai_notify gai_suspend \
@@ -200,6 +201,7 @@ $(objpfx)tst-resolv-res_init-multi: $(objpfx)libresolv.so \
   $(shared-thread-library)
 $(objpfx)tst-resolv-res_init-thread: $(libdl) $(objpfx)libresolv.so \
   $(shared-thread-library)
+$(objpfx)tst-resolv-noaaaa: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-nondecimal: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-qtypes: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-rotate: $(objpfx)libresolv.so $(shared-thread-library)

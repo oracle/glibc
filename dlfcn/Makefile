@@ -59,6 +59,10 @@ tststatic3-ENV = $(tststatic-ENV)
 tststatic4-ENV = $(tststatic-ENV)
 tststatic5-ENV = $(tststatic-ENV)
 
+tests-internal += \
+  tst-dlinfo-phdr \
+  # tests-internal
+
 ifneq (,$(CXX))
 modules-names += bug-atexit3-lib
 else
@@ -152,3 +156,5 @@ $(objpfx)bug-dl-leaf-lib-cb.so: $(objpfx)bug-dl-leaf-lib.so
 
 $(objpfx)tst-rec-dlopen: $(libdl)
 $(objpfx)tst-rec-dlopen.out: $(objpfx)moddummy1.so $(objpfx)moddummy2.so
+
+$(objpfx)tst-dlinfo-phdr: $(libdl)

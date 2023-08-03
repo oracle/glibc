@@ -38,6 +38,10 @@ struct dlinfo_args
   void *handle;
   int request;
   void *arg;
+
+  /* This is the value that is returned from dlinfo if no error is
+     signaled.  */
+  int result;
 };
 
 static void
@@ -50,6 +54,7 @@ dlinfo_doit (void *argsblock)
     {
     case RTLD_DI_CONFIGADDR:
     default:
+      args->result = -1;
       _dl_signal_error (0, NULL, NULL, N_("unsupported dlinfo request"));
       break;
 
@@ -85,6 +90,11 @@ dlinfo_doit (void *argsblock)
 	*(void **) args->arg = data;
 	break;
       }
+
+    case RTLD_DI_PHDR:
+      *(const ElfW(Phdr) **) args->arg = l->l_phdr;
+      args->result = l->l_phnum;
+      break;
     }
 }
 
@@ -97,7 +107,8 @@ __dlinfo (void *handle, int request, void *arg)
 # endif
 
   struct dlinfo_args args = { handle, request, arg };
-  return _dlerror_run (&dlinfo_doit, &args) ? -1 : 0;
+  _dlerror_run (&dlinfo_doit, &args);
+  return args.result;
 }
 # ifdef SHARED
 strong_alias (__dlinfo, dlinfo)

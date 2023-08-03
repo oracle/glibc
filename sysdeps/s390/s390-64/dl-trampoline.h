@@ -203,7 +203,7 @@ _dl_runtime_profile:
 	lmg    %r2,%r4,48(%r12)		# r2, r3: load arguments saved by PLT
 					# r4: pointer to struct La_s390_64_regs
 	la     %r5,72(%r12)		# pointer to struct La_s390_64_retval
-	brasl  %r14,_dl_call_pltexit
+	brasl  %r14,_dl_audit_pltexit
 
 	lgr    %r15,%r12		# remove stack frame
 	cfi_def_cfa_register (15)

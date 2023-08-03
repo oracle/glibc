@@ -279,6 +279,7 @@ _dl_start_user:\n\
 /* The S390 never uses Elf32_Rel relocations.  */
 #define ELF_MACHINE_NO_REL 1
 #define ELF_MACHINE_NO_RELA 0
+#define PLTREL ElfW(Rela)
 
 /* We define an initialization functions.  This is called very early in
    _dl_sysdep_start.  */

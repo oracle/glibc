@@ -260,6 +260,8 @@ _dl_start_user:\n\
    Prelinked libraries may use Elf32_Rela though.  */
 #define ELF_MACHINE_PLT_REL 1
 
+#define PLTREL ElfW(Rel)
+
 /* We define an initialization functions.  This is called very early in
    _dl_sysdep_start.  */
 #define DL_PLATFORM_INIT dl_platform_init ()

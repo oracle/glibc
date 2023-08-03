@@ -196,6 +196,7 @@ _dl_start_user:								\n\
 /* AArch64 uses RELA not REL */
 #define ELF_MACHINE_NO_REL 1
 #define ELF_MACHINE_NO_RELA 0
+#define PLTREL ElfW(Rela)
 
 #define DL_PLATFORM_INIT dl_platform_init ()
 

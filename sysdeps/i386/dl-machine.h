@@ -119,29 +119,6 @@ elf_machine_runtime_setup (struct link_map *l, struct r_scope_elem *scope[],
   return lazy;
 }
 
-#ifdef IN_DL_RUNTIME
-
-# ifndef PROF
-/* We add a declaration of this function here so that in dl-runtime.c
-   the ELF_MACHINE_RUNTIME_TRAMPOLINE macro really can pass the parameters
-   in registers.
-
-   We cannot use this scheme for profiling because the _mcount call
-   destroys the passed register information.  */
-#define ARCH_FIXUP_ATTRIBUTE __attribute__ ((regparm (3), stdcall, unused))
-
-extern ElfW(Addr) _dl_fixup (struct link_map *l,
-			     ElfW(Word) reloc_offset)
-     ARCH_FIXUP_ATTRIBUTE;
-extern ElfW(Addr) _dl_profile_fixup (struct link_map *l,
-				     ElfW(Word) reloc_offset,
-				     ElfW(Addr) retaddr, void *regs,
-				     long int *framesizep)
-     ARCH_FIXUP_ATTRIBUTE;
-# endif
-
-#endif
-
 /* Mask identifying addresses reserved for the user program,
    where the dynamic linker should not map anything.  */
 #define ELF_MACHINE_USER_ADDRESS_MASK	0xf8000000UL
@@ -239,6 +216,8 @@ _dl_start_user:\n\
 /* The i386 never uses Elf32_Rela relocations for the dynamic linker.
    Prelinked libraries may use Elf32_Rela though.  */
 #define ELF_MACHINE_PLT_REL 1
+
+#define PLTREL ElfW(Rel)
 
 /* We define an initialization functions.  This is called very early in
    _dl_sysdep_start.  */

@@ -39,7 +39,7 @@ do_test_1 (const char *modname, bool fail)
 	      == NULL)
 	    {
 	      printf ("incorrect dlopen '%s' error: %s\n", modname,
-		      dlerror ());
+		      err);
 	      exit (1);
 	    }
 

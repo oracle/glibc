@@ -1,0 +1,33 @@
+# Order of tunables in RHEL 8.7.0.
+@order glibc.rtld.nns
+@order glibc.elision.skip_lock_after_retries
+@order glibc.malloc.trim_threshold
+@order glibc.malloc.perturb
+@order glibc.cpu.x86_shared_cache_size
+@order glibc.elision.tries
+@order glibc.elision.enable
+@order glibc.cpu.x86_rep_movsb_threshold
+@order glibc.malloc.mxfast
+@order glibc.elision.skip_lock_busy
+@order glibc.malloc.top_pad
+@order glibc.cpu.x86_rep_stosb_threshold
+@order glibc.cpu.x86_non_temporal_threshold
+@order glibc.cpu.x86_shstk
+@order glibc.cpu.hwcap_mask
+@order glibc.malloc.mmap_max
+@order glibc.elision.skip_trylock_internal_abort
+@order glibc.malloc.tcache_unsorted_limit
+@order glibc.cpu.x86_ibt
+@order glibc.cpu.hwcaps
+@order glibc.elision.skip_lock_internal_abort
+@order glibc.malloc.arena_max
+@order glibc.malloc.mmap_threshold
+@order glibc.cpu.x86_data_cache_size
+@order glibc.malloc.tcache_count
+@order glibc.malloc.arena_test
+@order glibc.rtld.optional_static_tls
+@order glibc.malloc.tcache_max
+@order glibc.malloc.check
+
+# Tunables added in RHEL 8.8.0
+@order glibc.rtld.dynamic_sort

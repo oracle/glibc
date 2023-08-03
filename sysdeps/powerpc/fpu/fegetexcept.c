@@ -25,7 +25,7 @@ __fegetexcept (void)
   fenv_union_t fe;
   int result = 0;
 
-  fe.fenv = fegetenv_register ();
+  fe.fenv = fegetenv_status ();
 
   if (fe.l & (1 << (31 - FPSCR_XE)))
       result |= FE_INEXACT;

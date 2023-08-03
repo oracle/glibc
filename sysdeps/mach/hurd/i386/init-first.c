@@ -17,7 +17,6 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <assert.h>
-#include <ctype.h>
 #include <hurd.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -83,9 +82,6 @@ posixland_init (int argc, char **argv, char **envp)
   _dl_non_dynamic_init ();
 #endif
   __init_misc (argc, argv, envp);
-
-  /* Initialize ctype data.  */
-  __ctype_init ();
 
 #if defined SHARED && !defined NO_CTORS_DTORS_SECTIONS
   __libc_global_ctors ();

@@ -27,18 +27,16 @@ struct r_file_id
     ino64_t ino;
   };
 
-/* Sample FD to fill in *ID.  Returns true on success.
+/* Sample FD to fill in *ID and *ST.  Returns true on success.
    On error, returns false, with errno set.  */
 static inline bool
-_dl_get_file_id (int fd, struct r_file_id *id)
+_dl_get_file_id (int fd, struct r_file_id *id, struct stat64 *st)
 {
-  struct stat64 st;
-
-  if (__glibc_unlikely (__fxstat64 (_STAT_VER, fd, &st) < 0))
+  if (__glibc_unlikely (__fxstat64 (_STAT_VER, fd, st) < 0))
     return false;
 
-  id->dev = st.st_dev;
-  id->ino = st.st_ino;
+  id->dev = st->st_dev;
+  id->ino = st->st_ino;
   return true;
 }
 

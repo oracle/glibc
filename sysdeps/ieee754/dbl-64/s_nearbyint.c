@@ -29,16 +29,20 @@ static char rcsid[] = "$NetBSD: s_rint.c,v 1.8 1995/05/10 20:48:04 jtc Exp $";
 #include <math-barriers.h>
 #include <math_private.h>
 #include <libm-alias-double.h>
-
-static const double
-  TWO52[2] = {
-  4.50359962737049600000e+15, /* 0x43300000, 0x00000000 */
- -4.50359962737049600000e+15, /* 0xC3300000, 0x00000000 */
-};
+#include <math-use-builtins.h>
 
 double
 __nearbyint (double x)
 {
+#if USE_NEARBYINT_BUILTIN
+  return __builtin_nearbyint (x);
+#else
+  /* Use generic implementation.  */
+  static const double
+    TWO52[2] = {
+		4.50359962737049600000e+15, /* 0x43300000, 0x00000000 */
+		-4.50359962737049600000e+15, /* 0xC3300000, 0x00000000 */
+  };
   fenv_t env;
   int32_t i0, j0, sx;
   double w, t;
@@ -72,5 +76,6 @@ __nearbyint (double x)
   math_force_eval (t);
   libc_fesetenv (&env);
   return t;
+#endif /* ! USE_NEARBYINT_BUILTIN  */
 }
 libm_alias_double (__nearbyint, nearbyint)

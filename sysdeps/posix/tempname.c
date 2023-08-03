@@ -66,7 +66,6 @@
 # define __gettimeofday gettimeofday
 # define __mkdir mkdir
 # define __open open
-# define __lxstat64(version, file, buf) lstat (file, buf)
 # define __secure_getenv secure_getenv
 #endif
 
@@ -97,7 +96,7 @@ static int
 direxists (const char *dir)
 {
   struct_stat64 buf;
-  return __xstat64 (_STAT_VER, dir, &buf) == 0 && S_ISDIR (buf.st_mode);
+  return __stat64 (dir, &buf) == 0 && S_ISDIR (buf.st_mode);
 }
 
 /* Path search algorithm, for tmpnam, tmpfile, etc.  If DIR is
@@ -252,10 +251,10 @@ __gen_tempname (char *tmpl, int suffixlen, int flags, int kind)
 
 	case __GT_NOCREATE:
 	  /* This case is backward from the other three.  __gen_tempname
-	     succeeds if __xstat fails because the name does not exist.
+	     succeeds if lstat fails because the name does not exist.
 	     Note the continue to bypass the common logic at the bottom
 	     of the loop.  */
-	  if (__lxstat64 (_STAT_VER, tmpl, &st) < 0)
+	  if (__lstat64 (tmpl, &st) < 0)
 	    {
 	      if (errno == ENOENT)
 		{

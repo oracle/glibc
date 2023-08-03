@@ -514,7 +514,7 @@ _dl_start (void *arg)
      is trivial: always the map of ld.so itself.  */
 #define RTLD_BOOTSTRAP
 #define BOOTSTRAP_MAP (&bootstrap_map)
-#define RESOLVE_MAP(sym, version, flags) BOOTSTRAP_MAP
+#define RESOLVE_MAP(map, scope, sym, version, flags) BOOTSTRAP_MAP
 #include "dynamic-link.h"
 
 #ifdef DONT_USE_BOOTSTRAP_MAP
@@ -560,7 +560,7 @@ _dl_start (void *arg)
       /* Relocate ourselves so we can do normal function calls and
 	 data access using the global offset table.  */
 
-      ELF_DYNAMIC_RELOCATE (&bootstrap_map, 0, 0, 0);
+      ELF_DYNAMIC_RELOCATE (&bootstrap_map, NULL, 0, 0, 0);
     }
   bootstrap_map.l_relocated = 1;
 

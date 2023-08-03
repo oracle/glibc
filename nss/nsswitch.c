@@ -401,6 +401,7 @@ void *
 __nss_lookup_function (service_user *ni, const char *fct_name)
 {
   void **found, *result;
+  int saved_errno = errno;
 
   /* We now modify global data.  Protect it.  */
   __libc_lock_lock (lock);
@@ -522,6 +523,8 @@ __nss_lookup_function (service_user *ni, const char *fct_name)
 
   /* Remove the lock.  */
   __libc_lock_unlock (lock);
+
+  __set_errno (saved_errno);
 
   return result;
 }

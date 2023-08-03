@@ -2,6 +2,7 @@
 
 [Unit]
 Description=Name Service Cache Daemon
+After=syslog.target
 
 [Service]
 Type=forking
@@ -17,3 +18,4 @@ PIDFile=/run/nscd/nscd.pid
 
 [Install]
 WantedBy=multi-user.target
+Also=nscd.socket

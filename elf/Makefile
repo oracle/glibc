@@ -399,6 +399,7 @@ tests += \
   tst-dlmopen3 \
   tst-dlmopen-dlerror \
   tst-dlmopen-gethostbyname \
+  tst-dlmopen-twice \
   tst-dlopenfail \
   tst-dlopenfail-2 \
   tst-dlopenrpath \
@@ -744,6 +745,8 @@ modules-names = \
   tst-dlmopen1mod \
   tst-dlmopen-dlerror-mod \
   tst-dlmopen-gethostbyname-mod \
+  tst-dlmopen-twice-mod1 \
+  tst-dlmopen-twice-mod2 \
   tst-dlopenfaillinkmod \
   tst-dlopenfailmod1 \
   tst-dlopenfailmod2 \
@@ -2665,3 +2668,7 @@ $(objpfx)tst-audit-tlsdesc.out: $(objpfx)tst-auditmod-tlsdesc.so
 tst-audit-tlsdesc-ENV = LD_AUDIT=$(objpfx)tst-auditmod-tlsdesc.so
 $(objpfx)tst-audit-tlsdesc-dlopen.out: $(objpfx)tst-auditmod-tlsdesc.so
 tst-audit-tlsdesc-dlopen-ENV = LD_AUDIT=$(objpfx)tst-auditmod-tlsdesc.so
+
+$(objpfx)tst-dlmopen-twice.out: \
+  $(objpfx)tst-dlmopen-twice-mod1.so \
+  $(objpfx)tst-dlmopen-twice-mod2.so

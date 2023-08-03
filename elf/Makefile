@@ -219,6 +219,7 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-dlmopen-dlerror \
 	 tst-dlmopen-gethostbyname \
 	 tst-audit17 \
+	 tst-audit18 \
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
@@ -354,6 +355,8 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		libmarkermod5-5 tst-tls20mod-bad tst-tls21mod \
 		tst-dlmopen-dlerror-mod \
 		tst-dlmopen-gethostbyname-mod \
+		tst-auditmod18 \
+		tst-audit18mod \
 
 # Most modules build with _ISOMAC defined, but those filtered out
 # depend on internal headers.
@@ -1538,6 +1541,11 @@ $(objpfx)tst-auditmod17.so: $(objpfx)tst-auditmod17.os
 	mv -f $@.new $@
 CFLAGS-.os += $(call elide-stack-protector,.os,tst-auditmod17)
 tst-audit17-ENV = LD_AUDIT=$(objpfx)tst-auditmod17.so
+
+$(objpfx)tst-audit18: $(libdl)
+$(objpfx)tst-audit18.out: $(objpfx)tst-auditmod18.so \
+			  $(objpfx)tst-audit18mod.so
+tst-audit18-ARGS = -- $(host-test-program-cmd)
 
 # tst-sonamemove links against an older implementation of the library.
 LDFLAGS-tst-sonamemove-linkmod1.so = \

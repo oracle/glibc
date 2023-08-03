@@ -48,6 +48,7 @@ converttoint (double_t x)
 }
 #endif
 
+#include <fenv_private.h>
 #include_next <math_private.h>
 
 #endif

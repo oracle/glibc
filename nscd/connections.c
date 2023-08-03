@@ -2286,7 +2286,8 @@ main_loop_epoll (int efd)
 					     sizeof (buf))) != -1)
 	      ;
 
-	    __bump_nl_timestamp ();
+	    dbs[hstdb].head->extra_data[NSCD_HST_IDX_CONF_TIMESTAMP]
+	      = __bump_nl_timestamp ();
 	  }
 # endif
 	else

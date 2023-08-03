@@ -126,6 +126,9 @@ Major new features:
 
   Application developers must link against libpthread to use ISO C threads.
 
+* A new tunable, glibc.pthread.stack_hugetlb, can be used to disable
+  Transparent Huge Pages (THP) in stack allocation at pthread_create.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
 * The nonstandard header files <libio.h> and <_G_config.h> are no longer

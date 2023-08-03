@@ -105,6 +105,7 @@
 /* Maximum size in kB of cache.  */
 static size_t stack_cache_maxsize = 40 * 1024 * 1024; /* 40MiBi by default.  */
 static size_t stack_cache_actsize;
+int __nptl_stack_hugetlb = 1;
 
 /* Mutex protecting this variable.  */
 static int stack_cache_lock = LLL_LOCK_INITIALIZER;
@@ -564,6 +565,12 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 			MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
 
 	  if (__glibc_unlikely (mem == MAP_FAILED))
+	    return errno;
+
+	  /* Do madvise in case the tunable glibc.pthread.stack_hugetlb is
+	     set to 0, disabling hugetlb.  */
+	  if (__glibc_unlikely (__nptl_stack_hugetlb == 0)
+	      && __madvise (mem, size, MADV_NOHUGEPAGE) != 0)
 	    return errno;
 
 	  /* SIZE is guaranteed to be greater than zero.

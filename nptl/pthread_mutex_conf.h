@@ -27,6 +27,7 @@ struct mutex_config
 };
 
 extern struct mutex_config __mutex_aconf attribute_hidden;
+extern int __nptl_stack_hugetlb;
 
 extern void __pthread_tunables_init (void) attribute_hidden;
 #endif

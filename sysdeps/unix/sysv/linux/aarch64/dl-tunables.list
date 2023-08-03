@@ -27,3 +27,4 @@
 
 # Tunables added in OL 8
 @order glibc.pthread.mutex_spin_count
+@order glibc.pthread.stack_hugetlb

@@ -23,5 +23,11 @@ glibc {
       maxval: 32767
       default: 100
     }
+    stack_hugetlb {
+      type: INT_32
+      minval: 0
+      maxval: 1
+      default: 1
+    }
   }
 }

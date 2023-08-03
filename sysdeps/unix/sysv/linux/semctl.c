@@ -58,6 +58,15 @@ __new_semctl (int semid, int semnum, int cmd, ...)
       arg = va_arg (ap, union semun);
       va_end (ap);
       break;
+    case IPC_RMID:      /* arg ignored.  */
+    case GETNCNT:
+    case GETPID:
+    case GETVAL:
+    case GETZCNT:
+      break;
+    default:
+      __set_errno (EINVAL);
+      return -1;
     }
 
 #ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS

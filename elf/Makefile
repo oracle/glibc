@@ -855,7 +855,7 @@ extra-test-objs += $(addsuffix .os,$(strip $(modules-names)))
 
 # filtmod1.so has a special rule
 modules-names-nobuild := filtmod1 \
-			 tst-audit24bmod1 tst-audit24bmod2.so
+			 tst-audit24bmod1 tst-audit24bmod2
 
 tests += $(tests-static)
 

@@ -222,6 +222,7 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-audit17 \
 	 tst-audit18 \
 	 tst-audit19b \
+	 tst-audit20 \
 	 tst-audit22 \
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
@@ -364,6 +365,7 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-auditmod19a \
 		tst-auditmod19b \
 		tst-audit19bmod \
+		tst-auditmod20 \
 		tst-auditmod22 \
 
 # Most modules build with _ISOMAC defined, but those filtered out
@@ -1578,6 +1580,10 @@ tst-audit19a-ENV = LD_AUDIT=$(objpfx)tst-auditmod19a.so
 $(objpfx)tst-audit19b.out: $(objpfx)tst-auditmod19b.so
 $(objpfx)tst-audit19b: $(objpfx)tst-audit19bmod.so
 tst-audit19b-ARGS = -- $(host-test-program-cmd)
+
+$(objpfx)tst-audit20.out: $(objpfx)tst-auditmod20.so
+tst-audit20-ENV = LD_AUDIT=$(objpfx)tst-auditmod20.so
+$(objpfx)tst-auditmod20.so: $(libdl)
 
 $(objpfx)tst-audit22.out: $(objpfx)tst-auditmod22.so
 tst-audit22-ARGS = -- $(host-test-program-cmd)

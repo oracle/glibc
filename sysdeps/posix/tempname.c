@@ -56,6 +56,8 @@
 #if _LIBC
 # define struct_stat64 struct stat64
 # define __secure_getenv __libc_secure_getenv
+# define __clock_gettime64 __clock_gettime
+# define __timespec64 timespec
 #else
 # define struct_stat64 struct stat
 # define __gen_tempname gen_tempname

@@ -130,7 +130,10 @@ ifeq ($(have-GLIBC_2.27)$(build-shared),yesyes)
 tests += tst-ofdlocks-compat
 endif
 
-tests-internal += tst-sigcontext-get_pc
+tests-internal += \
+  tst-rseq \
+  tst-sigcontext-get_pc \
+  # tests-internal
 
 tests-time64 += \
   tst-adjtimex-time64 \
@@ -356,4 +359,8 @@ endif
 
 ifeq ($(subdir),nptl)
 tests += tst-align-clone tst-getpid1
+
+# tst-rseq-nptl is an internal test because it requires a definition of
+# __NR_rseq from the internal system call list.
+tests-internal += tst-rseq-nptl
 endif

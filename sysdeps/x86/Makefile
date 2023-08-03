@@ -95,7 +95,9 @@ tests += \
   tst-strcpy-rtm \
   tst-strlen-rtm \
   tst-strncmp-rtm \
-  tst-strrchr-rtm
+  tst-strrchr-rtm \
+  tst-wcsncmp-rtm \
+# tests
 
 CFLAGS-tst-memchr-rtm.c += -mrtm
 CFLAGS-tst-memcmp-rtm.c += -mrtm
@@ -107,6 +109,7 @@ CFLAGS-tst-strcpy-rtm.c += -mrtm
 CFLAGS-tst-strlen-rtm.c += -mrtm
 CFLAGS-tst-strncmp-rtm.c += -mrtm -Wno-error
 CFLAGS-tst-strrchr-rtm.c += -mrtm
+CFLAGS-tst-wcsncmp-rtm.c += -mrtm -Wno-error
 endif
 
 ifneq ($(enable-cet),no)

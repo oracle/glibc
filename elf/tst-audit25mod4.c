@@ -1,6 +1,5 @@
-/* Data structure for communication from the run-time dynamic linker for
-   loaded ELF shared objects.  LAV_CURRENT definition.
-   Copyright (C) 2021 Free Software Foundation, Inc.
+/* Module used by tst-audit25.
+   Copyright (C) 2022 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,9 +16,7 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef _LINK_H
-# error "Never include <bits/link_lavcurrent.h> directly; use <link.h> instead."
-#endif
-
-/* Version numbers for la_version handshake interface.  */
-#define LAV_CURRENT	2
+void
+tst_audit25mod4_func1 (void)
+{
+}

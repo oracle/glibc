@@ -25,7 +25,8 @@ void
 __flockfile (FILE *stream)
 {
   stream->_flags2 |= _IO_FLAGS2_NEED_LOCK;
-  _IO_lock_lock (*stream->_lock);
+	if ((stream->_flags & _IO_USER_LOCK) == 0)
+		_IO_lock_lock (*stream->_lock);
 }
 strong_alias (__flockfile, _IO_flockfile)
 weak_alias (__flockfile, flockfile)

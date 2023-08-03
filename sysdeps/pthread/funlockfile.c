@@ -24,7 +24,8 @@
 void
 __funlockfile (FILE *stream)
 {
-  _IO_lock_unlock (*stream->_lock);
+	if ((stream->_flags & _IO_USER_LOCK) == 0)
+		_IO_lock_unlock (*stream->_lock);
 }
 strong_alias (__funlockfile, _IO_funlockfile)
 weak_alias (__funlockfile, funlockfile)

@@ -527,7 +527,7 @@ _dl_allocate_tls_init (void *result)
   size_t maxgen = 0;
 
   /* Protects global dynamic TLS related state.  */
-  __rtld_lock_lock_recursive (GL(dl_load_lock));
+  __rtld_lock_lock_recursive (GL(dl_load_tls_lock));
 
   /* Check if the current dtv is big enough.   */
   if (dtv[-1].counter < GL(dl_tls_max_dtv_idx))
@@ -601,7 +601,7 @@ _dl_allocate_tls_init (void *result)
       listp = listp->next;
       assert (listp != NULL);
     }
-  __rtld_lock_unlock_recursive (GL(dl_load_lock));
+  __rtld_lock_unlock_recursive (GL(dl_load_tls_lock));
 
   /* The DTV version is up-to-date now.  */
   dtv[0].counter = maxgen;
@@ -740,7 +740,7 @@ _dl_update_slotinfo (unsigned long int req_modid)
 
 	 Here the dtv needs to be updated to new_gen generation count.
 
-	 This code may be called during TLS access when GL(dl_load_lock)
+	 This code may be called during TLS access when GL(dl_load_tls_lock)
 	 is not held.  In that case the user code has to synchronize with
 	 dlopen and dlclose calls of relevant modules.  A module m is
 	 relevant if the generation of m <= new_gen and dlclose of m is
@@ -862,11 +862,11 @@ tls_get_addr_tail (GET_ADDR_ARGS, dtv_t *dtv, struct link_map *the_map)
   if (__glibc_unlikely (the_map->l_tls_offset
 			!= FORCED_DYNAMIC_TLS_OFFSET))
     {
-      __rtld_lock_lock_recursive (GL(dl_load_lock));
+      __rtld_lock_lock_recursive (GL(dl_load_tls_lock));
       if (__glibc_likely (the_map->l_tls_offset == NO_TLS_OFFSET))
 	{
 	  the_map->l_tls_offset = FORCED_DYNAMIC_TLS_OFFSET;
-	  __rtld_lock_unlock_recursive (GL(dl_load_lock));
+	  __rtld_lock_unlock_recursive (GL(dl_load_tls_lock));
 	}
       else if (__glibc_likely (the_map->l_tls_offset
 			       != FORCED_DYNAMIC_TLS_OFFSET))
@@ -878,7 +878,7 @@ tls_get_addr_tail (GET_ADDR_ARGS, dtv_t *dtv, struct link_map *the_map)
 #else
 # error "Either TLS_TCB_AT_TP or TLS_DTV_AT_TP must be defined"
 #endif
-	  __rtld_lock_unlock_recursive (GL(dl_load_lock));
+	  __rtld_lock_unlock_recursive (GL(dl_load_tls_lock));
 
 	  dtv[GET_ADDR_MODULE].pointer.to_free = NULL;
 	  dtv[GET_ADDR_MODULE].pointer.val = p;
@@ -886,7 +886,7 @@ tls_get_addr_tail (GET_ADDR_ARGS, dtv_t *dtv, struct link_map *the_map)
 	  return (char *) p + GET_ADDR_OFFSET;
 	}
       else
-	__rtld_lock_unlock_recursive (GL(dl_load_lock));
+	__rtld_lock_unlock_recursive (GL(dl_load_tls_lock));
     }
   struct dtv_pointer result = allocate_and_init (the_map);
   dtv[GET_ADDR_MODULE].pointer = result;
@@ -957,7 +957,7 @@ _dl_tls_get_addr_soft (struct link_map *l)
     return NULL;
 
   dtv_t *dtv = THREAD_DTV ();
-  /* This may be called without holding the GL(dl_load_lock).  Reading
+  /* This may be called without holding the GL(dl_load_tls_lock).  Reading
      arbitrary gen value is fine since this is best effort code.  */
   size_t gen = atomic_load_relaxed (&GL(dl_tls_generation));
   if (__glibc_unlikely (dtv[0].counter != gen))

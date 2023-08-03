@@ -41,7 +41,7 @@ rseq_register_current_thread (struct pthread *self, bool do_rseq)
   return false;
 }
 #else /* RSEQ_SIG */
-static inline void
+static inline bool
 rseq_register_current_thread (struct pthread *self, bool do_rseq)
 {
   THREAD_SETMEM (self, rseq_area.cpu_id, RSEQ_CPU_ID_REGISTRATION_FAILED);

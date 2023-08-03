@@ -1,5 +1,5 @@
-/* Support functionality for using dlopen/dlclose/dlsym.
-   Copyright (C) 2017-2018 Free Software Foundation, Inc.
+/* dlmopen with error checking.
+   Copyright (C) 2017-2019 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,20 +16,16 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef SUPPORT_DLOPEN_H
-#define SUPPORT_DLOPEN_H
+#include <support/check.h>
+#include <support/xdlfcn.h>
 
-#include <dlfcn.h>
+void *
+xdlmopen (Lmid_t lmid, const char *filename, int flags)
+{
+  void *dso = dlmopen (lmid, filename, flags);
 
-__BEGIN_DECLS
+  if (dso == NULL)
+    FAIL_EXIT1 ("error: dlmopen: %s\n", dlerror ());
 
-/* Each of these terminates process on failure with relevant error message.  */
-void *xdlopen (const char *filename, int flags);
-void *xdlmopen (Lmid_t lmid, const char *filename, int flags);
-void *xdlsym (void *handle, const char *symbol);
-void *xdlvsym (void *handle, const char *symbol, const char *version);
-void xdlclose (void *handle);
-
-__END_DECLS
-
-#endif /* SUPPORT_DLOPEN_H */
+  return dso;
+}

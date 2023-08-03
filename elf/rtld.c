@@ -1917,6 +1917,12 @@ ERROR: '%s': cannot process note segment.\n", _dl_argv[0]);
       assert (i == npreloads);
     }
 
+#ifdef NEED_DL_SYSINFO_DSO
+  /* Now that the audit modules are opened, call la_objopen for the vDSO.  */
+  if (GLRO(dl_sysinfo_map) != NULL)
+    _dl_audit_objopen (GLRO(dl_sysinfo_map), LM_ID_BASE);
+#endif
+
   /* Load all the libraries specified by DT_NEEDED entries.  If LD_PRELOAD
      specified some libraries to load, these are inserted before the actual
      dependencies in the executable's searchlist for symbol resolution.  */

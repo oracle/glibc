@@ -2948,6 +2948,8 @@ static __thread tcache_perthread_struct *tcache = NULL;
 /* Process-wide key to try and catch a double-free in the same thread.  */
 static uintptr_t tcache_key;
 
+extern void __vdso_force_platform_setup (void);
+
 /* The value of tcache_key does not really have to be a cryptographically
    secure random number.  It only needs to be arbitrary enough so that it does
    not collide with values present in applications.  If a collision does happen
@@ -2963,6 +2965,11 @@ tcache_key_initialize (void)
   if (__getrandom (&tcache_key, sizeof(tcache_key), GRND_NONBLOCK)
       != sizeof (tcache_key))
     {
+      /* random_bits uses VDSO functions, and the VDSO
+       * pointers need to be initalized and mangled.  This
+       * happens in csu_init that has not been invoked at this point. */
+      __vdso_force_platform_setup ();
+
       tcache_key = random_bits ();
 #if __WORDSIZE == 64
       tcache_key = (tcache_key << 32) | random_bits ();

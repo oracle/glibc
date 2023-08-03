@@ -37,6 +37,11 @@ int __libc_multiple_libcs attribute_hidden = 1;
 int __libc_argc attribute_hidden;
 char **__libc_argv attribute_hidden;
 
+void
+__vdso_force_platform_setup (void)
+{
+  VDSO_SETUP ();
+}
 
 void
 __libc_init_first (int argc, char **argv, char **envp)

@@ -308,6 +308,7 @@ tests-cxx = \
   tst-nodelete \
   tst-unique3 \
   tst-unique4 \
+# tests-cxx
 
 tests += $(if $(CXX),$(tests-cxx))
 tests-internal += loadtest unload unload2 circleload1 \
@@ -580,6 +581,7 @@ modules-names = \
   vismod1 \
   vismod2 \
   vismod3 \
+# modules-names
 
 modules-names-cxx = \
   tst-dlopen-nodelete-reloc-mod1 \
@@ -605,6 +607,7 @@ modules-names-cxx = \
   tst-unique3lib \
   tst-unique3lib2 \
   tst-unique4lib \
+# modules-names-cxx
 
 modules-names += \
   $(if $(CXX),$(modules-names-cxx)) \
@@ -614,6 +617,7 @@ modules-names += \
   $(tst-tls-many-dynamic-modules-dep-bad) \
   $(tlsmod17a-modules) \
   $(tlsmod18a-modules) \
+# modules-names
 
 # Most modules build with _ISOMAC defined, but those filtered out
 # depend on internal headers.

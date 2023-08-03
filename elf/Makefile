@@ -64,7 +64,8 @@ elide-routines.os = $(all-dl-routines) dl-support enbl-secure dl-origin \
 # interpreter and operating independent of libc.
 rtld-routines	= rtld $(all-dl-routines) dl-sysdep dl-environ dl-minimal \
   dl-error-minimal dl-conflict dl-hwcaps dl-hwcaps_split dl-hwcaps-subdirs \
-  dl-usage dl-diagnostics dl-diagnostics-kernel dl-diagnostics-cpu
+  dl-usage dl-diagnostics dl-diagnostics-kernel dl-diagnostics-cpu \
+  dl-audit
 all-rtld-routines = $(rtld-routines) $(sysdep-rtld-routines)
 
 CFLAGS-dl-runtime.c += -fexceptions -fasynchronous-unwind-tables

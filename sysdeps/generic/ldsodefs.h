@@ -600,18 +600,18 @@ struct rtld_global_ro
 
   /* Name of the shared object to be profiled (if any).  */
   EXTERN const char *_dl_profile;
-  /* Filename of the output file.  */
+  /* Filename of the output file.  This is assigned a
+     non-NULL pointer by the ld.so startup code (after initialization
+     to NULL), so this can also serve as an indicator whether a copy
+     of ld.so is initialized and active.  See the rtld_active function
+     below.  */
   EXTERN const char *_dl_profile_output;
   /* Name of the object we want to trace the prelinking.  */
   EXTERN const char *_dl_trace_prelink;
   /* Map of shared object to be prelink traced.  */
   EXTERN struct link_map *_dl_trace_prelink_map;
 
-  /* All search directories defined at startup.  This is assigned a
-     non-NULL pointer by the ld.so startup code (after initialization
-     to NULL), so this can also serve as an indicator whether a copy
-     of ld.so is initialized and active.  See the rtld_active function
-     below.  */
+  /* All search directories defined at startup.  */
   EXTERN struct r_search_path_elem *_dl_init_all_dirs;
 
 #ifdef NEED_DL_SYSINFO
@@ -1259,9 +1259,9 @@ static inline bool
 rtld_active (void)
 {
   /* The default-initialized variable does not have a non-zero
-     dl_init_all_dirs member, so this allows us to recognize an
+     dl_profile_output member, so this allows us to recognize an
      initialized and active ld.so copy.  */
-  return GLRO(dl_init_all_dirs) != NULL;
+  return GLRO(dl_profile_output) != NULL;
 }
 
 static inline struct auditstate *

@@ -2352,9 +2352,7 @@ ERROR: '%s': cannot process note segment.\n", _dl_argv[0]);
   GLRO(dl_initial_searchlist) = *GL(dl_ns)[LM_ID_BASE]._ns_main_searchlist;
 
   /* Remember the last search directory added at startup, now that
-     malloc will no longer be the one from dl-minimal.c.  As a side
-     effect, this marks ld.so as initialized, so that the rtld_active
-     function returns true from now on.  */
+     malloc will no longer be the one from dl-minimal.c.  */
   GLRO(dl_init_all_dirs) = GL(dl_all_dirs);
 
   /* Print scope information.  */
@@ -2675,7 +2673,9 @@ process_envvars (struct dl_main_state *state)
   char *envline;
   char *debug_output = NULL;
 
-  /* This is the default place for profiling data file.  */
+  /* This is the default place for profiling data file.  As a side
+     effect, this marks ld.so as initialized, so that the rtld_active
+     function returns true from now on.  */
   GLRO(dl_profile_output)
     = &"/var/tmp\0/var/profile"[__libc_enable_secure ? 9 : 0];
 

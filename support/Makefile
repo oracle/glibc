@@ -86,6 +86,7 @@ libsupport-routines = \
   xchroot \
   xclone \
   xclose \
+  xchmod \
   xconnect \
   xcopy_file_range \
   xdlfcn \

@@ -2183,7 +2183,7 @@ do_check_malloc_state (mstate av)
 
       while (p != 0)
         {
-	  if (__glibc_unlikely (!aligned_OK (p)))
+	  if (__glibc_unlikely (misaligned_chunk (p)))
 	    malloc_printerr ("do_check_malloc_state(): "
 			     "unaligned fastbin chunk detected");
           /* each chunk claims to be inuse */
@@ -2963,11 +2963,11 @@ static __always_inline void *
 tcache_get (size_t tc_idx)
 {
   tcache_entry *e = tcache->entries[tc_idx];
+  if (__glibc_unlikely (!aligned_OK (e)))
+    malloc_printerr ("malloc(): unaligned tcache chunk detected");
   tcache->entries[tc_idx] = REVEAL_PTR (e->next);
   --(tcache->counts[tc_idx]);
   e->key = NULL;
-  if (__glibc_unlikely (!aligned_OK (e)))
-    malloc_printerr ("malloc(): unaligned tcache chunk detected");
   return (void *) e;
 }
 
@@ -3604,7 +3604,7 @@ _int_malloc (mstate av, size_t bytes)
       if (victim == NULL)				\
 	break;						\
       pp = REVEAL_PTR (victim->fd);                                     \
-      if (__glibc_unlikely (!aligned_OK (pp)))                          \
+      if (__glibc_unlikely (pp != NULL && misaligned_chunk (pp)))       \
 	malloc_printerr ("malloc(): unaligned fastbin chunk detected"); \
     }							\
   while ((pp = catomic_compare_and_exchange_val_acq (fb, pp, victim)) \
@@ -3619,8 +3619,8 @@ _int_malloc (mstate av, size_t bytes)
 
       if (victim != NULL)
 	{
-	  if (__glibc_unlikely (!aligned_OK (victim)))
-	    malloc_printerr ("malloc(): unaligned fastbin chunk detected");
+	  if (__glibc_unlikely (misaligned_chunk (victim)))
+	    malloc_printerr ("malloc(): unaligned fastbin chunk detected 2");
 
 	  if (SINGLE_THREAD_P)
 	    *fb = REVEAL_PTR (victim->fd);
@@ -3644,8 +3644,8 @@ _int_malloc (mstate av, size_t bytes)
 		  while (tcache->counts[tc_idx] < mp_.tcache_count
 			 && (tc_victim = *fb) != NULL)
 		    {
-		      if (__glibc_unlikely (!aligned_OK (tc_victim)))
-			malloc_printerr ("malloc(): unaligned fastbin chunk detected");
+		      if (__glibc_unlikely (misaligned_chunk (tc_victim)))
+			malloc_printerr ("malloc(): unaligned fastbin chunk detected 3");
 		      if (SINGLE_THREAD_P)
 			*fb = REVEAL_PTR (tc_victim->fd);
 		      else
@@ -4518,7 +4518,7 @@ static void malloc_consolidate(mstate av)
     if (p != 0) {
       do {
 	{
-	  if (__glibc_unlikely (!aligned_OK (p)))
+	  if (__glibc_unlikely (misaligned_chunk (p)))
 	    malloc_printerr ("malloc_consolidate(): "
 			     "unaligned fastbin chunk detected");
 
@@ -4954,7 +4954,7 @@ int_mallinfo (mstate av, struct mallinfo *m)
 	   p != 0;
 	   p = REVEAL_PTR (p->fd))
         {
-	  if (__glibc_unlikely (!aligned_OK (p)))
+	  if (__glibc_unlikely (misaligned_chunk (p)))
 	    malloc_printerr ("int_mallinfo(): "
 			     "unaligned fastbin chunk detected");
           ++nfastblocks;
@@ -5507,7 +5507,7 @@ __malloc_info (int options, FILE *fp)
 
 	      while (p != NULL)
 		{
-		  if (__glibc_unlikely (!aligned_OK (p)))
+		  if (__glibc_unlikely (misaligned_chunk (p)))
 		    malloc_printerr ("__malloc_info(): "
 				     "unaligned fastbin chunk detected");
 		  ++nthissize;

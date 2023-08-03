@@ -31,5 +31,6 @@ sysdeps-gconv-modules = ../sysdeps/s390/gconv-modules
 endif
 
 ifeq ($(subdir),string)
-sysdep_routines += bzero memset memset-z900
+sysdep_routines += bzero memset memset-z900 \
+		   memcmp memcmp-z900
 endif

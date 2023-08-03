@@ -290,12 +290,21 @@ _dl_sort_maps_dfs (struct link_map **maps, unsigned int nmaps,
     }
 }
 
+/* DSO sort algorithm to use.  */
+enum dso_sort_algorithm
+  {
+    dso_sort_algorithm_original,
+    dso_sort_algorithm_dfs
+  };
+
+static enum dso_sort_algorithm _dl_dso_sort_algo;
+
 void
 _dl_sort_maps_init (void)
 {
   int32_t algorithm = TUNABLE_GET (glibc, rtld, dynamic_sort, int32_t, NULL);
-  GLRO(dl_dso_sort_algo) = algorithm == 1 ? dso_sort_algorithm_original
-					  : dso_sort_algorithm_dfs;
+  _dl_dso_sort_algo = (algorithm == 1 ? dso_sort_algorithm_original
+		       : dso_sort_algorithm_dfs);
 }
 
 void
@@ -309,7 +318,7 @@ _dl_sort_maps (struct link_map **maps, unsigned int nmaps,
      PTR_MANGLE/DEMANGLE, further impairing performance of small, common
      input cases. A simple if-case with direct function calls appears to
      be the fastest.  */
-  if (__glibc_likely (GLRO(dl_dso_sort_algo) == dso_sort_algorithm_original))
+  if (__glibc_likely (_dl_dso_sort_algo == dso_sort_algorithm_original))
     _dl_sort_maps_original (maps, nmaps, force_first, for_fini);
   else
     _dl_sort_maps_dfs (maps, nmaps, force_first, for_fini);

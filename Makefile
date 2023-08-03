@@ -593,9 +593,13 @@ $(tests-container) $(addsuffix /tests,$(subdirs)) : \
 $(objpfx)testroot.pristine/install.stamp :
 	test -d $(objpfx)testroot.pristine || \
 	  mkdir $(objpfx)testroot.pristine
-	# We need a working /bin/sh for some of the tests.
-	test -d $(objpfx)testroot.pristine/bin || \
-	  mkdir $(objpfx)testroot.pristine/bin
+	# Set up symlinks to directories whose contents got moved to /usr
+	for moved in bin lib lib64 sbin; do \
+		test -d $(objpfx)testroot.pristine/usr/$$moved || \
+		  mkdir -p $(objpfx)testroot.pristine/usr/$$moved ;\
+		test -e $(objpfx)testroot.pristine/$$moved || \
+		  ln -s usr/$$moved $(objpfx)testroot.pristine/$$moved ;\
+	done
 	# We need the compiled locale dir for localedef tests.
 	test -d $(objpfx)testroot.pristine/$(complocaledir) || \
 	  mkdir -p $(objpfx)testroot.pristine/$(complocaledir)

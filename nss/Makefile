@@ -60,6 +60,10 @@ tests			= test-netdb test-digits-dots tst-nss-getpwent bug17079 \
 			  tst-nss-test5
 xtests			= bug-erange
 
+tests-container = \
+			  tst-nss-db-endpwent \
+			  tst-nss-db-endgrent
+
 # Tests which need libdl
 ifeq (yes,$(build-shared))
 tests += tst-nss-files-hosts-erange

@@ -44,6 +44,10 @@ dl-routines += dl-tunables
 tunables-type = $(addprefix TUNABLES_FRONTEND_,$(have-tunables))
 CPPFLAGS-dl-tunables.c += -DTUNABLES_FRONTEND=$(tunables-type)
 
+ifeq (yesyes,$(build-shared)$(run-built-tests))
+tests-special += $(objpfx)list-tunables.out
+endif
+
 # Make sure that the compiler does not insert any library calls in tunables
 # code paths.
 ifeq (yes,$(have-loop-to-function))
@@ -1824,6 +1828,13 @@ $(objpfx)tst-glibc-hwcaps-mask.out: \
 # Generic dependency for sysdeps implementation of
 # tst-glibc-hwcaps-cache.
 $(objpfx)tst-glibc-hwcaps-cache.out: $(objpfx)tst-glibc-hwcaps
+
+$(objpfx)list-tunables.out: tst-rtld-list-tunables.sh $(objpfx)ld.so
+	$(SHELL) $< $(objpfx)ld.so '$(test-wrapper-env)' \
+	    '$(run_program_env)' > $(objpfx)/tst-rtld-list-tunables.out
+	cmp tst-rtld-list-tunables.exp \
+	    $(objpfx)/tst-rtld-list-tunables.out > $@; \
+	$(evaluate-test)
 
 tst-dst-static-ENV = LD_LIBRARY_PATH='$$ORIGIN'
 

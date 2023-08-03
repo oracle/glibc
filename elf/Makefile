@@ -365,6 +365,7 @@ tests += \
   tst-audit16 \
   tst-audit17 \
   tst-audit18 \
+  tst-audit19b \
   tst-auditmany \
   tst-auxobj \
   tst-auxobj-dlopen \
@@ -454,6 +455,7 @@ tests-internal += \
   neededtest2 \
   neededtest3 \
   neededtest4 \
+  tst-audit19a \
   tst-create_format1 \
   tst-dl-hwcaps_split \
   tst-dlmopen2 \
@@ -626,6 +628,7 @@ modules-names = \
   tst-audit12mod3 \
   tst-audit13mod1 \
   tst-audit18mod \
+  tst-audit19bmod \
   tst-auditlogmod-1 \
   tst-auditlogmod-2 \
   tst-auditlogmod-3 \
@@ -644,6 +647,8 @@ modules-names = \
   tst-auditmod11 \
   tst-auditmod12 \
   tst-auditmod18 \
+  tst-auditmod19a \
+  tst-auditmod19b \
   tst-auxvalmod \
   tst-big-note-lib \
   tst-deep1mod1 \
@@ -2006,6 +2011,13 @@ tst-audit17-ENV = LD_AUDIT=$(objpfx)tst-auditmod17.so
 $(objpfx)tst-audit18.out: $(objpfx)tst-auditmod18.so \
 			  $(objpfx)tst-audit18mod.so
 tst-audit18-ARGS = -- $(host-test-program-cmd)
+
+$(objpfx)tst-audit19a.out: $(objpfx)tst-auditmod19a.so
+tst-audit19a-ENV = LD_AUDIT=$(objpfx)tst-auditmod19a.so
+
+$(objpfx)tst-audit19b.out: $(objpfx)tst-auditmod19b.so
+$(objpfx)tst-audit19b: $(objpfx)tst-audit19bmod.so
+tst-audit19b-ARGS = -- $(host-test-program-cmd)
 
 # tst-sonamemove links against an older implementation of the library.
 LDFLAGS-tst-sonamemove-linkmod1.so = \
